@@ -15,7 +15,6 @@ jobs:
       - python/tools
 
 workflows:
-  main:
-    build_test:
+  build_test:
       jobs:
         - build_and_test
