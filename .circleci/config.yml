@@ -12,11 +12,22 @@ jobs:
       PYTHONPATH: ./python
     steps:
       - checkout # checkout source code
+      - restore_cache:
+          name: restore dependency cache
+          keys:
+            # Find a cache corresponding to this specific package-lock.json checksum
+            # when this file is changed, this key will fail
+            - python-deps-{{ checksum "python_deps.json" }}
       - python/install-packages:
           pkg-manager: pip
       - run:
           name: ieeg
           command: pip install git+https://github.com/ieeg-portal/ieegpy.git
+      - save_cache:
+          name: save dependency cache
+          key: python-deps-{{ checksum "python_deps.lock" }}
+          paths:
+            - ~/.cache
       - run:
           name: test
           command: python ./python/99-example_ieeg.py
