@@ -19,7 +19,6 @@ jobs:
           command: conda env create -n ieegpy -f python/ieegpy.yml
       - run:
           name: test
-          command: conda activate ieegpy
           command: python ./python/99-example_ieeg.py
 
 workflows:
