@@ -46,4 +46,3 @@ t_sec = np.linspace(start_time_usec, stop_time_usec, num=data.shape[0]) / 1e6
 fig, ax = tools.plot_iEEG_data(data, t_sec)
 fig.set_size_inches(18.5, 10.5)
 ax.set_title(iEEG_filename)
-fig.show()
