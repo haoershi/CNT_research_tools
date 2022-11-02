@@ -14,6 +14,7 @@ import os
 
 work_path = os.getcwd()
 print(work_path)
+print(os.listdir(work_path))
 
 # %%
 with open("./config.json", 'rb') as f:
