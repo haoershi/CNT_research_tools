@@ -1,4 +1,3 @@
--r run-requirements.txt
 cachetools==5.2.0
 pennprov==2.2.11
 pyqt5-sip==12.9.0
