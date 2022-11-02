@@ -15,7 +15,7 @@ jobs:
       - restore_cache:
           name: restore dependency cache
           keys:
-            - python-deps-{{ checksum "python_deps.json" }}
+            - deps-{{ .Branch }}-{{ checksum "requirements.txt" }}
       - python/install-packages:
           pkg-manager: pip
       - run:
@@ -23,9 +23,9 @@ jobs:
           command: pip install git+https://github.com/ieeg-portal/ieegpy.git
       - save_cache:
           name: save dependency cache
-          key: python-deps-{{ checksum "python_deps.lock" }}
+          key: deps-{{ .Branch }}-{{ checksum "requirements.txt" }}
           paths:
-            - ./.cache
+            - cache
       - run:
           name: test
           command: python ./python/99-example_ieeg.py
