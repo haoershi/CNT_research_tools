@@ -15,8 +15,9 @@ jobs:
       - python/load-cache
       - python/install-packages:
           pkg-manager: pip
-      - python/save-cache
-      - python/python/tools
+      - run:
+          name: test
+          command: python ./python/99-example_ieeg.py
 
 workflows:
   build_test:
