@@ -15,8 +15,6 @@ jobs:
       - restore_cache:
           name: restore dependency cache
           keys:
-            # Find a cache corresponding to this specific package-lock.json checksum
-            # when this file is changed, this key will fail
             - python-deps-{{ checksum "python_deps.json" }}
       - python/install-packages:
           pkg-manager: pip
@@ -27,7 +25,7 @@ jobs:
           name: save dependency cache
           key: python-deps-{{ checksum "python_deps.lock" }}
           paths:
-            - ~/.cache
+            - ./.cache
       - run:
           name: test
           command: python ./python/99-example_ieeg.py
