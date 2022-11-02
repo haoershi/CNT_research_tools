@@ -1,0 +1,17 @@
+version: '2.1'
+orbs:
+  matlab: mathworks/matlab@0
+jobs:
+  build:
+    machine:
+      image: 'ubuntu-2204:2022.07.1'
+    steps:
+      - checkout
+      - matlab/install
+      - matlab/run-command:
+          command: ./Matlab/testing/pipeline_test_clip.m
+workflows:
+  build:
+    jobs:
+      - build
+
