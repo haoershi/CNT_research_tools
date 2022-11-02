@@ -15,8 +15,8 @@ jobs:
       - python/install-packages:
           pkg-manager: pip
       - run:
-          name: env
-          command: conda env create -n ieegpy -f python/ieegpy.yml
+          name: ieeg
+          command: pip install git+https://github.com/ieeg-portal/ieegpy.git
       - run:
           name: test
           command: python ./python/99-example_ieeg.py
