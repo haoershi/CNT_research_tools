@@ -10,8 +10,10 @@ import pandas as pd
 import numpy as np
 
 import tools
-#import os
+import os
 
+work_path = os.getcwd()
+print(work_path)
 
 # %%
 with open("./config.json", 'rb') as f:
