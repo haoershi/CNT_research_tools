@@ -18,9 +18,6 @@ jobs:
             - deps-{{ .Branch }}-{{ checksum "requirements.txt" }}
       - python/install-packages:
           pkg-manager: pip
-      - run:
-          name: ieeg
-          command: pip install git+https://github.com/ieeg-portal/ieegpy.git
       - save_cache:
           name: save dependency cache
           key: deps-{{ .Branch }}-{{ checksum "requirements.txt" }}
