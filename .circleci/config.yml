@@ -12,7 +12,6 @@ jobs:
       PYTHONPATH: ./python
     steps:
       - checkout # checkout source code
-      - python/load-cache
       - python/install-packages:
           pkg-manager: pip
       - run:
