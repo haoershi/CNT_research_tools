@@ -12,8 +12,8 @@ jobs:
       PYTHONPATH: ./python
     steps:
       - checkout # checkout source code
-      #- python/install-packages:
-          #pkg-manager: pip
+      - python/install-packages:
+          pkg-manager: pip
       - run:
           name: env
           command: conda env create -n ieegpy -f python/ieegpy.yml
