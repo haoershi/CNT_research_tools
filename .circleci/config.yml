@@ -9,12 +9,15 @@ jobs:
   build_and_test: # this can be any name you choose
     executor: python/default # use the default executor defined within the orb
     environment:
-      PYTHONPATH:./python
+      PYTHONPATH: ./python/tools
+      PYTHONPATH: ./python
     steps:
       - checkout # checkout source code
+      - python/load-cache
       - python/install-packages:
           pkg-manager: pip
-      - python/test/tools
+      - python/save-cache
+      - python/python/tools
 
 workflows:
   build_test:
