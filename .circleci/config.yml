@@ -12,7 +12,6 @@ jobs:
       - checkout # checkout source code
       - python/install-packages:
           pkg-manager: pip
-      - python/tools
 
 workflows:
   build_test:
