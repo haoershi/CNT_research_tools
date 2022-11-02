@@ -13,11 +13,9 @@ import tools
 import os
 
 work_path = os.getcwd()
-print(work_path)
-print(os.listdir(work_path))
 
 # %%
-with open("./config.json", 'rb') as f:
+with open(os.path.join(work_path,"config.json"), 'rb') as f:
     config = pd.read_json(f, typ='series')
 
 iEEG_filename = "HUP172_phaseII"
