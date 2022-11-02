@@ -9,10 +9,8 @@ jobs:
   build_and_test: # this can be any name you choose
     executor: python/default # use the default executor defined within the orb
     environment:
-      PYTHONPATH: ${HOME}/CNT_research_tools/python
+      PYTHONPATH: ${HOME}/CNT_research_tools
     steps:
-      - run:
-        command: echo ${HOME}
       - checkout # checkout source code
       - restore_cache:
           name: restore dependency cache
