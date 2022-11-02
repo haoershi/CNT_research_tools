@@ -7,7 +7,7 @@ orbs:
   
 jobs:
   build_and_test: # this can be any name you choose
-    working_directory: ~/python
+    working_directory: python/99-example_ieeg.py
     executor: python/default # use the default executor defined within the orb
     #environment:
       #PYTHONPATH: ${HOME}/CNT_research_tools
