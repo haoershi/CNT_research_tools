@@ -14,7 +14,7 @@ import os
 
 
 # %%
-with open(os.path.realpath("../config.json"), 'rb') as f:
+with open(os.path.realpath("./config.json"), 'rb') as f:
     config = pd.read_json(f, typ='series')
 
 iEEG_filename = "HUP172_phaseII"
