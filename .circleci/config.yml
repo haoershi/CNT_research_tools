@@ -18,7 +18,7 @@ jobs:
             pip install --progress-bar off --force-reinstall numpy==1.21.4 
             pip install --progress-bar off --force-reinstall matplotlib==3.5.2
             pip install --progress-bar off --force-reinstall matplotlib-inline==0.1.3
-            pip install --progress-bar off ipython ipywidgets pandas mne cachetools pennprov pyqt5-sip install seaborn PyQt5
+            pip install --progress-bar off ipython ipywidgets pandas mne cachetools pennprov pyqt5-sip install seaborn PyQt5 PySide2
             pip install --progress-bar off https://github.com/nteract/papermill/archive/master.zip
             pip install --progress-bar off git+https://github.com/ieeg-portal/ieegpy.git
             
