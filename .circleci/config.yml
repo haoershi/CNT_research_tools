@@ -8,8 +8,6 @@ jobs:
     working_directory: /tmp/repo
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: pip
       - run:
           name: Install grading dependencies
           command: |
