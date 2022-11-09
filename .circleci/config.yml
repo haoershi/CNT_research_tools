@@ -25,10 +25,10 @@ jobs:
             mkdir -p notebooks/test
             
       - run:
-          name: Execute test/ICAexample.ipynb
+          name: Execute test/ICA_example.ipynb
           command: |
             source activate base
-            papermill --cwd python python/ICAexample.ipynb homework-graded.ipynb
+            papermill --cwd python python/ICA_example.ipynb homework-graded.ipynb
             jupyter nbconvert --to html --stdout python/homework-graded.ipynb > notebooks/test/homework.html
   
       - store_artifacts:
