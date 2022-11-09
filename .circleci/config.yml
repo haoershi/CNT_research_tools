@@ -14,6 +14,7 @@ jobs:
             source activate base
             apt-get -y update 
             apt-get -y install gcc python3-dev
+            apt-get -y install jupyter-nbconvert
             pip install --upgrade pip
             pip install --progress-bar off --force-reinstall numpy==1.21.4 
             pip install --progress-bar off --force-reinstall matplotlib==3.5.2
