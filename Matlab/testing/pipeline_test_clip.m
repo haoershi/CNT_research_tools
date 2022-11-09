@@ -2,8 +2,8 @@ clear
 
 %% Path parameters
 ieeg_folder = '.Matlab/ieeg-matlab-1.14.49';
-ieeg_pw_file = './eri_ieeglogin.bin';
-ieeg_login = 'erinconr';
+ieeg_pw_file = '.Matlab/qaq_ieeglogin.bin';
+ieeg_login = 'qaq233tvt';
 
 %% Clip parameters
 file_name = 'HUP212_phaseII';
