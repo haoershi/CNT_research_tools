@@ -15,7 +15,6 @@ jobs:
             apt-get -y update 
             apt-get -y install gcc python3-dev
             pip install --upgrade pip
-            conda install numpy==1.21.4
             pip install --progress-bar off --force-reinstall numpy==1.21.4 
             pip install --progress-bar off ipython ipywidgets pandas mne
             pip install --progress-bar off https://github.com/nteract/papermill/archive/master.zip
