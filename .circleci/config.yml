@@ -38,7 +38,7 @@ jobs:
           command: |
             source activate base
             papermill --cwd python python/HaoerShi_HW1.ipynb homework-graded.ipynb
-            jupyter nbconvert --to html --stdout python/homework-graded.ipynb > notebooks/test/homework.html
+            jupyter nbconvert --to html --stdout homework-graded.ipynb > notebooks/test/homework.html
   
       - store_artifacts:
           path: /tmp/repo/notebooks
