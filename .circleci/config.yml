@@ -13,6 +13,7 @@ jobs:
           command: |
             source activate base
             pip install --progress-bar off ipython ipywidgets
+            pip install --progress-bar off gcc7
             pip install --progress-bar off https://github.com/nteract/papermill/archive/master.zip
       - run:
           name: Install course specific dependencies
