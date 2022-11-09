@@ -18,6 +18,7 @@ jobs:
             pip install --progress-bar off --force-reinstall numpy==1.21.4 
             pip install --progress-bar off ipython ipywidgets pandas mne
             pip install --progress-bar off https://github.com/nteract/papermill/archive/master.zip
+            pip install git+https://github.com/ieeg-portal/ieegpy.git
             
       - run:
           name: Install course specific dependencies
