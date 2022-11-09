@@ -14,8 +14,9 @@ jobs:
             source activate base
             apt-get -y update 
             apt-get -y install gcc python3-dev
-            pip install --progress-bar off ipython ipywidgets
+            pip install --progress-bar off ipython ipywidgets pandas numpy mne
             pip install --progress-bar off https://github.com/nteract/papermill/archive/master.zip
+            
       - run:
           name: Install course specific dependencies
           command: |
