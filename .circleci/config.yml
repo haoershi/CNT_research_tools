@@ -12,8 +12,8 @@ jobs:
           name: Install grading dependencies
           command: |
             source activate base
-            yes YES | apt-get update --yes
-            apt-get install gcc python3-dev
+            apt-get -y update 
+            apt-get -y install gcc python3-dev
             pip install --progress-bar off ipython ipywidgets
             pip install --progress-bar off https://github.com/nteract/papermill/archive/master.zip
       - run:
