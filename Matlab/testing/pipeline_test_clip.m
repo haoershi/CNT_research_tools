@@ -1,8 +1,8 @@
 clear
 
 %% Path parameters
-ieeg_folder = '/Users/erinconrad/Desktop/research/spike_locations/scripts/tools/ieeg-matlab-1.13.2';
-ieeg_pw_file = '/Users/erinconrad/Desktop/research/spike_locations/scripts/tools/eri_ieeglogin.bin';
+ieeg_folder = '.Matlab/ieeg-matlab-1.14.49';
+ieeg_pw_file = './eri_ieeglogin.bin';
 ieeg_login = 'erinconr';
 
 %% Clip parameters
