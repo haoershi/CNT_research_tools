@@ -32,6 +32,8 @@ jobs:
           name: pipeline test
           command: python ./python/99-example_ieeg.py
           version: 2.1
+      - store_test_results:
+          path: test-results
 
 workflows:
   build_test:
