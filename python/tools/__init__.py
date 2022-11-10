@@ -2,6 +2,7 @@
 Init file for tools
 '''
 
+from .automatic_bipolar_montage import automatic_bipolar_montage
 from .get_iEEG_data import get_iEEG_data
 from .gini import gini
 from .line_length import line_length
