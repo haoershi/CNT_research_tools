@@ -8,7 +8,7 @@ from numbers import Number
 import numpy as np
 from .clean_labels import clean_labels
 
-def get_iEEG_data(username, password_bin_file, iEEG_filename, start_time_usec, stop_time_usec, select_electrodes=None, ignore_electrodes=None, outputfile=None):
+def get_iEEG_data(username, password_bin_file, iEEG_filename, start_time, stop_time, select_electrodes=None, ignore_electrodes=None, outputfile=None):
     """"
     2020.04.06. Python 3.7
     Andy Revell, adapted by Akash Pattnaik (2021.06.23)
@@ -63,14 +63,24 @@ def get_iEEG_data(username, password_bin_file, iEEG_filename, start_time_usec, s
     #     print("Not saving, returning data and sampling frequency")
 
     # Pull and format metadata from patient_localization_mat
-    
-    start_time_usec = int(start_time_usec)
-    stop_time_usec = int(stop_time_usec)
+    meta_data = pd.read_csv('metadata.csv')
+    if iEEG_filename not in list(meta_data['filename']):
+        raise NameError('Filename not in iEEG database.')
+    else:
+        pwd = open(password_bin_file, 'r').read()
+        s = Session(username, pwd)
+        ds = s.open_dataset(iEEG_filename)
+        ts = s.get_time_series_details(ds.ch_labels[0])
+        dura = ts.duration/1e6
+        fs = ts.sample_rate
+        if start_time > stop_time or start_time < 0 or stop_time > dura:
+            raise ValueError('Invalid start and stop time.')
+        else: 
+            continue
+            
+    start_time_usec = int(start_time*1e6)
+    stop_time_usec = int(stop_time*1e6)
     duration = stop_time_usec - start_time_usec
-
-    pwd = open(password_bin_file, 'r').read()
-    s = Session(username, pwd)
-    ds = s.open_dataset(iEEG_filename)
     all_channel_labels = ds.get_channel_labels()
     #all_channel_labels = clean_labels(all_channel_labels)
 
