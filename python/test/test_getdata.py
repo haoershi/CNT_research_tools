@@ -26,16 +26,26 @@ import tools
 # write in a csv file all tests, col 0 filename, col 1 start in sec, col 2 stop in sec, col 4 electrodes
 # metadata should contain all correct info for reference, maybe fetch later
 # do not test electrodes temporarily
-def test_getdata():
-    with open(os.path.join("python/config.json"), 'rb') as f:
+with open(os.path.join("python/config.json"), 'rb') as f:
         config = pd.read_json(f, typ='series')
 
-    meta_data = pd.read_csv(os.path.join(test_path,'metadata.csv'))
-    test_input = pd.read_csv(os.path.join(test_path,'testinput.csv'))
-    for _i in test_input.shape[0]:
-        assert test_input.iloc[_i,0] in list(meta_data['filename'])
-        assert test_input.iloc[_i,1] < test_input.iloc[_i,2]
-        data,fs = tools.get_iEEG_data(config.usr,config.pwd,test_input.iloc[0,0],test_input.iloc[0,1]*1e6,test_input.iloc[0,2]*1e6)
-        assert data.shape[0] == fs*(test_input.iloc[0,2]-test_input.iloc[0,1])
-
+meta_data = pd.read_csv(os.path.join(test_path,'metadata.csv'))
+test_input = pd.read_csv(os.path.join(test_path,'testinput.csv'))
+params = [tuple(test_input.iloc[i,0:3]) for i in range(test_input.shape[0])]
+@pytest.mark.parametrize('filename,start,end',params)
+def test_getdata(filename,start,end):
+    try:
+        data,fs = tools.get_iEEG_data(config.usr,config.pwd,filename,start,end)
+        assert data.shape[0] == fs*(end-start)
+    except Exception as e:
+        if filename not in list(meta_data['filename']):
+            assert True
+        elif start > end:
+            assert True
+        elif start < 0:
+            assert True
+        elif end > 1000000:# should be change to the file duration
+            assert True
+        else:
+            assert False
 # %%
