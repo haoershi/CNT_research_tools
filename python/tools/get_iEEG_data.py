@@ -75,8 +75,6 @@ def get_iEEG_data(username, password_bin_file, iEEG_filename, start_time, stop_t
         fs = ts.sample_rate
         if start_time > stop_time or start_time < 0 or stop_time > dura:
             raise ValueError('Invalid start and stop time.')
-        else: 
-            continue
             
     start_time_usec = int(start_time*1e6)
     stop_time_usec = int(stop_time*1e6)
