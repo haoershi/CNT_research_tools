@@ -35,7 +35,7 @@ jobs:
             pytest --junitxml=test-results/junit.xml
       - run:
           name: pipeline test
-          command: python python/test/test_pipeline.py
+          command: python python/99-example_ieeg.py
           version: 2.1
       - store_test_results:
           path: test-results
