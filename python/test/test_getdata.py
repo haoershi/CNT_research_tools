@@ -29,7 +29,6 @@ import tools
 with open(os.path.join("python/config.json"), 'rb') as f:
         config = pd.read_json(f, typ='series')
 
-meta_data = pd.read_csv(os.path.join(test_path,'metadata.csv'))
 test_input = pd.read_csv(os.path.join(test_path,'testinput.csv'))
 params = [tuple(test_input.iloc[i,0:3]) for i in range(test_input.shape[0])]
 @pytest.mark.parametrize('filename,start,end',params)
