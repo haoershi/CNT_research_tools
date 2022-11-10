@@ -25,10 +25,13 @@ import tools
 # unit test for clean_labels function
 # write in a csv file, col 0 input, col 1 expected output
 # wait to fetch all channel types from ieeg
-def test_channel():
-    
-    test_channel = pd.read_csv(os.path.join(test_path,'testchannel.csv'))
-    clean_channel = tools.clean_labels(list(test_channel['input']))
-    for _i in test_channel.shape[0]:
-        assert clean_channel[_i] == test_channel.iloc[_i,1]
-# %%
+test_chans = pd.read_csv(os.path.join(test_path,'testchannel.csv'))
+params = [tuple([[test_chans.iloc[i,0]],[test_chans.iloc[i,1]]]) for i in range(test_chans.shape[0])]
+@pytest.mark.parametrize('input,expect',params)
+def test_channel(input,expect):
+    try:
+        clean_channel = tools.clean_labels(input)
+        assert expect == clean_channel
+    except AttributeError as e:
+        assert False
+    # %%
