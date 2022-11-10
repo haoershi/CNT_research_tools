@@ -26,9 +26,12 @@ jobs:
           paths:
             - ./cache
       - run:
-          name: unit tests
+          name: prep
           command:
             mkdir -p test-results
+      - run:
+          name: unit tests
+          command:
             pytest --verbose --junitxml=test-results/junit.xml
       - run:
           name: pipeline test
