@@ -7,6 +7,8 @@ orbs:
   
 jobs:
   build_and_test: # this can be any name you choose
+    docker:
+      - image: cimg/python:3.10.4
     executor: python/default # use the default executor defined within the orb
     environment:
       PYTHONPATH: ./python
@@ -24,8 +26,12 @@ jobs:
           paths:
             - ./cache
       - run:
-          name: test
+          name: unit tests
+          command: pytest
+      - run:
+          name: pipeline test
           command: python ./python/99-example_ieeg.py
+          version: 2.1
 
 workflows:
   build_test:
