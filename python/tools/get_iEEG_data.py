@@ -63,7 +63,7 @@ def get_iEEG_data(username, password_bin_file, iEEG_filename, start_time, stop_t
     #     print("Not saving, returning data and sampling frequency")
 
     # Pull and format metadata from patient_localization_mat
-    meta_data = pd.read_csv('./metadata.csv')
+    meta_data = pd.read_csv('python/metadata.csv')
     if iEEG_filename not in list(meta_data['filename']):
         raise NameError('Filename not in iEEG database.')
     else:
