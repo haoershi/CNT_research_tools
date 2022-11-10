@@ -12,11 +12,12 @@ import pytest
 import os
 import sys
 work_path = os.getcwd() # get current path
-print(os.getcwd())
-os.chdir(work_path)
-par_folder = os.path.dirname(work_path)
-sys.path.append(par_folder)
-sys.path.append(work_path)
+test_path = os.path.join(work_path,"python/test")
+file_path = os.path.join(work_path,"python")
+#print(os.getcwd())
+#os.chdir(work_path)
+#par_folder = os.path.dirname(work_path)
+sys.path.append(file_path)
 
 import tools
 
@@ -26,11 +27,11 @@ import tools
 # metadata should contain all correct info for reference, maybe fetch later
 # do not test electrodes temporarily
 def test_getdata():
-    with open(os.path.join(par_folder,"config.json"), 'rb') as f:
+    with open(os.path.join("python/config.json"), 'rb') as f:
         config = pd.read_json(f, typ='series')
 
-    meta_data = pd.read_csv(os.path.join(work_path,'metadata.csv'))
-    test_input = pd.read_csv(os.path.join(work_path,'testinput.csv'))
+    meta_data = pd.read_csv(os.path.join(test_path,'metadata.csv'))
+    test_input = pd.read_csv(os.path.join(test_path,'testinput.csv'))
     for _i in test_input.shape[0]:
         assert test_input.iloc[_i,0] in list(meta_data['filename'])
         assert test_input.iloc[_i,1] < test_input.iloc[_i,2]
