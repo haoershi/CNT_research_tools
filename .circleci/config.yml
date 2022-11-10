@@ -28,8 +28,8 @@ jobs:
       - run:
           name: unit tests
           command:
-            set -e
-            TEST_FILES=$(circleci tests glob "openapi_server/**/test_*.py" | circleci tests split --split-by=timings)
+            cp -f .circleci/resources/pytest_build_config.ini pytest.ini
+            set -e TEST_FILES=$(circleci tests glob "openapi_server/**/test_*.py" | circleci tests split --split-by=timings)
             mkdir -p test-results
             pytest --verbose --junitxml=test-results/junit.xml $TEST_FILES
       - run:
