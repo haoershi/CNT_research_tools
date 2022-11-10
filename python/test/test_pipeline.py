@@ -27,12 +27,12 @@ with open("python/config.json", 'rb') as f:
 
 # data info
 iEEG_filename = "HUP172_phaseII"
-start_time_usec = 402580 * 1e6
-stop_time_usec = 402600 * 1e6
+start_time = 402580
+stop_time = 402600
 electrodes = ["LE10","LE11","LH01","LH02","LH03","LH04"]
 # %%
-data, fs = tools.get_iEEG_data(config.usr, config.pwd, iEEG_filename, start_time_usec, stop_time_usec)
-t_sec = np.linspace(start_time_usec, stop_time_usec, num=data.shape[0]) / 1e6 # set a time array for later use
+data, fs = tools.get_iEEG_data(config.usr, config.pwd, iEEG_filename, start_time, stop_time)
+t_sec = np.linspace(start_time, stop_time, num=data.shape[0]) # set a time array for later use
 # %%
 # for test, plot sample data
 fig, ax = tools.plot_iEEG_data(data, t_sec)
