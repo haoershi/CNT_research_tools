@@ -72,7 +72,7 @@ def get_iEEG_data(username, password_bin_file, iEEG_filename, start_time_usec, s
     s = Session(username, pwd)
     ds = s.open_dataset(iEEG_filename)
     all_channel_labels = ds.get_channel_labels()
-    all_channel_labels = clean_labels(all_channel_labels)
+    #all_channel_labels = clean_labels(all_channel_labels)
 
     if select_electrodes is not None:
         if isinstance(select_electrodes[0], Number):
