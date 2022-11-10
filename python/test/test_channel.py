@@ -12,10 +12,13 @@ import pytest
 import os
 import sys
 work_path = os.getcwd() # get current path
-print(os.getcwd())
-os.chdir(work_path)
-par_folder = os.path.dirname(work_path)
-sys.path.append(work_path)
+test_path = os.path.join(work_path,"python/test")
+file_path = os.path.join(work_path,"python")
+#print(os.getcwd())
+#os.chdir(work_path)
+#par_folder = os.path.dirname(work_path)
+sys.path.append(file_path)
+
 import tools
 
 # %%
@@ -24,7 +27,7 @@ import tools
 # wait to fetch all channel types from ieeg
 def test_channel():
     
-    test_channel = pd.read_csv(os.path.join(work_path,'testchannel.csv'))
+    test_channel = pd.read_csv(os.path.join(test_path,'testchannel.csv'))
     clean_channel = tools.clean_labels(list(test_channel['input']))
     for _i in test_channel.shape[0]:
         assert clean_channel[_i] == test_channel.iloc[_i,1]
