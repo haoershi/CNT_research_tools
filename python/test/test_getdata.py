@@ -37,7 +37,7 @@ def test_getdata(filename,start,end):
     try:
         data,fs = tools.get_iEEG_data(config.usr,config.pwd,filename,start,end)
         assert data.shape[0] == fs*(end-start)
-    except ValueError or NameError as e:
+    except ieeg.ieeg_api.IeegServiceError as e:
         if filename not in list(meta_data['filename']):
             assert True
         elif start > end:
