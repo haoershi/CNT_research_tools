@@ -70,11 +70,15 @@ def get_iEEG_data(username, password_bin_file, iEEG_filename, start_time, stop_t
         pwd = open(password_bin_file, 'r').read()
         s = Session(username, pwd)
         ds = s.open_dataset(iEEG_filename)
-        ts = ds.get_time_series_details(ds.ch_labels[0])
-        dura = ts.duration/1e6
-        fs = ts.sample_rate
-        if start_time > stop_time or start_time < 0 or stop_time > dura:
-            raise ValueError('Invalid start and stop time.')
+        # some channel tests here
+        if len(ds.ch_labels) == 0:
+            raise ValueError('No channel left.')
+        else:
+            ts = ds.get_time_series_details(ds.ch_labels[0])
+            dura = ts.duration/1e6
+            fs = ts.sample_rate
+            if start_time > stop_time or start_time < 0 or stop_time > dura:
+                raise ValueError('Invalid start and stop time.')
             
     start_time_usec = int(start_time*1e6)
     stop_time_usec = int(stop_time*1e6)
