@@ -1,4 +1,4 @@
-clear;
+%clear;
 work_path = pwd;
 file_path = string(work_path)+'/matlab';
 test_path = string(work_path)+'/matlab/test';
