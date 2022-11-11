@@ -9,7 +9,7 @@ jobs:
       - checkout
       - matlab/install
       - matlab/run-command:
-          command: ./Matlab/testing/pipeline_test_clip.m
+          command: ./matlab/test/pipeline_test_clip_circleci.m
 workflows:
   build:
     jobs:
