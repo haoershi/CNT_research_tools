@@ -9,7 +9,7 @@ jobs:
       - checkout
       - matlab/install
       - matlab/run-command:
-          command: ./matlab/test/pipeline_test_clip_circleci.m
+          command: /matlab/test/pipeline_test_clip_circleci.m
       - matlab/run-tests:
           test-results-junit: test-results/matlab/results.xml
       - store_test_results:
