@@ -10,6 +10,10 @@ jobs:
       - matlab/install
       - matlab/run-command:
           command: ./matlab/test/pipeline_test_clip_circleci.m
+      - matlab/run-tests:
+          test-results-junit: test-results/matlab/results.xml
+      - store_test_results:
+          path: test-results
 workflows:
   build:
     jobs:
