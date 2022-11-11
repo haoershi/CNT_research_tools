@@ -2,8 +2,8 @@ clear
 %cd /Users/meow/Downloads/UPenn/00_Thesis/script % don't run when on
 %circleci
 work_path = pwd;
-file_path = string(work_path)+'/Matlab';
-test_path = string(work_path)+'/Matlab/test';
+file_path = string(work_path)+'/matlab';
+test_path = string(work_path)+'/matlab/test';
 
 % Add path to this codebase
 addpath(genpath('./..'))
