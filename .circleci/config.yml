@@ -8,12 +8,8 @@ jobs:
     steps:
       - checkout
       - matlab/install
-      - matlab/run-command:
-          command: /matlab/test/test.m
-      - matlab/run-tests:
-          test-results-junit: test-results/matlab/results.xml
-      - store_test_results:
-          path: test-results
+      - matlab/run-build:
+          tasks: test
 workflows:
   build:
     jobs:
