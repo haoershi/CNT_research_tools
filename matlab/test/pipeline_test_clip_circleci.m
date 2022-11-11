@@ -1,6 +1,4 @@
-clear
-%cd /Users/meow/Downloads/UPenn/00_Thesis/script % don't run when on
-%circleci
+clear;
 work_path = pwd;
 file_path = string(work_path)+'/matlab';
 test_path = string(work_path)+'/matlab/test';
