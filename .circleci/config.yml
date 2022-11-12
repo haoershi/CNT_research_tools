@@ -16,8 +16,9 @@ jobs:
           test-results-junit: test-results/matlab/results.xml
       - store_test_results:
           path: test-results
-      - matlab/run-command:
-          command: /matlab/test/test.m
+      - store_artifacts:
+          path: test-results
+
 workflows:
   build:
     jobs:
