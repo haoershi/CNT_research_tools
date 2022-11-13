@@ -11,7 +11,7 @@ classdef getDataTest < matlab.unittest.TestCase
     % https://www.mathworks.com/help/matlab/matlab_prog/use-external-parameters-in-parameterized-test.html 
     % Define parameters below
     properties (TestParameter)
-        Data = getData_default_param();
+        Data = getData_param('getData_testInput.csv');
     end
 
     %% Test Method Block
