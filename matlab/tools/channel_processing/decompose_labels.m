@@ -1,4 +1,4 @@
-function [clean_labels,elecs,numbers] = decompose_labels(chLabels,name)
+function [clean_labels,elecs,numbers] = decompose_labels(chLabels)
 
 %{
 This function takes an arbitrary set of electrode labels. It returns clean_labels,
@@ -6,20 +6,38 @@ which contains simplified labels removing leading zeros, and other bonus
 parts. It also returns, for each label, the electrode name and the number
 of the contact on that electrode
 %}
+%% Added 11/13, Haoer
+% assume cell format of channel labels
+if ~iscell(chLabels)
+    try
+        % convert to cell if table format
+        if istable(chLabels)
+            chLabels = table2cell(chLabels); 
+        
+        % convert to cell if string or char format
+        elseif isstring(chLabels) || ischar(chLabels)
+            chLabels = cellstr(chLabels); 
+        end
+    
+    catch ME
+        throw(MException('CNTtools:invalidInputType','Electrode labels should be a cell array.'))
+    end
+end
+% end of added part
 
 clean_labels = cell(length(chLabels),1);
 elecs = cell(length(chLabels),1);
 numbers = nan(length(chLabels),1);
 
 for ich = 1:length(chLabels)
-    if ischar(chLabels)
-        label = chLabels;
-    else
-        label = chLabels{ich};
-    end
+%     if ischar(chLabels)
+%         label = chLabels;
+%     else
+    label = chLabels{ich};
+%     end
 
     %% if it's a string, convert it to a char
-    if strcmp(class(label),'string')
+    if isa(label,'string')
         label = convertStringsToChars(label);
     end
     
@@ -72,15 +90,15 @@ for ich = 1:length(chLabels)
     label = strrep(label,'AMY','DA');
     
     %% Dumb fixes specific to individual patients
-    if strcmp(name,'HUP099')
-        if strcmp(label(1),'R')
-            label = strrep(label,'R','');
-        end
-    end
-    
-    if strcmp(name,'HUP189')
-        label = strrep(label,'Gr','G');
-    end
+%     if strcmp(name,'HUP099')
+%         if strcmp(label(1),'R')
+%             label = strrep(label,'R','');
+%         end
+%     end
+%     
+%     if strcmp(name,'HUP189')
+%         label = strrep(label,'Gr','G');
+%     end
     
     %% Fill the clean label
     clean_labels{ich} = label;
