@@ -1,0 +1,10 @@
+filename,start,stop,out,notes
+HUP172_phaseII,402580,402600,,correctCase1
+HUP212_phaseII,100000,100015,,correctCase2
+HAP210_,10000,10015,IEEGToolbox:invalidFileName,invalidFilename
+HUP077_phaseII,10000,10015,IEEGToolbox:emptyFile,emptyFile
+HUP060_phaseIV,20020,20000,IEEGToolbox:invalidTimeRange,stopBeforeStart
+HUP101_phaseII_D01,1000000,1000015,IEEGToolbox:invalidTimeRange,outrangeTime1
+HUP212_phaseII,-30,0,IEEGToolbox:invalidTimeRange,outrangeTime2
+HUP212_phaseII,"""30""",45,IEEGToolbox:invalidInputType,invalidType
+"""HUP212_phaseII""",30,[45],,invalidType2
