@@ -9,54 +9,56 @@ function data = download_ieeg_data(fname, login_name, pwfile, run_times, extras)
 %       run_times: time range of to be pulled data within file, in seconds
 %       extras: whether to assign other data attributes to output var
 % Output:
-%       data: a struct of field 'fs', ? dimension?
+%       data: a struct of field 'fs', 'values', 'file_name', 'chLabels',
+%       'duration', and 'ann'
 
 %% Added 11/12, Haoer
-% import for later test
-%import matlab.unittest.constraints.IssuesNoWarnings;
-%import matlab.unittest.qualifications.Verifiable;
+% think if need test for login file, lack no meta data version check
+
 % Assert input type
-% errType = MException('IEEGToolbox:invalidInputType','Invalid input type.');
-assert((isstring(fname) || ischar(fname)),'IEEGToolbox:invalidInputType','Invalid input type.')
-assert(isa(run_times,'numeric'),'IEEGToolbox:invalidInputType','Invalid input type.')
-% if ~isstring(fname) && ~ischar(fname)
-%     error('IEEGToolbox:invalidInputType','Invalid input type.')
-% elseif ~isa(run_times,'numeric')
-%     error('IEEGToolbox:invalidInputType','Invalid input type.')
-% end
+assert((isstring(fname) || ischar(fname)),'CNTtools:invalidInputType','Invalid input type.')
+assert(isa(run_times,'numeric'),'CNTtools:invalidInputType','Invalid input type.')
+
 % remove potential blanks/quotes
 fname = strip(fname);
 fname = strip(fname,'"');
 fname = strip(fname,"'");
+
 % If with meta data file, metaData can be fetched through the tool/fetch_metadata 
 % function, don't know how to effectively fetch yet
 if exist('meta_data.csv')
+    
     % Import metaData
     metaData = readtable('meta_data.csv','Delimiter',',','Format','auto');% read meta data
-%     % test login info
-%     try
-%         IEEGSession(metaData.filename(1), login_name, pwfile);
-%     catch ME
-%         error('Invalid login info.')
-%     end
-    % test if filename valid
-    assert(ismember(fname,metaData.filename),'IEEGToolbox:invalidFileName','Invalid filename.')
+    
+    % test if filename valid, obtain other info from metadata
+    assert(ismember(fname,metaData.filename),'CNTtools:invalidFileName','Invalid filename.')
     cellfind = @(string)(@(cell_contents)(strcmp(string,cell_contents)));
-    assert(~isempty(metaData.chans{cellfun(cellfind(fname),metaData.filename)}),'IEEGToolbox:emptyFile','No channels.')
+    assert(~isempty(metaData.chans{cellfun(cellfind(fname),metaData.filename)}),'CNTtools:emptyFile','No channels.')
     dura = metaData.duration(cellfun(cellfind(fname),metaData.filename));
+
 else
+    % without meta data file, in case ob different data base
     try
-        session = IEEGSession(fname, login_name, pwfile);
-        assert(~isempty(session.data.channelLabels),'IEEGToolbox:emptyFile','No channels.');
-        dura = session.data.rawChannels(1).get_tsdetails.getDuration/1e6;
+        session = IEEGSession(fname, login_name, pwfile); % check if can fetch this file
+        assert(~isempty(session.data.channelLabels),'CNTtools:emptyFile','No channels.'); % check file is not empty
+        dura = session.data.rawChannels(1).get_tsdetails.getDuration/1e6;  % get duration info
+        % Delete session
+        session.delete;
+        clearvars -except data
     catch ME
-        throw(MException('IEEGToolbox:failedFetch','Invalid filename or login info.'));
+        throw(MException('CNTtools:failedFetch','Invalid filename or login info.'));
     end
 end
+
 % test if time range valid
-assert(run_times(2) > run_times(1),'IEEGToolbox:invalidTimeRange','Stop before start.')
-assert(run_times(1) >= 0 && run_times(2) <= dura, 'IEEGToolbox:invalidTimeRange', 'Time outrange.')
-%% end of added code
+assert(run_times(2) > run_times(1),'CNTtools:invalidTimeRange','Stop before start.')
+assert(run_times(1) >= 0 && run_times(2) <= dura, 'CNTtools:invalidTimeRange', 'Time outrange.')
+
+
+% -----end of added code-----
+
+%% original code
 
 attempt = 1;
 
