@@ -6,9 +6,25 @@ import pickle
 # from pull_patient_localization import pull_patient_localization
 from numbers import Number
 import numpy as np
+import time
+from beartype import beartype
 from .clean_labels import clean_labels
+from typing import Union
+import os
 
-def get_iEEG_data(username, password_bin_file, iEEG_filename, start_time, stop_time, select_electrodes=None, ignore_electrodes=None, outputfile=None):
+def _pull_iEEG(ds, start_usec, duration_usec, channel_ids):
+    '''
+    Pull data while handling iEEGConnectionError
+    '''
+    while True:
+        try:
+            data = ds.get_data(start_usec, duration_usec, channel_ids)
+            return data
+        except Exception as e:
+            time.sleep(1)
+
+@beartype
+def get_iEEG_data(username: str, password_bin_file: str, iEEG_filename: str, start_time: Union[float,int], stop_time: Union[float,int], select_electrodes:list[Union[str,int]]=None, ignore_electrodes:list[Union[str,int]]=None, outputfile=None):
     """"
     2020.04.06. Python 3.7
     Andy Revell, adapted by Akash Pattnaik (2021.06.23)
@@ -63,28 +79,35 @@ def get_iEEG_data(username, password_bin_file, iEEG_filename, start_time, stop_t
     #     print("Not saving, returning data and sampling frequency")
 
     # Pull and format metadata from patient_localization_mat
-    meta_data = pd.read_csv('python/metadata.csv')
-    if iEEG_filename not in list(meta_data['filename']):
-        raise NameError('Filename not in iEEG database.')
-    else:
-        pwd = open(password_bin_file, 'r').read()
-        s = Session(username, pwd)
-        ds = s.open_dataset(iEEG_filename)
-        # some channel tests here
-        if len(ds.ch_labels) == 0:
-            raise ValueError('No channel left.')
-        else:
-            ts = ds.get_time_series_details(ds.ch_labels[0])
-            dura = ts.duration/1e6
-            fs = ts.sample_rate
-            if start_time > stop_time or start_time < 0 or stop_time > dura:
-                raise ValueError('Invalid start and stop time.')
-            
+
+    pwd = open(password_bin_file, 'r').read()
+
+    assert start_time>=0 and start_time<stop_time
     start_time_usec = int(start_time*1e6)
     stop_time_usec = int(stop_time*1e6)
     duration = stop_time_usec - start_time_usec
-    all_channel_labels = ds.get_channel_labels()
-    #all_channel_labels = clean_labels(all_channel_labels)
+
+    if os.path.exists('meta_data.csv'):
+        meta_data = pd.read_csv('meta_data.csv')
+        assert iEEG_filename in meta_data['filename'].values
+        assert duration <= meta_data['duration'][meta_data['filename'].eq(iEEG_filename)]
+    else:
+        try:
+            s = Session(username, pwd)
+            ds = s.open_dataset(iEEG_filename)
+        except Exception as e:
+            raise AssertionError('CNTtools:failedFetch, Invalid filename or login info.')
+
+    while True:
+        try:
+            s = Session(username, pwd)
+            ds = s.open_dataset(iEEG_filename)
+            all_channel_labels = ds.get_channel_labels()
+            break
+        except Exception as e:
+            time.sleep(1)
+    assert len(all_channel_labels)>0,'CNTtools:emptyFile: No channels.'
+    all_channel_labels = clean_labels(all_channel_labels)
 
     if select_electrodes is not None:
         if isinstance(select_electrodes[0], Number):
@@ -98,7 +121,7 @@ def get_iEEG_data(username, password_bin_file, iEEG_filename, start_time, stop_t
         else:
             print("Electrodes not given as a list of ints or strings")
 
-    if ignore_electrodes is not None:
+    elif ignore_electrodes is not None:
         if isinstance(ignore_electrodes[0], int):
             channel_ids = [i for i in np.arange(len(all_channel_labels)) if i not in ignore_electrodes]
             channel_names = [all_channel_labels[e] for e in channel_ids]
@@ -114,6 +137,7 @@ def get_iEEG_data(username, password_bin_file, iEEG_filename, start_time, stop_t
         channel_ids = np.arange(len(all_channel_labels))
         channel_names = all_channel_labels
 
+
     try:
         data = ds.get_data(start_time_usec, duration, channel_ids)
     except Exception as e:
@@ -124,11 +148,13 @@ def get_iEEG_data(username, password_bin_file, iEEG_filename, start_time, stop_t
         data = None
         while clip_start + clip_size < stop_time_usec:
             if data is None:
-                data = ds.get_data(clip_start, clip_size, channel_ids)
+                #data = ds.get_data(clip_start, clip_size, channel_ids)
+                data = _pull_iEEG(ds, clip_start, clip_size, channel_ids)
             else:
-                data = np.concatenate(([data, ds.get_data(clip_start, clip_size, channel_ids)]), axis=0)
+                #data = np.concatenate(([data, ds.get_data(clip_start, clip_size, channel_ids)]), axis=0)
+                data = np.concatenate(([data, _pull_iEEG(ds, clip_start, clip_size, channel_ids)]), axis=0)
             clip_start = clip_start + clip_size
-        data = np.concatenate(([data, ds.get_data(clip_start, stop_time_usec - clip_start, channel_ids)]), axis=0)
+        #data = np.concatenate(([data, ds.get_data(clip_start, stop_time_usec - clip_start, channel_ids)]), axis=0)
 
     df = pd.DataFrame(data, columns=channel_names)
     fs = ds.get_time_series_details(ds.ch_labels[0]).sample_rate #get sample rate
