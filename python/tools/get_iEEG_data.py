@@ -24,7 +24,7 @@ def _pull_iEEG(ds, start_usec, duration_usec, channel_ids):
             time.sleep(1)
 
 @beartype
-def get_iEEG_data(username: str, password_bin_file: str, iEEG_filename: str, start_time: Union[float,int,numpy.int64], stop_time: Union[float,int,numpy.int64], select_electrodes:list[Union[str,int]]=None, ignore_electrodes:list[Union[str,int]]=None, outputfile=None):
+def get_iEEG_data(username: str, password_bin_file: str, iEEG_filename: str, start_time: Union[float,int], stop_time: Union[float,int], select_electrodes:list[Union[str,int]]=None, ignore_electrodes:list[Union[str,int]]=None, outputfile=None):
     """"
     2020.04.06. Python 3.7
     Andy Revell, adapted by Akash Pattnaik (2021.06.23)
