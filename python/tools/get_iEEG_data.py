@@ -90,7 +90,7 @@ def get_iEEG_data(username: str, password_bin_file: str, iEEG_filename: str, sta
 
     if os.path.exists('meta_data.csv'):
         meta_data = pd.read_csv('meta_data.csv')
-        assert iEEG_filename in meta_data['filename'].values, 'CNTtools:invalidFileName'
+        assert iEEG_filename in meta_data['filename'].values, 'CNTtools:invalidFilename'
         assert duration <= meta_data['duration'][meta_data['filename'].eq(iEEG_filename)],'CNTtools:invalidTimeRange'
     else:
         try:

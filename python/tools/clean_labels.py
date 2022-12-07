@@ -12,7 +12,7 @@ def clean_labels(channel_li:Union[list[str],str]):
     This function cleans a list of channels and returns the new channels
     '''
     if not isinstance(channel_li,list):
-        channel_li = list(channel_li)
+        channel_li = [channel_li]
     new_channels = []
     for i in range(len(channel_li)):
         # standardizes channel names
