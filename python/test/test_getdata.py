@@ -30,9 +30,8 @@ with open(os.path.join("python/config.json"), 'rb') as f:
         config = pd.read_json(f, typ='series')
 
 test_input = pd.read_csv(os.path.join(test_path,'getData_testInput.csv'))
-test_input['start'].astype(int)
-test_input['stop'].astype(int)
-params = [tuple(test_input.iloc[i,0:4]) for i in range(test_input.shape[0])]
+params = [tuple(test_input.iloc[i,0:4].values) for i in range(test_input.shape[0])]
+params = [tuple([i[0],int(i[1]),int(i[2]),i[3]]) for i in params]
 @pytest.mark.parametrize('filename,start,stop,out',params)
 def test_getdata(filename,start,stop,out):
     try:
