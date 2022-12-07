@@ -25,14 +25,14 @@ def clean_labels(channel_li:Union[list[str],str]):
             label = label_non_num+label_num
         else:
             label = channel_li[i]
-        label.replace('EEG','')
-        label.replace('Ref','')
-        label.replace(' ','')
-        label.replace('-','')
-        label.replace('CAR','')
-        label.replace('HIPP','DH')
-        label.replace('AMY','DA')
-        label.replace('FP1','Fp1')
-        label.replace('FP2','Fp2')
+        label = label.replace('EEG','')
+        label = label.replace('Ref','')
+        label = label.replace(' ','')
+        label = label.replace('-','')
+        label = label.replace('CAR','')
+        label = label.replace('HIPP','DH')
+        label = label.replace('AMY','DA')
+        label = label.replace('FP1','Fp1')
+        label = label.replace('FP2','Fp2')
         new_channels.append(label)
     return new_channels
