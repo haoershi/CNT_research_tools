@@ -9,3 +9,4 @@ seaborn==0.11.2
 git+https://github.com/ieeg-portal/ieegpy.git
 pytest
 beartype
+pytest-html
