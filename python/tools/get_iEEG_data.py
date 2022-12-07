@@ -82,21 +82,22 @@ def get_iEEG_data(username: str, password_bin_file: str, iEEG_filename: str, sta
 
     pwd = open(password_bin_file, 'r').read()
 
-    assert start_time>=0 and start_time<stop_time
+    assert start_time<stop_time,'CNTtools:invalidTimeRange'
+    assert start_time>=0, 'CNTtools:invalidTimeRange'
     start_time_usec = int(start_time*1e6)
     stop_time_usec = int(stop_time*1e6)
     duration = stop_time_usec - start_time_usec
 
     if os.path.exists('meta_data.csv'):
         meta_data = pd.read_csv('meta_data.csv')
-        assert iEEG_filename in meta_data['filename'].values
-        assert duration <= meta_data['duration'][meta_data['filename'].eq(iEEG_filename)]
+        assert iEEG_filename in meta_data['filename'].values, 'CNTtools:invalidFileName'
+        assert duration <= meta_data['duration'][meta_data['filename'].eq(iEEG_filename)],'CNTtools:invalidTimeRange'
     else:
         try:
             s = Session(username, pwd)
             ds = s.open_dataset(iEEG_filename)
         except Exception as e:
-            raise AssertionError('CNTtools:failedFetch, Invalid filename or login info.')
+            raise AssertionError('CNTtools:invalidFilename')
 
     while True:
         try:
@@ -106,7 +107,7 @@ def get_iEEG_data(username: str, password_bin_file: str, iEEG_filename: str, sta
             break
         except Exception as e:
             time.sleep(1)
-    assert len(all_channel_labels)>0,'CNTtools:emptyFile: No channels.'
+    assert len(all_channel_labels)>0,'CNTtools:emptyFile'
     all_channel_labels = clean_labels(all_channel_labels)
 
     if select_electrodes is not None:
