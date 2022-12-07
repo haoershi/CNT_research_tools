@@ -2,6 +2,7 @@
 A simple test script to check if all dependencies are installed
 """
 import traceback
+import pytest
 
 print('---- Running Dependencies Test ----')
 
@@ -12,7 +13,7 @@ print('\n~ Requires: '+str(dep)[1:-1]+'\n')
 
 passed = True
 
-
+@pytest.mark.parametrize('case',list(range(len(dep))))
 def test_case(case):
     global passed
     try:
@@ -34,9 +35,6 @@ def test_case(case):
         print(traceback.format_exc())
         print('~ Import failed!')
         passed = False
-
-for i in range(len(dep)):
-    test_case(i)
 
 if passed:
     print('\nDependencies Test PASSED! :)\n')

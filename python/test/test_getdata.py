@@ -29,17 +29,11 @@ import tools
 with open(os.path.join("python/config.json"), 'rb') as f:
         config = pd.read_json(f, typ='series')
 
-test_input = pd.read_csv(os.path.join(test_path,'test_getData.csv'))
+test_input = pd.read_csv(os.path.join(test_path,'getData_testInput.csv'))
 params = [tuple(test_input.iloc[i,0:3]) for i in range(test_input.shape[0])]
-@pytest.mark.parametrize('filename,start,stop',params)
-def test_getdata(filename,start,stop):
+@pytest.mark.parametrize('filename,start,stop,out',params)
+def test_getdata(filename,start,stop,out):
     try:
         data,fs = tools.get_iEEG_data(config.usr,config.pwd,filename,start,stop)
-        assert data.shape[0] == fs*(stop-start)
     except Exception as e:
-        if type(e)== NameError:
-            assert True
-        elif type(e)== ValueError:
-            assert True
-        else:
-            assert False
+        assert str(e)==out
