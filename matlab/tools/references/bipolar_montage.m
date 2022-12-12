@@ -17,7 +17,7 @@ chs_in_bipolar = nan(nchs,2);
 old_values = values;
 
 %% Decompose chLabels
-[clean_labels,elecs,numbers] = decompose_labels(chLabels,name);
+[clean_labels,elecs,numbers] = decompose_labels(chLabels);%,name);
 bipolar_labels = cell(nchs,1);
 
 %% Bipolar montage
