@@ -26,7 +26,7 @@ def find_non_ieeg(channel_li:Union[list[str],str]):
         label_num_search = re.search(r'\d', i)
         if label_num_search is not None:
             label_num_idx = label_num_search.start()
-            label_non_num = channel_li[i][:label_num_idx]
+            label_non_num = i[:label_num_idx]
         else:
             label_non_num = i
         # finds non-iEEG channels, make a separate function
