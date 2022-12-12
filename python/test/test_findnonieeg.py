@@ -26,7 +26,7 @@ import tools
 # write in a csv file, col 0 input, col 1 expected output
 # wait to fetch all channel types from ieeg
 test_chans = pd.read_csv(os.path.join(test_path,'findNonIEEG_testInput.csv'))
-params = [tuple([[test_chans.iloc[i,0]],[test_chans.iloc[i,1]]]) for i in range(test_chans.shape[0])]
+params = [tuple([test_chans.iloc[i,0],test_chans.iloc[i,1]]) for i in range(test_chans.shape[0])]
 @pytest.mark.parametrize('input,expected',params)
 def test_channel(input,expected):
     try:
