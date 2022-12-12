@@ -54,8 +54,8 @@ def find_non_ieeg(channel_li:Union[list[str],str]):
         if label_non_num.upper() in non_ieeg:
             is_non_ieeg[ind] = True
 # add O1, O2 judgement later
-        if label_non_num.upper() in ["O1","O2"]:
-            if 
+        #if label_non_num.upper() in ["O1","O2"]:
+        #    if 
 
     return is_non_ieeg
     
