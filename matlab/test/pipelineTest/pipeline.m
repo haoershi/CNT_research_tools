@@ -6,7 +6,7 @@ assert(exist('IEEGToolbox','dir')==7,'CNTtools:dependencyUnavailable','IEEGToolb
 assert(exist('tools','dir')==7,'CNTtools:dependencyUnavailable','Tools not imported.')
 
 %% Read json login info
-fname = '../config.json';
+fname = '../../config.json';
 login = read_json(fname);
 
 %% Clip parameters
