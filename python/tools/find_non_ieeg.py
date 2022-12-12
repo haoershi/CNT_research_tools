@@ -10,7 +10,28 @@ non_ieeg = [
     "EKG",
     "O",
     "C",
-    "ECG"
+    "ECG",
+    "CZ",
+    "RATE",
+    'C3',
+    'C4',
+    'CZ',
+    'F8',
+    'F7',
+    'F4',
+    'F3',
+    'FP2',
+    'FP1',
+    'FZ',
+    'LOC',
+    'T4',
+    'T5',
+    'T3',
+    'C6',
+    'ROC',
+    'P4',
+    'P3',
+    'T6' 
     ]
 
 @beartype
@@ -30,8 +51,11 @@ def find_non_ieeg(channel_li:Union[list[str],str]):
         else:
             label_non_num = i
         # finds non-iEEG channels, make a separate function
-        if label_non_num in non_ieeg:
+        if label_non_num.upper() in non_ieeg:
             is_non_ieeg[ind] = True
+# add O1, O2 judgement later
+        if label_non_num.upper() in ["O1","O2"]:
+            if 
 
     return is_non_ieeg
     
