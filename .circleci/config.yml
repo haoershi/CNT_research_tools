@@ -33,7 +33,19 @@ jobs:
       - run:
           name: Trigger workflows
           command: chmod +x .circleci/circle_trigger.sh && .circleci/circle_trigger.sh
-
+      - run:
+          name: install secrets
+          command:
+              git clone https://github.com/sobolevn/git-secret.git git-secret
+              cd git-secret && make build
+              make install
+      - run:
+          name: unencrypt
+          command:
+              echo "$GPG_PRIVATE_KEY" > ./private_key.gpg
+              gpg --batch --yes --pinentry-mode loopback --import private_key.gpg
+              git secret reveal
+              
   build_python: # this can be any name you choose
     parameters:
         package_name:
