@@ -35,7 +35,7 @@ jobs:
           command: chmod +x .circleci/circle_trigger.sh && .circleci/circle_trigger.sh
       - run: git clone https://github.com/sobolevn/git-secret.git git-secret
       - run: cd git-secret && make build
-      - run: make install
+      - run: PREFIX="/usr/local" make install
       - run: echo "$GPG_PRIVATE_KEY" > ./private_key.gpg
       - run: gpg --batch --yes --pinentry-mode loopback --import private_key.gpg
       - run: git secret reveal
