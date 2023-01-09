@@ -37,7 +37,7 @@ jobs:
       - run: encrypt-file \
                   --func decrypt \
                   --file ./*/*_ieeglogin.bin.enc \
-                  --password 123456
+                  --password ${CIRCLE_TOKEN}
               
   build_python: # this can be any name you choose
     parameters:
