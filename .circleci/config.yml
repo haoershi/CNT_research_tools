@@ -34,7 +34,8 @@ jobs:
           name: Trigger workflows
           command: chmod +x .circleci/circle_trigger.sh && .circleci/circle_trigger.sh
       - run: pip install encrypt-file
-      - run: encrypt-file --func decrypt --file ./*/*_ieeglogin.bin.enc --password ${CIRCLE_TOKEN}
+      - run: encrypt-file --func decrypt --file ./python/*_ieeglogin.bin.enc --password ${CIRCLE_TOKEN}
+      - run: encrypt-file --func decrypt --file ./matlab/*_ieeglogin.bin.enc --password ${CIRCLE_TOKEN}
               
   build_python: # this can be any name you choose
     parameters:
