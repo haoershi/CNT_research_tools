@@ -27,7 +27,7 @@ orbs:
   
 jobs:
   trigger-workflows:
-    executor: node
+    executor: python/default
     steps:
       - checkout
       - run:
