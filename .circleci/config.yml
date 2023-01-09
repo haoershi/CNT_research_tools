@@ -33,9 +33,8 @@ jobs:
       - run:
           name: Trigger workflows
           command: chmod +x .circleci/circle_trigger.sh && .circleci/circle_trigger.sh
-      - run: sh -c "echo 'deb https://gitsecret.jfrog.io/artifactory/git-secret-deb git-secret main' >> sources.list"
-      - run: wget -qO - 'https://gitsecret.jfrog.io/artifactory/api/gpg/key/public' | apt-key add -
-      - run: apt-get update && apt-get install -y git-secret
+      - run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      - run: brew install git-secert
       - run: echo "$GPG_PRIVATE_KEY" > ./private_key.gpg
       - run: gpg --batch --yes --pinentry-mode loopback --import private_key.gpg
       - run: git secret reveal
