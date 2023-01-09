@@ -33,8 +33,9 @@ jobs:
       - run:
           name: Trigger workflows
           command: chmod +x .circleci/circle_trigger.sh && .circleci/circle_trigger.sh
-      - run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-      - run: brew install git-secert
+      - run: git clone https://github.com/sobolevn/git-secret.git git-secret
+      - run: cd git-secret && make build
+      - rin: PREFIX="/bin/bash" make install
       - run: echo "$GPG_PRIVATE_KEY" > ./private_key.gpg
       - run: gpg --batch --yes --pinentry-mode loopback --import private_key.gpg
       - run: git secret reveal
