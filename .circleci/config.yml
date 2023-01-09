@@ -109,13 +109,13 @@ workflows:
   python:
     when: << pipeline.parameters.python >>
     jobs:
-      - build:
-          name: python-build
+      - build_python:
+          name: build_python
           package_name: python
 
   matlab:
     when: << pipeline.parameters.matlab >>
     jobs:
-      - build:
-          name: matlab-build
+      - build_matlab:
+          name: build_matlab
           package_name: matlab
