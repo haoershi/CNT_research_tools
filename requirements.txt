@@ -10,4 +10,4 @@ git+https://github.com/ieeg-portal/ieegpy.git
 pytest
 beartype
 pytest-html
-git-secret
+git+https://github.com/sobolevn/git-secret.git
