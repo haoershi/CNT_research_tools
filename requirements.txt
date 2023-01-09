@@ -10,3 +10,4 @@ git+https://github.com/ieeg-portal/ieegpy.git
 pytest
 beartype
 pytest-html
+encrypt-file
