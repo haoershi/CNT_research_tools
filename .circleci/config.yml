@@ -2,18 +2,52 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
+parameters:
+  # This parameter is used to trigger the main workflow
+  trigger:
+    type: boolean
+    default: true
+
+  # A parameter per package
+  matlab:
+    type: boolean
+    default: false
+  python:
+    type: boolean
+    default: false
+
+executors:
+  node:
+    docker:
+      - image: circleci/node
+      
 orbs:
   python: circleci/python@2.0.3
+  matlab: mathworks/matlab@0.11.0
   
 jobs:
-  build_and_test: # this can be any name you choose
+  trigger-workflows:
+    executor: node
+    steps:
+      - checkout
+      - run:
+          name: Trigger workflows
+          command: chmod +x .circleci/circle_trigger.sh && .circleci/circle_trigger.sh
+
+  build_python: # this can be any name you choose
+    parameters:
+        package_name:
+          type: string
     docker:
       - image: cimg/python:3.10.4
     executor: python/default # use the default executor defined within the orb
+    working_directory: ~/project/<< parameters.package_name >>
+    
     environment:
       PYTHONPATH: ./python
     steps:
-      - checkout # checkout source code
+      - checkout: # checkout source code
+        path: ~/project
       - restore_cache:
           name: restore dependency cache
           keys:
@@ -36,9 +70,52 @@ jobs:
       - store_test_results:
           path: test-results
       - store_artifacts:
-          path: test-results      
-
+          path: test-results  
+          
+  build_matlab:
+    parameters:
+        package_name:
+          type: string
+    working_directory: ~/project/<< parameters.package_name >>
+    
+    machine:
+      image: 'ubuntu-2204:2022.07.1'
+    steps:
+      - checkout:
+          path: ~/project
+      - matlab/install
+      - run:
+          name: prep
+          command:
+            mkdir -p test-results
+      - matlab/run-tests:
+          test-results-junit: test-results/matlab/results.xml
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: test-results
+        
 workflows:
-  build_test:
-      jobs:
-        - build_and_test
+  version: 2
+  # The main workflow responsible for triggering all other workflows
+  # in which changes are detected.
+  ci:
+    when: << pipeline.parameters.trigger >>
+    jobs:
+      - trigger-workflows
+
+  # Workflows defined for each package.
+
+  python:
+    when: << pipeline.parameters.python >>
+    jobs:
+      - build:
+          name: python-build
+          package_name: python
+
+  matlab:
+    when: << pipeline.parameters.matlab >>
+    jobs:
+      - build:
+          name: matlab-build
+          package_name: matlab
