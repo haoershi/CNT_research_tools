@@ -46,8 +46,7 @@ jobs:
     environment:
       PYTHONPATH: ./python
     steps:
-      - checkout: # checkout source code
-        path: ~/project
+      - checkout
       - restore_cache:
           name: restore dependency cache
           keys:
