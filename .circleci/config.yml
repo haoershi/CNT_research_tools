@@ -59,7 +59,7 @@ jobs:
           key: deps-{{ .Branch }}-{{ checksum "requirements.txt" }}
           paths:
             - ./cache
-      - run: gpg --decrypt *_ieeglogin.bin.gpg -o *_ieeglogin.bin
+      - run: gpg -o *_ieeglogin.bin --decrypt *_ieeglogin.bin.gpg 
       - run:
           name: prep
           command:
@@ -85,7 +85,7 @@ jobs:
       - checkout:
           path: ~/project
       - matlab/install   
-      - run: gpg --decrypt *_ieeglogin.bin.gpg -o *_ieeglogin.bin
+      - run: gpg -o *_ieeglogin.bin --decrypt *_ieeglogin.bin.gpg 
       - run:
           name: prep
           command:
