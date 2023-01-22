@@ -56,7 +56,9 @@ jobs:
           key: deps-{{ .Branch }}-{{ checksum "requirements.txt" }}
           paths:
             - ./cache
-      - run: gpg --no-tty --batch --passphrase $GPG_PASSPHRASE --pinentry-mode loopback *_ieeglogin.bin.gpg
+      - run: ls
+      - run: ls python
+      - run: gpg --no-tty --batch --passphrase $GPG_PASSPHRASE --pinentry-mode loopback python/*_ieeglogin.bin.gpg
       - run:
           name: prep
           command:
