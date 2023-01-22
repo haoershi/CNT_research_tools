@@ -56,10 +56,6 @@ jobs:
           key: deps-{{ .Branch }}-{{ checksum "requirements.txt" }}
           paths:
             - ./cache
-      - run: echo -e $GPG_KEY | gpg --import --no-tty --batch --yes
-      - run: ls ~/project/python
-      - run: pwd
-      - run: ls
       - run: gpg --no-tty --batch --passphrase $GPG_PASSPHRASE --pinentry-mode loopback ~/project/python/*_ieeglogin.bin.gpg
       - run: ls ~/project/python
       - run:
