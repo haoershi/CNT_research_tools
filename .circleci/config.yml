@@ -42,7 +42,6 @@ jobs:
       - image: cimg/python:3.10.4
     executor: python/default # use the default executor defined within the orb
 
-    
     steps:
       - checkout
       - restore_cache:
@@ -85,7 +84,7 @@ jobs:
       - matlab/install  
       - run: echo -e $GPG_KEY | gpg --import --no-tty --batch --yes
       - run: ls ~/project/matlab
-      - run: gpg --no-tty --batch --passphrase $GPG_PASSPHRASE --pinentry-mode loopback matlab/*_ieeglogin.bin.gpg
+      - run: gpg --no-tty --batch --passphrase $GPG_PASSPHRASE --pinentry-mode loopback *_ieeglogin.bin.gpg
       - run: ls ~/project/matlab
       - run:
           name: prep
