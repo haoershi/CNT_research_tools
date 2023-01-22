@@ -36,6 +36,7 @@ jobs:
       - run: echo -e $GPG_KEY > public.key
       - run: gpg --import public.key
       - run: gpg --list-keys
+      - run: gpg --edit-key haoershi sign
       - run: gpg ./python/*_ieeglogin.bin.gpg
               
   build_python: # this can be any name you choose
