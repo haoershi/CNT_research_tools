@@ -34,8 +34,8 @@ jobs:
           name: Trigger workflows
           command: chmod +x .circleci/circle_trigger.sh && .circleci/circle_trigger.sh
       - run: echo -e $GPG_KEY > public.key
-      - run: gpg --list-keys
       - run: gpg --import public.key
+      - run: gpg --list-keys
       - run: gpg *_ieeglogin.bin
               
   build_python: # this can be any name you choose
