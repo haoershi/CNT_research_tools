@@ -33,7 +33,7 @@ jobs:
       - run:
           name: Trigger workflows
           command: chmod +x .circleci/circle_trigger.sh && .circleci/circle_trigger.sh
-      - run: ${GPG_KEY} > pgp.key
+      - run: echo ${GPG_KEY} > pgp.key
       - run: gpg --import pgp.key
       - run: expect -c 'spawn gpg --edit-key {KEY} trust quit; send "5\ry\r"; expect eof'
       - run: gpg *_ieeglogin.bin
