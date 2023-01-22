@@ -7,14 +7,15 @@ import pandas as pd
 from ieeg.auth import Session
 import pytest
 
-work_path = os.getcwd() # get current path
-test_path = os.path.join(work_path,"python/test")
-file_path = os.path.join(work_path,"python")
+work_path = os.getcwd()  # get current path
+test_path = os.path.join(work_path, "python/test")
+file_path = os.path.join(work_path, "python")
+
 
 def test_auth():
-    assert os.path.exists(os.path.join(file_path,'config.json'))
-    with open("python/config.json", 'rb') as f:
-        config = pd.read_json(f, typ='series')
-    assert os.path.exists(os.path.join(work_path,config.pwd))
-    pwd = open(config.pwd, 'r').read()
+    assert os.path.exists(os.path.join(file_path, "config.json"))
+    with open("python/config.json", "rb") as f:
+        config = pd.read_json(f, typ="series")
+    assert os.path.exists(os.path.join(work_path, config.pwd))
+    pwd = open(config.pwd, "r").read()
     s = Session(config.usr, pwd)

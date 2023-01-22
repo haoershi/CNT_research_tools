@@ -1,4 +1,3 @@
-
 from scipy.signal import welch
 from scipy.integrate import simpson
 import numpy as np

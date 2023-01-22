@@ -1,7 +1,7 @@
 #%%
-'''
+"""
 This function provides a test case of pulling iEEG data
-'''
+"""
 # pylint: disable-msg=C0103
 # pylint: disable-msg=C0301
 #%%
@@ -15,16 +15,18 @@ import os
 work_path = os.getcwd()
 
 # %%
-with open(os.path.join(work_path,"config.json"), 'rb') as f:
-    config = pd.read_json(f, typ='series')
+with open(os.path.join(work_path, "config.json"), "rb") as f:
+    config = pd.read_json(f, typ="series")
 
 iEEG_filename = "HUP172_phaseII"
 start_time_usec = 402580 * 1e6
 stop_time_usec = 402600 * 1e6
-electrodes = ["LE10","LE11","LH01","LH02","LH03","LH04"]
+electrodes = ["LE10", "LE11", "LH01", "LH02", "LH03", "LH04"]
 
 # %%
-data, fs = tools.get_iEEG_data(config.usr, config.pwd, iEEG_filename, start_time_usec, stop_time_usec)
+data, fs = tools.get_iEEG_data(
+    config.usr, config.pwd, iEEG_filename, start_time_usec, stop_time_usec
+)
 
 # %%
 print(data.columns)
