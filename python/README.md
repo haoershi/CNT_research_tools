@@ -1,5 +1,5 @@
-# CNT_research_tools
-A resposiory for CNT-approved research tools.  
+# CNT Research Tools Python Version
+A resposiory for the python version of CNT-approved research tools.  
 
 # Get Started 
 
@@ -18,6 +18,18 @@ Create a conda environment:
 ```
 conda env create -n ieegpy -f python/ieegpy.yml
 ```
+```
+conda env create -n ieegpy pip
+pip install -r requirements.txt
+```
+
+## Login Configuration
+Generate bin password file *_ieeglogin.bin through
+1. Matlab toolbox
+2. Python xxx
+
+Put password file into the folder
+Change config.json file to specify user name and password file name.
 
 ## Resources
 * [Project Tracker Google doc](https://docs.google.com/spreadsheets/d/12f-cCzB2J7W96jZzbJH7HKbWrivrUa2PKcRpQZsHXpM/edit?usp=sharing)
