@@ -33,9 +33,10 @@ jobs:
       - run:
           name: Trigger workflows
           command: chmod +x .circleci/circle_trigger.sh && .circleci/circle_trigger.sh
-      - run: pip install encrypt-file
-      - run: encrypt-file --func decrypt --file ./python/*_ieeglogin.bin --password ${ENCRYPT_PW}
-      - run: encrypt-file --func decrypt --file ./matlab/*_ieeglogin.bin --password ${ENCRYPT_PW}
+      - run: cat ${GPG_KEY} > pgp.key
+      - run: gpg --import pgp.key
+      - run: expect -c 'spawn gpg --edit-key {KEY} trust quit; send "5\ry\r"; expect eof'
+      - run: gpg *_ieeglogin.bin
               
   build_python: # this can be any name you choose
     parameters:
