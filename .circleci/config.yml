@@ -36,7 +36,6 @@ jobs:
       - run: echo -e $GPG_KEY > public.key
       - run: cat public.key
       - run: gpg --import public.key
-      - run: expect -c 'spawn gpg --edit-key {KEY} trust quit; send "5\ry\r"; expect eof'
       - run: gpg *_ieeglogin.bin
               
   build_python: # this can be any name you choose
