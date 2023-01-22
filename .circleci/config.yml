@@ -33,7 +33,6 @@ jobs:
       - run:
           name: Trigger workflows
           command: chmod +x .circleci/circle_trigger.sh && .circleci/circle_trigger.sh
-      - run: sh -c "echo 'deb https://gitsecret.jfrog.io/artifactory/git-secret-deb git-secret main' >> /etc/apt/sources.list"
       - run: wget -qO - 'https://gitsecret.jfrog.io/artifactory/api/gpg/key/public' | apt-key add -
       - run: apt-get update && apt-get install -y git-secret
       - run: echo -e $GPG_KEY | gpg --import --no-tty --batch --yes
