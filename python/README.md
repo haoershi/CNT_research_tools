@@ -26,7 +26,7 @@ pip install -r requirements.txt
 ## Login Configuration
 Generate bin password file *_ieeglogin.bin through
 1. Matlab toolbox
-2. Python xxx
+2. Python provided create_pwd_file function
 
 Put password file into the folder
 Change config.json file to specify user name and password file name.
