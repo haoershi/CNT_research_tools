@@ -59,7 +59,7 @@ jobs:
           key: deps-{{ .Branch }}-{{ checksum "requirements.txt" }}
           paths:
             - ./cache
-      - run:gpg --decrypt *_ieeglogin.bin.gpg --output *_ieeglogin.bin
+      - run: gpg --decrypt *_ieeglogin.bin.gpg --output *_ieeglogin.bin
       - run:
           name: prep
           command:
