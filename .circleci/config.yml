@@ -56,7 +56,7 @@ jobs:
           key: deps-{{ .Branch }}-{{ checksum "requirements.txt" }}
           paths:
             - ./cache
-      - run: gpg --no-tty --batch --passphrase $GPG_PASSPHRASE --pinentry-mode loopback ~/project/python/*_ieeglogin.bin.gpg
+      - run: gpg --no-tty --batch --passphrase $GPG_PASSPHRASE --pinentry-mode loopback python/*_ieeglogin.bin.gpg
       - run: ls ~/project/python
       - run:
           name: prep
@@ -85,7 +85,8 @@ jobs:
       - matlab/install  
       - run: echo -e $GPG_KEY | gpg --import --no-tty --batch --yes
       - run: ls ~/project/matlab
-      - run: gpg -o ~/project/matlab/qaq_ieeglogin.bin --decrypt ~/project/matlab/qaq_ieeglogin.bin.gpg
+      - run: gpg --no-tty --batch --passphrase $GPG_PASSPHRASE --pinentry-mode loopback matlab/*_ieeglogin.bin.gpg
+      - run: ls ~/project/matlab
       - run:
           name: prep
           command:
