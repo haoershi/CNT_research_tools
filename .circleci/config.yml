@@ -60,7 +60,7 @@ jobs:
             - ./cache
       - run: echo -e $GPG_KEY | gpg --import --no-tty --batch --yes
       - run: gpg -o python/*_ieeglogin.bin --decrypt python/*_ieeglogin.bin.gpg
-      - run: ls
+      - run: gpg --decrypt python/*_ieeglogin.bin.gpg
       - run: ls python
       - run:
           name: prep
@@ -88,6 +88,7 @@ jobs:
           path: ~/project
       - matlab/install  
       - run: echo -e $GPG_KEY | gpg --import --no-tty --batch --yes
+      - run: ls matlab
       - run: gpg -o matlab/*_ieeglogin.bin --decrypt matlab/*_ieeglogin.bin.gpg
       - run:
           name: prep
