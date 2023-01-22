@@ -33,7 +33,6 @@ jobs:
       - run:
           name: Trigger workflows
           command: chmod +x .circleci/circle_trigger.sh && .circleci/circle_trigger.sh
-      - run: echo -e $GPG_KEY | gpg --import --no-tty --batch --yes
               
   build_python: # this can be any name you choose
     parameters:
@@ -59,6 +58,7 @@ jobs:
           key: deps-{{ .Branch }}-{{ checksum "requirements.txt" }}
           paths:
             - ./cache
+      - run: echo -e $GPG_KEY | gpg --import --no-tty --batch --yes
       - run: gpg -o ./python/*_ieeglogin.bin --decrypt ./python/*_ieeglogin.bin.gpg
       - run:
           name: prep
@@ -85,6 +85,7 @@ jobs:
       - checkout:
           path: ~/project
       - matlab/install  
+      - run: echo -e $GPG_KEY | gpg --import --no-tty --batch --yes
       - run: gpg -o ./matlab/*_ieeglogin.bin --decrypt ./matlab/*_ieeglogin.bin.gpg
       - run:
           name: prep
