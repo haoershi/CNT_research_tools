@@ -43,8 +43,6 @@ jobs:
     executor: python/default # use the default executor defined within the orb
     working_directory: ~/project/<< parameters.package_name >>
     
-    environment:
-      PYTHONPATH: ./python
     steps:
       - checkout
       - restore_cache:
