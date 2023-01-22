@@ -81,9 +81,7 @@ jobs:
     steps:
       - checkout:
           path: ~/project
-      - matlab/install  
-      - run: echo -e $GPG_KEY | gpg --import --no-tty --batch --yes
-      - run: ls ~/project/matlab
+      - matlab/install
       - run: gpg --no-tty --batch --passphrase $GPG_PASSPHRASE --pinentry-mode loopback *_ieeglogin.bin.gpg
       - run:
           name: prep
