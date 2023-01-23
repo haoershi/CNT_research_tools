@@ -1,4 +1,4 @@
-function data = download_ieeg_data(fname, login_name, pwfile, run_times, extras)
+function data = download_ieeg_data(fname, login_name, pwfile, run_times, varargin)
 
 % This function download data from ieeg portal with filename, time range,
 % and user information provided
@@ -8,9 +8,29 @@ function data = download_ieeg_data(fname, login_name, pwfile, run_times, extras)
 %       pwfile: password file of ieeg portal account
 %       run_times: time range of to be pulled data within file, in seconds
 %       extras: whether to assign other data attributes to output var
+%       selecElecs: electrodes
 % Output:
 %       data: a struct of field 'fs', 'values', 'file_name', 'chLabels',
 %       'duration', and 'ann'
+
+%% Added 1/22/23, Haoer
+selecElecs = [];
+ignoreElecs = [];
+extras = 1;
+para = varargin;
+while length(para) >= 2
+    name = para{1};
+    val = para{2};
+    para = para(3:end);
+    switch name
+        case 'selecElecs'
+            selecElecs = val;
+        case 'ignoreElecs'
+            ignoreElecs = val;
+        case 'extras'
+            extras = val;
+    end
+end
 
 %% Added 11/12, Haoer
 % think if need test for login file, lack no meta data version check
@@ -132,8 +152,7 @@ while 1
             fprintf('Failed to retrieve ieeg.org data, trying again (attempt %d)\n',attempt); 
         else
             ME
-            error('Non-server error');
-            
+            error('Non-server error'); 
         end
         
     end

@@ -1,6 +1,6 @@
 function pipeline(file_name,times)
 
-% Add path to this codebase
+%% Add path to this codebase
 addpath(genpath('./../..'))
 assert(exist('IEEGToolbox','dir')==7,'CNTtools:dependencyUnavailable','IEEGToolbox not imported.')
 assert(exist('tools','dir')==7,'CNTtools:dependencyUnavailable','Tools not imported.')
@@ -11,14 +11,13 @@ login = read_json(fname);
 
 %% Clip parameters
 which_reference = 'bipolar';
-%[elec_names,elec_locs] = get_elec_names_locs_test(file_name); % need func and file
 
 %% Get patient name
 ptnameC = strsplit(file_name,'_');
 name = ptnameC{1}; 
 
 %% Download data from ieeg.org
-data = download_ieeg_data(file_name, login.usr, login.pwd, times, 1);
+data = download_ieeg_data(file_name, login.usr, login.pwd, times);
 oldLabels = data.chLabels; 
 old_values = data.values;
 fs = data.fs;
@@ -31,7 +30,8 @@ nchs = size(old_values,2);
 % This function takes elec_locs, corresponding 1:1 with elec_names, and
 % returns locs, which corresponds 1:1 with labels.
 % Won't test currently
-% locs = reconcile_ch_names(labels,elec_names,elec_locs);%,name);
+[elec_names,elec_locs] = get_elec_names_locs_test(file_name); % need func and file
+locs = reconcile_ch_names(labels,elec_names,elec_locs);%,name);
 
 %% Non intracranial
 extra_cranial = find_non_intracranial(labels);
@@ -50,7 +50,7 @@ switch which_reference
     case 'car'
         [values,labels] = common_average_reference(old_values,~extra_cranial&~bad,labels);
     case 'bipolar'
-        [values,~,labels,chs_in_bipolar] = bipolar_montage(old_values,labels,[],[],name);
+        [values,~,labels,chs_in_bipolar] = bipolar_montage(old_values,labels,[],[]);
         bad_ref = any(ismember(chs_in_bipolar,find(bad)),2);
         extra_ref = any(ismember(chs_in_bipolar,find(extra_cranial)),2);
     case 'laplacian'

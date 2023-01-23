@@ -1,8 +1,8 @@
-function target_thing = reconcile_ch_names(target_chs,new_chs,new_thing,pt_name)
+function target_thing = reconcile_ch_names(target_chs,new_chs,new_thing)
 
 % clean both
-target_chs = decompose_labels(target_chs,pt_name);
-new_chs = decompose_labels(new_chs,pt_name);
+target_chs = decompose_labels(target_chs);
+new_chs = decompose_labels(new_chs);
 
 [Lia,locb] = ismember(target_chs,new_chs);
 target_thing = nan(size(target_chs,1),size(new_thing,2));
