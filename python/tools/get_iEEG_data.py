@@ -3,7 +3,6 @@ import ieeg
 from ieeg.auth import Session
 import pandas as pd
 import pickle
-from os.path import dirname, abspath
 
 
 # from .pull_patient_localization import pull_patient_localization
@@ -100,7 +99,7 @@ def get_iEEG_data(
     # Pull and format metadata from patient_localization_mat
 
     # Added by Haoer
-    current_dir = dirname(dirname(abspath(__file__)))
+    current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     password_bin_file = os.path.join(current_dir,password_bin_file)
     pwd = open(password_bin_file, "r").read()
 
