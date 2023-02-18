@@ -9,7 +9,6 @@ import pytest
 
 current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-@pytest
 def test_auth():
     assert os.path.exists(os.path.join(current_dir, "config.json"))
     with open(os.path.join(current_dir, "config.json"), "rb") as f:
