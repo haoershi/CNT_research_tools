@@ -1,20 +1,23 @@
 # pylint: disable-msg=C0103
+import ieeg
 from ieeg.auth import Session
 import pandas as pd
 import pickle
+import os
+
 
 # from .pull_patient_localization import pull_patient_localization
 # from pull_patient_localization import pull_patient_localization
 from numbers import Number
 import numpy as np
-import time
+import time, os, warnings
 from beartype import beartype
-from .clean_labels import clean_labels
 from typing import Union
-import os
+
+from .clean_labels import clean_labels
 
 
-def _pull_iEEG(ds, start_usec, duration_usec, channel_ids):
+def _pull_iEEG(ds: ieeg.dataset.Dataset, start_usec: Number, duration_usec: Number, channel_ids: list) -> np.ndarray:
     """
     Pull data while handling iEEGConnectionError
     """
@@ -23,7 +26,10 @@ def _pull_iEEG(ds, start_usec, duration_usec, channel_ids):
             data = ds.get_data(start_usec, duration_usec, channel_ids)
             return data
         except Exception as e:
-            time.sleep(1)
+            if '500' in str(e) | '502' in str(e) | '503' in str(e) | '504' in str(e):
+                time.sleep(1)
+            else:
+                raise e
 
 
 @beartype
@@ -31,8 +37,8 @@ def get_iEEG_data(
     username: str,
     password_bin_file: str,
     iEEG_filename: str,
-    start_time: Union[float, int],
-    stop_time: Union[float, int],
+    start_time: Number,
+    stop_time: Number,
     select_electrodes: list[Union[str, int]] = None,
     ignore_electrodes: list[Union[str, int]] = None,
     outputfile=None,
@@ -50,10 +56,11 @@ def get_iEEG_data(
         username: your iEEG.org username
         password_bin_file: your iEEG.org password bin_file
         iEEG_filename: The file name on iEEG.org you want to download from
-        start_time_usec: the start time in the iEEG_filename. In microseconds
-        stop_time_usec: the stop time in the iEEG_filename. In microseconds.
-            iEEG.org needs a duration input: this is calculated by stop_time_usec - start_time_usec
-        ignore_electrodes: the electrode/channel names you want to exclude. EXACT MATCH on iEEG.org. Caution: some may be LA08 or LA8
+        start_time: the start time in the iEEG_filename. In seconds
+        stop_time: the stop time in the iEEG_filename. In seconds.
+            iEEG.org needs a duration input: this is calculated by stop_time - start_time
+        select_electrodes: the electrode/channel names/indices you want to select.
+        ignore_electrodes: the electrode/channel names/indices you want to exclude. EXACT MATCH on iEEG.org. Caution: some may be LA08 or LA8
         outputfile: the path and filename you want to save.
             PLEASE INCLUDE EXTENSION .pickle.
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -67,8 +74,8 @@ def get_iEEG_data(
     username = 'arevell'
     password = 'password'
     iEEG_filename='HUP138_phaseII'
-    start_time_usec = 248432340000
-    stop_time_usec = 248525740000
+    start_time = 248432.34
+    stop_time = 248525.74
     removed_channels = ['EKG1', 'EKG2', 'CZ', 'C3', 'C4', 'F3', 'F7', 'FZ', 'F4', 'F8', 'LF04', 'RC03', 'RE07', 'RC05', 'RF01', 'RF03', 'RB07', 'RG03', 'RF11', 'RF12']
     outputfile = '/Users/andyrevell/mount/DATA/Human_Data/BIDS_processed/sub-RID0278/eeg/sub-RID0278_HUP138_phaseII_248432340000_248525740000_EEG.pickle'
     get_iEEG_data(username, password, iEEG_filename, start_time_usec, stop_time_usec, removed_channels, outputfile)
@@ -92,7 +99,8 @@ def get_iEEG_data(
 
     # Pull and format metadata from patient_localization_mat
 
-    pwd = open(password_bin_file, "r").read()
+    # Added by Haoer
+    pwd = open(os.path.abspath(password_bin_file), "r").read()
 
     assert start_time < stop_time, "CNTtools:invalidTimeRange"
     assert start_time >= 0, "CNTtools:invalidTimeRange"
@@ -100,19 +108,15 @@ def get_iEEG_data(
     stop_time_usec = int(stop_time * 1e6)
     duration = stop_time_usec - start_time_usec
 
-    if os.path.exists("meta_data.csv"):
-        meta_data = pd.read_csv("meta_data.csv")
-        assert iEEG_filename in meta_data["filename"].values, "CNTtools:invalidFileName"
-        assert (
-            duration <= meta_data["duration"][meta_data["filename"].eq(iEEG_filename)]
-        ), "CNTtools:invalidTimeRange"
-    else:
-        try:
-            s = Session(username, pwd)
-            ds = s.open_dataset(iEEG_filename)
-        except Exception as e:
-            raise AssertionError("CNTtools:invalidFileName")
-
+    # check
+    # no meta data checking currently
+    #if os.path.exists("meta_data.csv"):
+    #    meta_data = pd.read_csv("meta_data.csv")
+    #    assert iEEG_filename in meta_data["filename"].values, "CNTtools:invalidFileName"
+    #    assert (
+    #        duration <= meta_data["duration"][meta_data["filename"].eq(iEEG_filename)]
+    #    ), "CNTtools:invalidTimeRange"
+    #else:
     while True:
         try:
             s = Session(username, pwd)
@@ -120,40 +124,59 @@ def get_iEEG_data(
             all_channel_labels = ds.get_channel_labels()
             break
         except Exception as e:
-            time.sleep(1)
+            if 'Authentication' in str(e):
+                raise AssertionError("CNTtools:invalidLoginInfo")
+            elif '404' in str(e) or 'NoSuchDataSnapshot' in str(e):
+                raise AssertionError("CNTtools:invalidFileName")
+            elif '500' in str(e) | '502' in str(e) | '503' in str(e) | '504' in str(e):
+                time.sleep(1)
+            else:
+                raise e
     assert len(all_channel_labels) > 0, "CNTtools:emptyFile"
+    end_sec = ds.get_time_series_details(all_channel_labels[0]).duration
+    assert stop_time_usec <= end_sec, "CNTtools:invalidTimeRange"       
     all_channel_labels = clean_labels(all_channel_labels)
 
     if select_electrodes is not None:
-        if isinstance(select_electrodes[0], Number):
-            channel_ids = select_electrodes
+        elec_type = type(select_electrodes[0])
+        assert all(isinstance(i, elec_type) for i in select_electrodes), "CNTtools:invalidElectrodeList"
+        if elec_type == int:
+            channel_ids = [i for i in select_electrodes if i >= 0 & i < len(all_channel_labels)]
+            if len(channel_ids) < len(select_electrodes):
+                warnings.warn("CNTtools:invalidChannelID, invalid channels ignored.")
             channel_names = [all_channel_labels[e] for e in channel_ids]
-        elif isinstance(select_electrodes[0], str):
+        elif elec_type == str:
             select_electrodes = clean_labels(select_electrodes)
-
             channel_ids = [
                 i for i, e in enumerate(all_channel_labels) if e in select_electrodes
             ]
-            channel_names = select_electrodes
+            if len(channel_ids) < len(select_electrodes):
+                warnings.warn("CNTtools:invalidChannelID, invalid channels ignored.")
+            channel_names = [all_channel_labels[e] for e in channel_ids]
         else:
             print("Electrodes not given as a list of ints or strings")
 
     elif ignore_electrodes is not None:
-        if isinstance(ignore_electrodes[0], int):
+        elec_type = type(ignore_electrodes[0])
+        assert all(isinstance(i, elec_type) for i in ignore_electrodes), "CNTtools:invalidElectrodeList"
+        if elec_type == int:
             channel_ids = [
                 i
                 for i in np.arange(len(all_channel_labels))
                 if i not in ignore_electrodes
             ]
+            if len(channel_ids) > len(all_channel_labels) - len(ignore_electrodes):
+                warnings.warn("CNTtools:invalidChannelID, invalid channels ignored.")
             channel_names = [all_channel_labels[e] for e in channel_ids]
-        elif isinstance(ignore_electrodes[0], str):
+        elif elec_type == str:
             ignore_electrodes = clean_labels(ignore_electrodes)
-
             channel_ids = [
                 i
                 for i, e in enumerate(all_channel_labels)
                 if e not in ignore_electrodes
             ]
+            if len(channel_ids) > len(all_channel_labels) - len(ignore_electrodes):
+                warnings.warn("CNTtools:invalidChannelID, invalid channels ignored.")
             channel_names = [
                 e for e in all_channel_labels if e not in ignore_electrodes
             ]
@@ -169,7 +192,6 @@ def get_iEEG_data(
     except Exception as e:
         # clip is probably too big, pull chunks and concatenate
         clip_size = 60 * 1e6
-
         clip_start = start_time_usec
         data = None
         while clip_start + clip_size < stop_time_usec:
