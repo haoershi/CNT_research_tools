@@ -57,6 +57,8 @@ jobs:
           paths:
             - ./cache
       - run: gpg --no-tty --batch --passphrase $GPG_PASSPHRASE --pinentry-mode loopback python/*_ieeglogin.bin.gpg
+      - run: pwd
+      - run: ls
       - run:
           name: prep
           command:
