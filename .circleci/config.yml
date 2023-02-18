@@ -38,6 +38,7 @@ jobs:
     parameters:
         package_name:
           type: string
+    working_directory: ~/project/<< parameters.package_name >>
     docker:
       - image: cimg/python:3.10.4
     executor: python/default # use the default executor defined within the orb
