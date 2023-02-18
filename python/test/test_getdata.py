@@ -33,10 +33,10 @@ params = [tuple([i[0], int(i[1]), int(i[2]), i[3], eval(i[4]), eval(i[5])]) for 
 def test_getdata(filename, start, stop, out, selec, ignore):
     try:
         if selec is not None:
-            data, fs = tools.get_iEEG_data(config.usr, config.pwd, filename, start, stop, select_electrodes = selec)
+            _, _ = tools.get_iEEG_data(config.usr, config.pwd, filename, start, stop, select_electrodes = selec)
         elif ignore is not None:
-            data, fs = tools.get_iEEG_data(config.usr, config.pwd, filename, start, stop, ignore_electrodes = ignore)
+            _, _ = tools.get_iEEG_data(config.usr, config.pwd, filename, start, stop, ignore_electrodes = ignore)
         else:
-            data, fs = tools.get_iEEG_data(config.usr, config.pwd, filename, start, stop)
+            _, _ = tools.get_iEEG_data(config.usr, config.pwd, filename, start, stop)
     except Exception as e:
         assert str(e) == out
