@@ -10,7 +10,7 @@ fname = '../../config.json';
 login = read_json(fname);
 
 %% Clip parameters
-which_reference = 'laplacian';
+which_reference = 'car';
 
 %% Get patient name
 ptnameC = strsplit(file_name,'_');
