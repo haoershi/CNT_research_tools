@@ -154,7 +154,7 @@ if ~isempty(ignoreElecs)
         if length(channelIDs) > numElecs - length(ignoreElecs)
             warning("CNTtools:invalidChannelID, invalid channels ignored.");
         end
-        channelLabels = allChannelLabels(cellfun(@(x) x, channelIDs));
+        channelLabels = allChannelLabels(channelIDs);
     elseif isstring(ignoreElecs{1}) || ischar(ignoreElecs{1})
         [ignoreElecs,~,~] = clean_labels(ignoreElecs);
         channelLabels = allChannelLabels(cellfun(@(x) ~ismember(x,ignoreElecs), allChannelLabels));

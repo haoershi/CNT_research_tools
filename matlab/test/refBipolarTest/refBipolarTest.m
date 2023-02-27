@@ -15,7 +15,7 @@ classdef refBipolarTest < matlab.unittest.TestCase
             % for qualification method
             addpath(genpath('./../..')); % always add to ensure loading of other files/func
             load refBipolar_testInput.mat;
-            f = @() bipolar_montage(old_values,labels,[],[]);
+            f = @() bipolar_montage(old_values,labels);
             testCase.verifyWarningFree(f)
         end
     end

@@ -26,9 +26,9 @@ nchs = size(old_values,2);
 %% Reconcile locs and associated names with ieeg ch names
 % This function takes elec_locs, corresponding 1:1 with elec_names, and
 % returns locs, which corresponds 1:1 with labels.
-% Won't test currently
-[elec_names,elec_locs] = get_elec_names_locs_test(file_name); % need func and file
-locs = reconcile_ch_names(labels,elec_names,elec_locs);%,name);
+% % Won't test currently
+% [elec_names,elec_locs] = get_elec_names_locs_test(file_name); % need func and file
+% locs = reconcile_ch_names(labels,elec_names,elec_locs);%,name);
 
 %% Non intracranial
 extra_cranial = find_non_ieeg(labels);
