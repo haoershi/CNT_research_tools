@@ -36,6 +36,8 @@ def plot_iEEG_data(data, t, fig=None, ax=None, linecolor="k"):
     else:
         n_rows = 1
 
+    data = pd.DataFrame(data)
+    
     ticklocs = []
     ax.set_xlim(t[0], t[-1])
     dmin = data.min().min()

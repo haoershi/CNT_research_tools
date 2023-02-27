@@ -5,7 +5,6 @@ A simple test script to check if config file works properly
 import os
 import pandas as pd
 from ieeg.auth import Session
-import pytest
 
 current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 

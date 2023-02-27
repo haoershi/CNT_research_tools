@@ -1,6 +1,24 @@
-function ekg = find_non_intracranial(labels)
+function ekg = find_non_ieeg(labels)
 
 % ADD DC CHANNELS
+%% Added 11/13, Haoer
+% assume cell format of channel labels
+if ~iscell(labels)
+    try
+        % convert to cell if table format
+        if istable(labels)
+            labels = table2cell(labels); 
+        
+        % convert to cell if string or char format
+        elseif isstring(labels) || ischar(labels)
+            labels = cellstr(labels); 
+        end
+    
+    catch ME
+        throw(MException('CNTtools:invalidInputType','Electrode labels should be a cell array.'))
+    end
+end
+% end of added part
 
 ekg = zeros(length(labels),1);
 

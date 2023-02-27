@@ -4,15 +4,15 @@
 import re
 import numpy as np
 from beartype import beartype
-from typing import Union
+from beartype.typing import Union, Iterable
 
 
 @beartype
-def clean_labels(channel_li: Union[list[str], str]):
+def clean_labels(channel_li: Union[Iterable[str], str]) -> np.ndarray:
     """
     This function cleans a list of channels and returns the new channels
     """
-    if not isinstance(channel_li, list):
+    if isinstance(channel_li, str):
         channel_li = [channel_li]
     new_channels = []
     for i in range(len(channel_li)):
@@ -22,7 +22,7 @@ def clean_labels(channel_li: Union[list[str], str]):
             label_num_idx = label_num_search.start()
             label_non_num = channel_li[i][:label_num_idx]
             label_num = channel_li[i][label_num_idx:]
-            label_num = label_num.strip("0")
+            label_num = label_num.lstrip("0")
             label = label_non_num + label_num
         else:
             label = channel_li[i]
@@ -36,4 +36,4 @@ def clean_labels(channel_li: Union[list[str], str]):
         label = label.replace("FP1", "Fp1")
         label = label.replace("FP2", "Fp2")
         new_channels.append(label)
-    return new_channels
+    return np.array(new_channels)

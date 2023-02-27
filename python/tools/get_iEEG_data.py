@@ -32,14 +32,14 @@ def _pull_iEEG(ds: ieeg.dataset.Dataset, start_usec: Number, duration_usec: Numb
 
 
 @beartype
-def get_iEEG_data(
+def get_ieeg_data(
     username: str,
     password_bin_file: str,
     iEEG_filename: str,
     start_time: Number,
     stop_time: Number,
-    select_electrodes: list[Union[str, int]] = None,
-    ignore_electrodes: list[Union[str, int]] = None,
+    select_elecs: list[Union[str, int]] = None,
+    ignore_elecs: list[Union[str, int]] = None,
     outputfile=None,
 ):
     """ "
@@ -58,8 +58,8 @@ def get_iEEG_data(
         start_time: the start time in the iEEG_filename. In seconds
         stop_time: the stop time in the iEEG_filename. In seconds.
             iEEG.org needs a duration input: this is calculated by stop_time - start_time
-        select_electrodes: the electrode/channel names/indices you want to select.
-        ignore_electrodes: the electrode/channel names/indices you want to exclude. EXACT MATCH on iEEG.org. Caution: some may be LA08 or LA8
+        select_elecs: the electrode/channel names/indices you want to select.
+        ignore_elecs: the electrode/channel names/indices you want to exclude. EXACT MATCH on iEEG.org. Caution: some may be LA08 or LA8
         outputfile: the path and filename you want to save.
             PLEASE INCLUDE EXTENSION .pickle.
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -90,7 +90,7 @@ def get_iEEG_data(
     # print("iEEG_filename: {0}".format(iEEG_filename))
     # print("start_time_usec: {0}".format(start_time_usec))
     # print("stop_time_usec: {0}".format(stop_time_usec))
-    # print("ignore_electrodes: {0}".format(ignore_electrodes))
+    # print("ignore_elecs: {0}".format(ignore_elecs))
     # if outputfile:
     #     print("Saving to: {0}".format(outputfile))
     # else:
@@ -138,48 +138,48 @@ def get_iEEG_data(
     assert stop_time_usec <= end_sec, "CNTtools:invalidTimeRange"       
     all_channel_labels = clean_labels(all_channel_labels)
 
-    if select_electrodes is not None:
-        elec_type = type(select_electrodes[0])
-        assert all(isinstance(i, elec_type) for i in select_electrodes), "CNTtools:invalidElectrodeList"
+    if select_elecs is not None:
+        elec_type = type(select_elecs[0])
+        assert all(isinstance(i, elec_type) for i in select_elecs), "CNTtools:invalidElectrodeList"
         if elec_type == int:
-            channel_ids = [i for i in select_electrodes if i >= 0 & i < len(all_channel_labels)]
-            if len(channel_ids) < len(select_electrodes):
+            channel_ids = [i for i in select_elecs if i >= 0 & i < len(all_channel_labels)]
+            if len(channel_ids) < len(select_elecs):
                 warnings.warn("CNTtools:invalidChannelID, invalid channels ignored.")
             channel_names = [all_channel_labels[e] for e in channel_ids]
         elif elec_type == str:
-            select_electrodes = clean_labels(select_electrodes)
+            select_elecs = clean_labels(select_elecs)
             channel_ids = [
-                i for i, e in enumerate(all_channel_labels) if e in select_electrodes
+                i for i, e in enumerate(all_channel_labels) if e in select_elecs
             ]
-            if len(channel_ids) < len(select_electrodes):
+            if len(channel_ids) < len(select_elecs):
                 warnings.warn("CNTtools:invalidChannelID, invalid channels ignored.")
             channel_names = [all_channel_labels[e] for e in channel_ids]
         else:
             print("Electrodes not given as a list of ints or strings")
 
-    elif ignore_electrodes is not None:
-        elec_type = type(ignore_electrodes[0])
-        assert all(isinstance(i, elec_type) for i in ignore_electrodes), "CNTtools:invalidElectrodeList"
+    elif ignore_elecs is not None:
+        elec_type = type(ignore_elecs[0])
+        assert all(isinstance(i, elec_type) for i in ignore_elecs), "CNTtools:invalidElectrodeList"
         if elec_type == int:
             channel_ids = [
                 i
                 for i in np.arange(len(all_channel_labels))
-                if i not in ignore_electrodes
+                if i not in ignore_elecs
             ]
-            if len(channel_ids) > len(all_channel_labels) - len(ignore_electrodes):
+            if len(channel_ids) > len(all_channel_labels) - len(ignore_elecs):
                 warnings.warn("CNTtools:invalidChannelID, invalid channels ignored.")
             channel_names = [all_channel_labels[e] for e in channel_ids]
         elif elec_type == str:
-            ignore_electrodes = clean_labels(ignore_electrodes)
+            ignore_elecs = clean_labels(ignore_elecs)
             channel_ids = [
                 i
                 for i, e in enumerate(all_channel_labels)
-                if e not in ignore_electrodes
+                if e not in ignore_elecs
             ]
-            if len(channel_ids) > len(all_channel_labels) - len(ignore_electrodes):
+            if len(channel_ids) > len(all_channel_labels) - len(ignore_elecs):
                 warnings.warn("CNTtools:invalidChannelID, invalid channels ignored.")
             channel_names = [
-                e for e in all_channel_labels if e not in ignore_electrodes
+                e for e in all_channel_labels if e not in ignore_elecs
             ]
         else:
             print("Electrodes not given as a list of ints or strings")
@@ -207,14 +207,14 @@ def get_iEEG_data(
             clip_start = clip_start + clip_size
         # data = np.concatenate(([data, ds.get_data(clip_start, stop_time_usec - clip_start, channel_ids)]), axis=0)
 
-    df = pd.DataFrame(data, columns=channel_names)
+    # df = pd.DataFrame(data, columns=channel_names)
     fs = ds.get_time_series_details(ds.ch_labels[0]).sample_rate  # get sample rate
 
     if outputfile:
         with open(outputfile, "wb") as f:
-            pickle.dump([df, fs], f)
+            pickle.dump([data, channel_names, fs], f)
     else:
-        return df, fs
+        return data, np.array(channel_names), fs
 
     # session.delete
     # clear variables

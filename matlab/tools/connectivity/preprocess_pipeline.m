@@ -1,4 +1,4 @@
-function [show_values,show_labels,fs] = preprocess_pipeline(file_name,times,reference)
+function [show_values,show_labels,fs] = preprocess_pipeline(file_name,times,reference,selecElecs)
 
 %% Add path to this codebase
 addpath(genpath('./../..'))
@@ -17,50 +17,29 @@ ptnameC = strsplit(file_name,'_');
 name = ptnameC{1}; 
 
 %% Download data from ieeg.org
-data = download_ieeg_data(file_name, login.usr, login.pwd, times);
-oldLabels = data.chLabels; 
-old_values = data.values;
+data = download_ieeg_data(file_name, login.usr, login.pwd, times,'selecElecs',selecElecs);
+labels = data.chLabels; 
+values = data.values;
 fs = data.fs;
-
+nchs = size(values,2);
 %% Decompose labels
-[labels,elecs,numbers] = decompose_labels(oldLabels);%,name); 
-
-%% Select Electrodes
-keepElecs = [];
-REGION = {'A','B','C'};
-HEMI = {'L','R'};
-for i = 1:length(HEMI)
-    for j = 1:length(REGION)
-        index = find(strcmp(labels,strcat([HEMI{i},REGION{j},'1'])));
-        keepElecs = [keepElecs index:index+11];
-    end
-end
-old_values = old_values(:,keepElecs);
-labels = labels(keepElecs);
-elecs = elecs(keepElecs);
-numbers = numbers(keepElecs);
-nchs = size(old_values,2);
+%[labels,elecs,numbers] = decompose_labels(oldLabels);%,name); 
 
 %% Identify bad channels
-bad = identify_bad_chs(old_values,fs);
+bad = identify_bad_chs(values,fs);
 %bad = logical(zeros(nchs,1)); % Uncomment this to see what happens if you
 %don't remove bad channels!
 
 %% Notch Filter
-old_values = notch_filter(old_values,fs);
+values = notch_filter(values,fs);
 
 %% Common average reference (include only intra-cranial)
-old_labels = labels;
 switch which_reference
     case 'car'
-        [values,labels] = common_average_reference(old_values,~bad,labels);
+        [values,labels] = common_average_reference(values,~bad,labels);
     case 'bipolar'
-        [values,~,labels,chs_in_bipolar] = bipolar_montage(old_values,labels,[],[]);
-        bad_ref = any(ismember(chs_in_bipolar,find(bad)),2);
-    case 'laplacian'
-        radius = 50;
-        [values,close_chs,labels] = laplacian_reference(...
-            old_values,~bad,locs,radius,labels);        
+        [values,~,labels,chs_in_bipolar] = bipolar_montage(values,labels,[],[]);
+        bad_ref = any(ismember(chs_in_bipolar,find(bad)),2);      
 end
 
 %% Remove bad channels

@@ -4,7 +4,7 @@
 import re
 import numpy as np
 from beartype import beartype
-from typing import Union
+from beartype.typing import Union, Iterable
 
 non_ieeg = [
     "EKG",
@@ -25,11 +25,11 @@ non_ieeg = [
 
 
 @beartype
-def find_non_ieeg(channel_li: Union[list[str], str]):
+def find_non_ieeg(channel_li: Union[Iterable[str], str]) -> np.ndarray:
     """
     This function finds non-iEEG channel labels
     """
-    if not isinstance(channel_li, list):
+    if isinstance(channel_li, str):
         channel_li = [channel_li]
     is_non_ieeg = np.zeros(len(channel_li), dtype=bool)
     for ind, i in enumerate(channel_li):

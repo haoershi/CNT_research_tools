@@ -1,10 +1,10 @@
 %% Test Class Definition
 classdef getDataTest < matlab.unittest.TestCase
-    % This is a test class defined for the download_ieeg_data function
+    % This is a test class defined for the get_ieeg_data function
     % Import test cases from test_getData.csv file, which include filename,
     % start time, stop time and notes describes the test scenairo of the
     % case, the notes would be used as test case names and the other three
-    % would be used to run the download_ieeg_data function. Login usrname
+    % would be used to run the get_ieeg_data function. Login usrname
     % and password file would be imported from the config.json file.
     % 
     % From this website to learn how to incorporate outside data
@@ -25,8 +25,16 @@ classdef getDataTest < matlab.unittest.TestCase
             % read login info
             login_file = 'config.json';
             login = read_json(login_file);
-            f = @() download_ieeg_data(Data{1}, login.usr, login.pwd, [Data{2},Data{3}], 1);
-            %eval(strcat('f = @() download_ieeg_data(Data{1}, login.usr, login.pwd, [',Data{2},',',Data{3},'], 1);'))
+            if isempty(Data{5}) && isempty(Data{6})
+                f = @() get_ieeg_data(Data{1}, login.usr, login.pwd, [Data{2},Data{3}]);
+            else
+                selecElecs = {};
+                ignoreElecs = {};
+                if ~isempty(Data{5});eval(['selecElecs = ',Data{5},';']);end
+                if ~isempty(Data{6});eval(['ignoreElecs = ',Data{6},';']);end
+                f = @() get_ieeg_data(Data{1}, login.usr, login.pwd, [Data{2},Data{3}],'selecElecs',selecElecs,'ignoreElecs',ignoreElecs);
+            end
+                %eval(strcat('f = @() get_ieeg_data(Data{1}, login.usr, login.pwd, [',Data{2},',',Data{3},'], 1);'))
             if strcmp(Data{4},'/')
                 testCase.verifyWarningFree(f)
             else

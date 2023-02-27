@@ -1,5 +1,5 @@
-function [values,clean_labels,bipolar_labels,chs_in_bipolar,mid_locs,mid_anatomy] =...
-    bipolar_montage(values,chLabels,locs,anatomy)
+function [values,labels,bipolar_labels,chs_in_bipolar,mid_locs,mid_anatomy] =...
+    bipolar_montage(values,chLabels,varargin)
 
 %{
 This function takes a chunk of multi-channel EEG data, along with channel
@@ -11,13 +11,28 @@ values(:,RA2). If ich is the last contact on the electrode, then
 values(:,ich) is defined to be nans.
 %}
 
+locs = {};
+anatomy = {};
+assert(mod(nargin,2)==0,'CNTtools:invalidInput','Optional inputs should be paired.');
+para = varargin;
+while length(para) >= 2
+    name = para{1};
+    val = para{2};
+    para = para(3:end);
+    switch name
+        case 'locs'
+            locs = val;
+        case 'anatomy'
+            anatomy = val;
+    end
+end
 %% Initialize output variables
 nchs = size(values,2);
 chs_in_bipolar = nan(nchs,2);
 old_values = values;
 
 %% Decompose chLabels
-[clean_labels,elecs,numbers] = decompose_labels(chLabels);%,name);
+[labels,elecs,numbers] = clean_labels(chLabels);%,name);
 bipolar_labels = cell(nchs,1);
 
 %% Bipolar montage
@@ -27,7 +42,7 @@ for ch = 1:nchs
     out = nan(size(values,1),1);
     
     % Get the clean label
-    label = clean_labels{ch};
+    label = labels{ch};
 
     % get the non numerical portion of the electrode contact
     label_non_num = elecs{ch};
@@ -42,16 +57,16 @@ for ch = 1:nchs
     % see if there exists one higher
     label_num_higher = label_num + 1;
     higher_label = [label_non_num,sprintf('%d',label_num_higher)];
-    if sum(strcmp(clean_labels(:,1),higher_label)) > 0
-        higher_ch = find(strcmp(clean_labels(:,1),higher_label));
+    if sum(strcmp(labels(:,1),higher_label)) > 0
+        higher_ch = find(strcmp(labels(:,1),higher_label));
         out = old_values(:,ch)-old_values(:,higher_ch);
         bipolar_label = [label,'-',higher_label];
         chs_in_bipolar(ch,:) = [ch,higher_ch];
       
         
     elseif strcmp(label,'FZ') % exception for FZ and CZ
-        if sum(strcmp(clean_labels(:,1),'CZ')) > 0
-            higher_ch = find(strcmp(clean_labels(:,1),'CZ'));
+        if sum(strcmp(labels(:,1),'CZ')) > 0
+            higher_ch = find(strcmp(labels(:,1),'CZ'));
             out = old_values(:,ch)-old_values(:,higher_ch);
             bipolar_label = [label,'-','CZ'];
             chs_in_bipolar(ch,:) = [ch,higher_ch];

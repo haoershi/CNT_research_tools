@@ -1,4 +1,4 @@
-function [clean_labels,elecs,numbers] = decompose_labels(chLabels)
+function [clean_labels,elecs,numbers] = clean_labels(chLabels)
 
 %{
 This function takes an arbitrary set of electrode labels. It returns clean_labels,

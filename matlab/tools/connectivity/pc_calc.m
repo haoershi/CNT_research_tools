@@ -1,4 +1,4 @@
-function avg_pc = pc_calc(values,fs,tw)
+function all_pc = pc_calc(values,fs,tw)
 
 %{
 Calculate pearson connectivity between each pair of channels

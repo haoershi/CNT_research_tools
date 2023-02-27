@@ -13,12 +13,12 @@ classdef findNonIEEGTest < matlab.unittest.TestCase
     %% Test Method Block
     methods (Test)
         % includes unit test functions
-        function testdecompLabel(testCase,Data)   
+        function testfindNonEEG(testCase,Data)   
             % This part test for wrong input types
             % see https://www.mathworks.com/help/matlab/matlab_prog/types-of-qualifications.html
             % for qualification method
             addpath(genpath('./../..')); % always add to ensure loading of other files/func
-            out = find_non_intracranial(Data(1));
+            out = find_non_ieeg(Data(1));
             testCase.verifyEqual(out,logical(Data{2}))
         end
     end

@@ -5,6 +5,6 @@ function output = getData_param(fname)
     % format into struct
     output = struct();
     for i = 1:size(inputData,1)
-        eval(strcat('output.',string(inputData{i,5}),'={inputData{',num2str(i),',1:4}};'))
+        eval(strcat('output.',string(inputData{i,size(inputData,2)}),'={inputData{',num2str(i),',1:size(inputData,2)-1}};'))
     end
 end
