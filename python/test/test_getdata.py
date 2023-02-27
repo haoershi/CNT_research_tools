@@ -12,7 +12,6 @@ import pytest
 import os,sys
 test_dir = os.path.dirname(os.path.abspath(__file__))
 current_dir = os.path.dirname(test_dir)
-print(test_dir)
 sys.path.append(current_dir)
 import tools
 # %%
@@ -33,11 +32,12 @@ params = [tuple([i[0], int(i[1]), int(i[2]), i[3], eval(i[4]), eval(i[5])]) for 
 def test_getdata(filename, start, stop, out, selec, ignore):
     try:
         if selec is not None:
-            _, _ = tools.get_ieeg_data(config.usr, config.pwd, filename, start, stop, select_elecs = selec)
+            _, _,_ = tools.get_ieeg_data(config.usr, config.pwd, filename, start, stop, select_elecs = selec)
         elif ignore is not None:
-            _, _ = tools.get_ieeg_data(config.usr, config.pwd, filename, start, stop, ignore_elecs = ignore)
+            _, _,_ = tools.get_ieeg_data(config.usr, config.pwd, filename, start, stop, ignore_elecs = ignore)
         else:
-            _, _ = tools.get_ieeg_data(config.usr, config.pwd, filename, start, stop)
+            _, _,_ = tools.get_ieeg_data(config.usr, config.pwd, filename, start, stop)
     except Exception as e:
-        print(str(e))
-        # assert str(e) == out
+        assert str(e) == out
+
+# %%
