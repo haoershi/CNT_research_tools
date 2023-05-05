@@ -758,7 +758,7 @@ cfreq = multcompare(stats);
 cref = multcompare(stats);
 [p,tbl,stats] = friedman(tmethod,76);
 cmethod = multcompare(stats);
-save(strcat(dataPath,'permstats.mat'),'tref','tfreq','tmethod','cfreq','cref','cmethod');
+save(strcat(dataPath,'/permstats.mat'),'tref','tfreq','tmethod','cfreq','cref','cmethod');
 %% 6 | SOZ lateralization 🧠
 % This part evaluate which method perform best in lateralizing epilepsy patients.
 % (Note: The ML part was implemented in Google Colab and hasn't been transfered to here yet) 
