@@ -33,5 +33,5 @@ set(fig1,h);caxis([-1,1])
 fig1.Title = refMethods{2};
 set(gca,'FontName','Avenir','FontSize',14);
 exportgraphics(gcf, strcat(figPath,'/methodBD',level,'.png'), 'Resolution', 300);
-saveas(gcf,strcat(figPath,'/methodBD',level,'svg'))
+saveas(gcf,strcat(figPath,'/methodBD',level,'.svg'))
 close all
