@@ -91,6 +91,7 @@ addpath(genpath(resultDir));
 % exising; then save it to patientList to store other info
 if exist(strcat(dataset,'_patientList.mat'),'file') ~= 2
     select_patient(dataset);
+    load(strcat('meta/',dataset,'_patientList.mat'));
 else
     load(strcat('meta/',dataset,'_patientList.mat'));
 end
@@ -117,9 +118,8 @@ fprintf('The %d Connectivit Measures translates to %d total methods\n',length(co
 load(strcat('meta/',dataset,'_subMeta.mat'));
 patientList = subMeta;
 keepPatient = zeros(numFile,1);
-
 bar = waitbar(0, 'Processing...');
-for i = 1:2%numFile
+for i = 1:numFile
     waitbar(i/numFile, bar, sprintf('Processing %d of %d...', i, numFile));
     % skip the file if don't have file start time
     if isnan(patientList(i).ind_2pm)
@@ -688,6 +688,7 @@ ticks = groupCenters(numel(boxdata), size(boxdata{1},2), 1);
 set(gca,'XTick',ticks,'XTickLabels',{'20%','40%','60%','80%'})
 exportgraphics(gcf, strcat(figPath,'/robustRef.png'), 'Resolution', 300);
 saveas(gcf,strcat(figPath,'/robustRef.svg'))
+close all
 % SPlit by method
 for i = 1:nConn
     tmp = permReliability(:,sum(numFeats(1:i-1))+1:sum(numFeats(1:i)),:);
@@ -713,6 +714,7 @@ ticks = groupCenters(numel(boxdata), size(boxdata{1},2), 1);
 set(gca,'XTick',ticks,'XTickLabels',{'20%','40%','60%','80%'})
 exportgraphics(gcf, strcat(figPath,'/robustMethod.png'), 'Resolution', 300);
 saveas(gcf,strcat(figPath,'/robustMethod.svg'))
+close all
 % SPlit by freq
 ini = [];
 for i = 1:nConn
@@ -746,7 +748,7 @@ ticks = groupCenters(numel(boxdata), size(boxdata{1},2), 1);
 set(gca,'XTick',ticks,'XTickLabels',{'20%','40%','60%','80%'})
 exportgraphics(gcf, strcat(figPath,'/robustFreq.png'), 'Resolution', 300);
 saveas(gcf,strcat(figPath,'/robustFreq.svg'))
-
+close all
 % add test
 % ref
 tref = reshape(permute(ref,[1,3,2]),size(ref,1)*size(ref,3),nRef);
@@ -805,14 +807,14 @@ goodoutcome = goodoutcome';
 nodeStrAll = permute(nodeStrAll,[2,1,3]);
 save(strcat(dataPath,'/sozML.mat'),'nodeStrAll','numlabel','strlabel','istemp','goodoutcome')
 for k = 1:nMethod
-    eval(['writematrix(squeeze(nodeStrAll(:,',num2str(k),',:)),strcat(MLPath,"/',num2str(k),'",".csv"));']);
+    eval(['writematrix(squeeze(nodeStrAll(',num2str(k),',:,:)),strcat(MLPath,"/',num2str(k),'",".csv"));']);
 end
 writematrix(numlabel,strcat(MLPath,'/label.csv'))
 colNames = {};
 for i = 1:length(connMeasureNames)
     if numFeats(i) == 1
         colNames = [colNames, connMeasureNames(i)];
-    elseif numFeats(i) == 7
+    elseif numFeats(i) == nFreq
          tmpNames = strcat(connMeasureNames(i),{'-'},freqBandNames);
         colNames = [colNames, tmpNames];
     end
@@ -879,8 +881,8 @@ plot_soz_scatter(nodeStrAll(:,~istemp,:),numlabel(~istemp),'pairT_LR_nontemp');
 nodeStrAll(:,numlabel==2,:) = nodeStrAll(:,numlabel==2,[2,1]);
 plot_soz_scatter(nodeStrAll(:,numlabel==1|numlabel==2,:),numlabel(numlabel==1|numlabel==2),'pairT_SOZ');
 plot_soz_scatter(nodeStrAll(:,goodoutcome,:),numlabel(goodoutcome),'pairT_SOZ_good');
-plot_soz_scatter(nodeStrAll(:,istemp'&(numlabel==1|numlabel==2),:),numlabel(istemp'&(numlabel==1|numlabel==2)),'pairT_SOZ_temp');
-plot_soz_scatter(nodeStrAll(:,~istemp'&(numlabel==1|numlabel==2),:),numlabel(~istemp'&(numlabel==1|numlabel==2)),'pairT_SOZ_nontemp');
+plot_soz_scatter(nodeStrAll(:,istemp&(numlabel==1|numlabel==2),:),numlabel(istemp&(numlabel==1|numlabel==2)),'pairT_SOZ_temp');
+plot_soz_scatter(nodeStrAll(:,~istemp&(numlabel==1|numlabel==2),:),numlabel(~istemp&(numlabel==1|numlabel==2)),'pairT_SOZ_nontemp');
 % volcano plot
 files = dir(strcat(MLPath,'/pairT*'));
 for i = 1:length(files)
