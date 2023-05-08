@@ -20,14 +20,14 @@ for i = 1:length(bad_chan)
     elecName = elecName(2:end);
     if strcmp(elecName,'DA')|strcmp(elecName,'AD')|strcmp(elecName,'A')
         newInd(1,num(i)) = 0;
-    elseif strcmp(elecName,'DH')|strcmp(elecName,'HD')|strcmp(elecName,'B')
+    elseif strcmp(elecName,'DH')|strcmp(elecName,'HD')|strcmp(elecName,'B')|strcmp(elecName,'AH')
         newInd(2,num(i)) = 0;
-    elseif strcmp(elecName,'C')
+    elseif strcmp(elecName,'C')|strcmp(elecName,'PH')
         newInd(3,num(i)) = 0;
     end
 end
 % update values
 values = values(:,ismember(labels,newlabels));
-if length(newlabels) == 0
+if isempty(newlabels)
     keep = 0;
 end

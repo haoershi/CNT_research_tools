@@ -77,11 +77,11 @@ else
         % network level
         fig1 = heatmap(squeeze(data(i,:,:)));
         set(fig1,h);
-        fig1.Title = strrep(strcat(titles{i},' ',level,' Connectivity Measure Correlation'),'_','-');
+        fig1.Title = strrep(strcat(titles{i}," ",level,' Connectivity Measure Correlation'),'_','-');
         exportgraphics(gcf, strcat(figPath,'/corr/',titles{i},'_',level,'.png'), 'Resolution', 300);
         saveas(gcf,strcat(figPath,'/corr/',titles{i},'_',level,'.svg'))
     end
-    fig1 = heatmap(squeeze(mean(networkCorr,1,'omitnan')));
+    fig1 = heatmap(squeeze(mean(data,1,'omitnan')));
     set(fig1,h);
     fig1.Title = strrep(strcat('Averaged ',level,' Connectivity Measure Correlation'),'_','-');
     exportgraphics(gcf, strcat(figPath,'/corr/',level,'.png'), 'Resolution', 300);
