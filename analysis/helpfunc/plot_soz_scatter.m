@@ -36,3 +36,4 @@ for i = 1:size(nodeStrAll,1)
     exportgraphics(gcf, strcat(figPath,'/',folderName,'/',num2str(i),'.png'), 'Resolution', 300);
     saveas(gcf,strcat(figPath,'/',folderName,'/',num2str(i),'.svg'))
 end
+close all
