@@ -25,7 +25,7 @@ def _pull_iEEG(ds: ieeg.dataset.Dataset, start_usec: Number, duration_usec: Numb
             data = ds.get_data(start_usec, duration_usec, channel_ids)
             return data
         except Exception as e:
-            if '500' in str(e) | '502' in str(e) | '503' in str(e) | '504' in str(e):
+            if '500' in str(e) or '502' in str(e) or '503' in str(e) or '504' in str(e):
                 time.sleep(1)
             else:
                 raise e
