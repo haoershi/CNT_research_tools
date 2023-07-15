@@ -1,4 +1,4 @@
-function [values,labels,bipolar_labels,chs_in_bipolar,mid_locs,mid_anatomy] =...
+function [values,bipolar_labels,chs_in_bipolar,mid_locs,mid_anatomy] =...
     bipolar_montage(values,chLabels,varargin)
 
 %{
@@ -11,6 +11,8 @@ values(:,RA2). If ich is the last contact on the electrode, then
 values(:,ich) is defined to be nans.
 %}
 
+soft = true;
+softThres = 1;
 locs = {};
 anatomy = {};
 assert(mod(nargin,2)==0,'CNTtools:invalidInput','Optional inputs should be paired.');
@@ -24,6 +26,10 @@ while length(para) >= 2
             locs = val;
         case 'anatomy'
             anatomy = val;
+        case 'soft'
+            soft = val;
+        case 'softThres'
+            softThres = val;
     end
 end
 %% Initialize output variables
@@ -37,9 +43,9 @@ bipolar_labels = cell(nchs,1);
 
 %% Bipolar montage
 for ch = 1:nchs
-    
     % Initialize it as nans
     out = nan(size(values,1),1);
+    bipolar_label = '-';
     
     % Get the clean label
     label = labels{ch};
@@ -50,33 +56,34 @@ for ch = 1:nchs
     % get numerical portion
     label_num = numbers(ch);
     
-    if label_num > 12
-        error('This might be a grid and so bipolar might be tricky');
+%     if label_num > 12
+%         warning('This might be a grid and so bipolar might be tricky');
+%     end
+    
+    % see if there exists one higher
+    if soft
+        label_nums = [label_num + 1:label_num + softThres + 1];
+    else
+        label_nums = [label_num+1];
     end
 
-    % see if there exists one higher
-    label_num_higher = label_num + 1;
-    higher_label = [label_non_num,sprintf('%d',label_num_higher)];
-    if sum(strcmp(labels(:,1),higher_label)) > 0
-        higher_ch = find(strcmp(labels(:,1),higher_label));
-        out = old_values(:,ch)-old_values(:,higher_ch);
-        bipolar_label = [label,'-',higher_label];
-        chs_in_bipolar(ch,:) = [ch,higher_ch];
-      
-        
-    elseif strcmp(label,'FZ') % exception for FZ and CZ
+    for label_num_i = label_nums
+        higher_label = [label_non_num,sprintf('%d',label_num_i)];
+        if sum(strcmp(labels(:,1),higher_label)) > 0
+            higher_ch = find(strcmp(labels(:,1),higher_label),1);
+            out = old_values(:,ch)-old_values(:,higher_ch);
+            bipolar_label = [label,'-',higher_label];
+            chs_in_bipolar(ch,:) = [ch,higher_ch];
+            break
+        end
+    end
+    if strcmp(label,'FZ') % exception for FZ and CZ
         if sum(strcmp(labels(:,1),'CZ')) > 0
             higher_ch = find(strcmp(labels(:,1),'CZ'));
             out = old_values(:,ch)-old_values(:,higher_ch);
             bipolar_label = [label,'-','CZ'];
             chs_in_bipolar(ch,:) = [ch,higher_ch];
-            
-          
         end
-        
-    else
-        % allow it to remain nans
-        bipolar_label = '-';
     end
     values(:,ch) = out;
     bipolar_labels{ch} = bipolar_label;

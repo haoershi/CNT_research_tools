@@ -67,6 +67,7 @@ attempt = 1;
 
 while attempt < 100
     try
+%         disp(fname)
         session = IEEGSession(fname, login_name, pwfile); % check if can fetch this file
         channelLabels = session.data.channelLabels; % get channel info
         break
@@ -91,7 +92,7 @@ end
 % assert(~isempty(channelLabels),'CNTtools:emptyFile','No channels.'); 
 dura = session.data.rawChannels(1).get_tsdetails.getDuration/1e6;  % get duration info
 % Delete session
-session.delete;        
+session.delete; 
 % test if time range valid
 assert(times(2) > times(1),'CNTtools:invalidTimeRange','Stop before start.')
 assert(times(1) >= 0 && times(2) <= dura, 'CNTtools:invalidTimeRange', 'Time outrange.')
@@ -238,15 +239,20 @@ while attempt < 100
     % If server error, try again (this is because there are frequent random
     % server errors).
     catch ME
-        if contains(ME.message,'503') || contains(ME.message,'504') || ...
+        if contains(ME.message,'Authentication')
+            throw(MException('CNTtools:invalidLoginInfo','Invalid login info.'));
+        elseif contains(ME.message,'No snapshot with name')
+            throw(MException('CNTtools:invalidFileName','Invalid filename.'));
+        elseif contains(ME.message,'positive integers or logical values')
+            throw(MException('CNTtools:emptyFile','No channels.'));
+        elseif contains(ME.message,'503') || contains(ME.message,'504') || ...
                 contains(ME.message,'502') || contains(ME.message,'500')
             attempt = attempt + 1;
             fprintf('Failed to retrieve ieeg.org data, trying again (attempt %d)\n',attempt); 
         else
-            throw(ME)
+            throw(ME);
             error('Non-server error'); 
         end
-        
     end
 end
 

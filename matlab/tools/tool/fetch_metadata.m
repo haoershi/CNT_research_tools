@@ -1,11 +1,16 @@
-metaData = table2struct(readtable('metadata.csv','Delimiter',',','Format','auto'));
+% metaData = table2struct(readtable('MUSC_filelist.csv','Delimiter',',','Format','auto'));
+load('meta/MUSC_metaData.mat')
+login = read_json(which('config.json'));
 for i = 1:length(metaData)
-    data = fetch_ieeg_info(metaData(i).filename, login.usr, login.pwd);
-    metaData(i).duration = data.duration;
-    metaData(i).channels = data.chLabels;
-    metaData(i).fs = data.fs;
-    metaData(i).chanstr = strjoin(metaData(i).channels');
+    if isempty(metaData(i).duration)
+        data = fetch_ieeg_info(metaData(i).filename, login.usr, login.pwd);
+        metaData(i).duration = data.duration;
+        metaData(i).channels = data.chLabels;
+        metaData(i).fs = data.fs;
+        metaData(i).chanstr = strjoin(metaData(i).channels');
+    end
 end
+save('meta/MUSC_metaData.mat','metaData');
 
 function data = fetch_ieeg_info(fname, login_name, pwfile)
 
@@ -23,6 +28,8 @@ try
     else
         data.duration = nan;
     end
+    session.delete;
+    clearvars -except data
 catch ME
     data.fs = [];
     data.chLabels = {};
