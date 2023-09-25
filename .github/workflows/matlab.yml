@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - './matlab' 
+      - './matlab/**' 
 
 jobs:
   unit-tests:
