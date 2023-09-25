@@ -12,13 +12,9 @@ import pytest
 import os
 import sys
 
-work_path = os.getcwd()  # get current path
-test_path = os.path.join(work_path, "python/test")
-file_path = os.path.join(work_path, "python")
-# print(os.getcwd())
-# os.chdir(work_path)
-# par_folder = os.path.dirname(work_path)
-sys.path.append(file_path)
+test_dir = os.path.dirname(os.path.abspath(__file__))
+current_dir = os.path.dirname(test_dir)
+sys.path.append(current_dir)
 
 import tools
 
