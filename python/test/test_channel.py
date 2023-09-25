@@ -22,7 +22,7 @@ import tools
 # unit test for clean_labels function
 # write in a csv file, col 0 input, col 1 expected output
 # wait to fetch all channel types from ieeg
-test_chans = pd.read_csv(os.path.join(test_path, "decompLabel_testInput.csv"))
+test_chans = pd.read_csv(os.path.join(test_dir, "decompLabel_testInput.csv"))
 params = [
     tuple([[test_chans.iloc[i, 0]], [test_chans.iloc[i, 1]]])
     for i in range(test_chans.shape[0])
