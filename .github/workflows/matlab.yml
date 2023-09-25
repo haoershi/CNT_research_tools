@@ -21,6 +21,6 @@ jobs:
 
       - name: Run MATLAB Unit Tests
         run: |
-          matlab -batch "runtests('test/*')"
+          matlab -batch "runtests('test','IncludeSubfolders',true)"
         working-directory: ./matlab
 
