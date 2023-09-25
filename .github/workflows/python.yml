@@ -12,6 +12,7 @@ on:
     branches: [ "main" ]
     paths:
       - './python/**' 
+  workflow_dispatch: 
 
 jobs:
   build:
