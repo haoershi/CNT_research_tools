@@ -1,24 +1,47 @@
-# CNT_research_tools
-A resposiory for CNT-approved research tools.  
+# CNT Pre-processing Toolkit
+Toolkit for pre-processing of intracranial EEG data, and an interactive pipeline for pre-processing method evaluation.
+Toolkit available in Matlab and Python
+Toolkit compatible with iEEG.org
 
-# Get Started 
+## Installation
 
-Download or clone the toolbox into a local folder:
+### Get Started 
+
+Download or clone the toolbox into a local folder via git, and switch to folder:
 ```
-git clone git@github.com:penn-cnt/CNT_research_tools.git
+git clone git@github.com:haoershi/CNT_research_tools.git
+cd CNT_research_tools
 ```
 
+### Python
 
-## Python Set-Up
+**Installation via Conda**
 
 Dependencies: 
 * [anaconda](https://www.anaconda.com)
 
-Create a conda environment:
+
+Create a conda environment and activate:
 ```
-conda env create -n ieegpy -f python/ieegpy.yml
+cd python
+conda env create -n ieegpy -f ieegpy.yml
+conda activate ieegpy
 ```
 
-## Resources
-* [Project Tracker Google doc](https://docs.google.com/spreadsheets/d/12f-cCzB2J7W96jZzbJH7HKbWrivrUa2PKcRpQZsHXpM/edit?usp=sharing)
-* [Background Notes Google doc](https://docs.google.com/document/d/17qalWwt5yb7NOVwob53GO_U_6H2GWmNjsN_aptjJoSw/edit?usp=sharing)
+**Login Configuration**
+
+The toolkit currently depends on ieeg.org.
+To access data, please register first on https://www.ieeg.org.
+Generate bin password file *_ieeglogin.bin through create_pwd_file function.
+In the _python_ folder, run in Python:
+```\python
+from tools import create_pwd_file
+create_pwd_file(username, password)
+```
+A password file named usr_ieeglogin.bin would be automatically created in the _python_ folder.
+Update config.json file to specify username and password file name.
+
+**Test**
+
+Run pytest to ensure no running issues.
+(Getting data may not be tested currently)
