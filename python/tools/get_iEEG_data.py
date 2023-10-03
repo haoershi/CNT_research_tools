@@ -99,8 +99,8 @@ def get_ieeg_data(
     # Pull and format metadata from patient_localization_mat
 
     # Added by Haoer
-    current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    password_bin_file = os.path.join(current_dir,password_bin_file)
+    # current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    # password_bin_file = os.path.join(current_dir,password_bin_file)
     pwd = open(password_bin_file, "r").read()
 
     assert start_time < stop_time, "CNTtools:invalidTimeRange"
