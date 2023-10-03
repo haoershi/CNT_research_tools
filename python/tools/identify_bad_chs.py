@@ -10,7 +10,7 @@ def prctile(x, p):
     return np.percentile(x, p)
 
 @beartype
-def identify_bad_chan(data: np.ndarray, fs: Number):
+def identify_bad_chs(data: np.ndarray, fs: Number):
     """Identify bad channels from a data array of m time points by n channels.
 
     Args:

@@ -1,5 +1,5 @@
 function [values,bipolar_labels,chs_in_bipolar,mid_locs,mid_anatomy] =...
-    bipolar_montage(values,chLabels,varargin)
+    bipolar(values,chLabels,varargin)
 
 %{
 This function takes a chunk of multi-channel EEG data, along with channel

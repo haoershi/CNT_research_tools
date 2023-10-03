@@ -13,7 +13,6 @@ import tools
 import os
 
 work_path = os.path.dirname(os.path.abspath(__file__))
-
 # %%
 with open(os.path.join(work_path, "config.json"), "rb") as f:
     config = pd.read_json(f, typ="series")
@@ -38,16 +37,16 @@ clean_channels = tools.clean_labels(channels)
 non_ieeg_channels = tools.find_non_ieeg(clean_channels)
 
 #%%
-bad_chans, _ = tools.identify_bad_chan(data,fs)
+bad_chans, _ = tools.identify_bad_chs(data,fs)
 #%%
 keep_chans = (~non_ieeg_channels & ~bad_chans).squeeze()
 data = data[:, keep_chans]
 clean_channels = clean_channels[keep_chans]
 #%% car
-# data, car_labels = tools.common_average_ref(data, clean_channels)
+# data, car_labels = tools.car(data, clean_channels)
 # print(car_labels)
 #%% bipolar
-# data, bipolar_labels = tools.automatic_bipolar_montage(data, clean_channels)
+# data, bipolar_labels = tools.bipolar(data, clean_channels)
 # print(bipolar_labels)
 #%% laplacian
 locs = pd.read_csv(os.path.join(work_path,"tools","locs.csv"),header=None).values

@@ -3,7 +3,7 @@ from beartype import beartype
 from beartype.typing import Iterable
 
 @beartype
-def common_average_ref(data: np.ndarray, labels: Iterable[str]):
+def car(data: np.ndarray, labels: Iterable[str]):
     """Do common average reference for the input data array
 
     Args:

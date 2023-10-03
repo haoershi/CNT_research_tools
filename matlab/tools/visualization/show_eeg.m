@@ -25,7 +25,7 @@ for ich = 1:nchs
     hold on
     count = count+1;
     ch_offsets(ich) = offset;
-    ch_bl(ich) = -offset + nanmedian(values(:,ich));
+    ch_bl(ich) = -offset + median(values(:,ich),'omitnan');
     
     text(dur+0.05,ch_bl(ich),sprintf('%s',labels{ich}),'fontsize',20)
     

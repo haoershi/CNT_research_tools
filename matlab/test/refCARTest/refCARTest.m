@@ -15,7 +15,7 @@ classdef refCARTest < matlab.unittest.TestCase
             % for qualification method
             addpath(genpath('./../..')); % always add to ensure loading of other files/func
             load refCAR_testInput.mat;
-            f = @() common_average_reference(old_values,~extra_cranial&~bad,labels);
+            f = @() car(old_values,~extra_cranial&~bad,labels);
             testCase.verifyWarningFree(f)
         end
     end

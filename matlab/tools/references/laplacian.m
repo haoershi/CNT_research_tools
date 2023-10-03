@@ -1,4 +1,4 @@
-function [out_values,close_chs,laplacian_labels] = laplacian_reference(values,include,locs,radius,labels)
+function [out_values,close_chs,laplacian_labels] = laplacian(values,include,locs,radius,labels)
 
 assert(~isempty(locs))
 
@@ -12,7 +12,7 @@ close(logical(eye(size(close)))) = 0;
 close_chs = cell(nchs,1);
 
 for i = 1:nchs
-    out_values(:,i) = values(:,i) - nanmean(values(:,close(i,:)&include'),2);
+    out_values(:,i) = values(:,i) - mean(values(:,close(i,:)&include'),2,'omitnan');
     close_chs{i} = find(close(i,:)&include');
 end
 

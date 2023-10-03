@@ -16,7 +16,7 @@ classdef refLaplacianTest < matlab.unittest.TestCase
             % for qualification method
             addpath(genpath('./../..')); % always add to ensure loading of other files/func
             load refLaplacian_testInput.mat;
-            f = @() laplacian_reference(old_values,~extra_cranial&~bad,locs,50,labels);
+            f = @() laplacian(old_values,~extra_cranial&~bad,locs,50,labels);
             testCase.verifyWarningFree(f)
         end
     end

@@ -12,7 +12,7 @@ for i = 1:size(values,2)
         continue
     end
     
-    eeg(isnan(eeg)) = nanmean(eeg);
+    eeg(isnan(eeg)) = mean(eeg,'omitnan');
     eeg = filtfilt(f,eeg);   
     values(:,i) = eeg;
 end

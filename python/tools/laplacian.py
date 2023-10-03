@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.spatial.distance import cdist
 
-def laplacian_reference(data:np.ndarray,locs,radius,labels):
+def laplacian(data:np.ndarray,locs,radius,labels):
     """_summary_
 
     Args:

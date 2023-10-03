@@ -5,7 +5,7 @@ from beartype import beartype
 from beartype.typing import Iterable
 
 @beartype
-def automatic_bipolar_montage(data: np.ndarray, labels: Iterable[str]):
+def bipolar(data: np.ndarray, labels: Iterable[str]):
     """This function returns the data in bipolar montage using the channel names
 
     Args:

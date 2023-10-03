@@ -30,10 +30,10 @@ for i = 1:nchs
     ich = i;
     %ich = 43;
     eeg = values(:,ich);
-    bl = nanmedian(eeg);
+    bl = median(eeg,'omitnan');
     
     %% Get channel standard deviation
-    all_std(i) = nanstd(eeg);
+    all_std(i) = std(eeg,'omitnan');
     
     %% Remove channels with nans in more than half
     if sum(isnan(eeg)) > 0.5*length(eeg)
@@ -112,7 +112,7 @@ for i = 1:nchs
     % Calculate fft
     %orig_eeg = orig_values(:,ich);
     %Y = fft(orig_eeg-mean(orig_eeg));
-    Y = fft(eeg-nanmean(eeg));
+    Y = fft(eeg-mean(eeg,'omitnan'));
     
     % Get power
     P = abs(Y).^2;
@@ -151,7 +151,7 @@ for i = 1:nchs
 end
 
 %% Remove channels for whom the std is much larger than the baseline
-median_std = nanmedian(all_std);
+median_std = median(all_std,'omitnan');
 higher_std = chs(all_std > mult_std * median_std);
 bad_std = higher_std;
 bad_std(ismember(bad_std,bad)) = [];
