@@ -100,6 +100,7 @@ The toolbox includes the following functions:
     * Laplacian Re-referencing (LR)
 * Pre-whitening
 * Feature extraction
+<img src="https://github.com/haoershi/CNT_research_tools/assets/116624350/dfefeb73-4fc0-48db-96ff-5fd823785f2c" width=50% height=50%>
 
 ## Usage
 
