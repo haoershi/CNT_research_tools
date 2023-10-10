@@ -1,7 +1,12 @@
-function values = notch_filter(values,fs)
+function values = notch_filter(values,fs,varargin)
+
+notch_freq = 60;
+if nargin == 3
+    notch_freq = varargin{1};
+end
 
 f = designfilt('bandstopiir','FilterOrder',4, ...
-   'HalfPowerFrequency1',59,'HalfPowerFrequency2',61, ...
+   'HalfPowerFrequency1',notch_freq-1,'HalfPowerFrequency2',notch_freq+1, ...
    'DesignMethod','butter','SampleRate',fs);
 %fvtool(f)
 for i = 1:size(values,2) 
