@@ -37,7 +37,7 @@ if do_tw
         end
     end
     
-    re = mean(re,4,'omitnan');
+    re = nanmean(re,4);
 
 else
     re = nan(nchs,nchs,nfreqs);

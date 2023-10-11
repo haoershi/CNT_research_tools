@@ -206,7 +206,7 @@ if length(dir(paths.rawPath)) <= 2 || params.force_download
                     [data,labels,fs,keepPatient(fileInds(k)),times] = preprocess5(patientList(fileInds(k)),params.chans_to_use);
                     if keepPatient(fileInds(k)) ~= 0
                         patientList(fileInds(k)).time = times;
-                        save(strcat(paths.rawPath,filesep,patient,'.mat'),'data','labels','fs','times')
+                        save(strcat(paths.rawPath,filesep,'',patient,'.mat'),'data','labels','fs','times')
                         break
                     end
                 end
@@ -224,17 +224,17 @@ if length(dir(paths.rawPath)) <= 2 || params.force_download
     fprintf('There are %d unique patients included\n',numFile);
 else
     fprintf('Data already downloaded\n');
-    fprintf('Set force download to true to redownload')
+    fprintf('Set force download to true to redownload\n')
 end
 clearvars -except numFile patientList params paths 
 %% 2 | Re-ref and Calculate Connectivity 🔣 
 % This part conduct re-ref processing and calculate connectivity 
 % for all methods.
 % connectivity parameters
-o_tw = true;
+do_tw = true;
 tw = 2; % time windown in sec
 bar = waitbar(0, 'Processing...');
-for i = 1:numFile
+for i = 2% 1:numFile
     waitbar(i/numFile, bar, sprintf('Processing %d of %d...', i, numFile));
     filename = strcat(paths.rawPath,filesep,'',patientList(i).patient,'.mat');
     if exist(filename,'file')
@@ -297,7 +297,7 @@ for i = 1:numFile
 end
 close(bar);
 fprintf('Finished calculation\n');
-clearvars -except numFile patientList params paths  
+clearvars -except numFile patientList params paths 
 %% 3 | Methods Similarity 🔍
 % This part evaluate which methods are more similar to each other
 % calculate measure correlation
@@ -327,8 +327,8 @@ for i = 1:numFile
         tmpNet = reshape(tmpNet,[params.nMethod,length(ind)*2]);
         % node level
         for j = 1:nchan
-            nodeStr(:,j,1) = mean(results(:,j,[1:(j-1),(j+1):end],1),3,'omitnan');
-            nodeStr(:,j,2) = mean(results(:,j,[1:(j-1),(j+1):end],2),3,'omitnan');
+            nodeStr(:,j,1) = nanmean(results(:,j,[1:(j-1),(j+1):end],1),3);
+            nodeStr(:,j,2) = nanmean(results(:,j,[1:(j-1),(j+1):end],2),3);
         end
         nodeStr = reshape(nodeStr,[params.nMethod,36*2]); 
     else
@@ -339,13 +339,13 @@ for i = 1:numFile
         tmpNet = tmpNet(:,ind,:);
         % node level
         for j = 1:nchan
-            nodeStr(:,j) = mean(results(:,j,[1:(j-1),(j+1):end]),3,'omitnan');
+            nodeStr(:,j) = nanmean(results(:,j,[1:(j-1),(j+1):end]),3);
         end
     end
     networkCorr(i,:,:) = corrcoef(tmpNet','Rows','complete');
     nodeCorr(i,:,:) = corrcoef(nodeStr','Rows','complete');
     % global level
-    globalStr(:,i) = mean(nodeStr,2,'omitnan');
+    globalStr(:,i) = nanmean(nodeStr,2);
 end
 globalCorr = corrcoef(globalStr','Rows','complete');
 save(strcat(paths.dataPath,filesep,'corrs.mat'),'networkCorr','nodeCorr','globalStr','globalCorr','patients')
@@ -387,6 +387,7 @@ plot_clustergram(squeeze(mean(nodeCorr,1,'omitnan')),'Nodal','abs');
 % tsne plot
 tsne_plot(networkCorr,'abs');
 
+% inv of 1+RE
 if ismember('RE',params.connSymbols)
     % load results
     filelist = dir(paths.resultPath);
@@ -414,8 +415,8 @@ if ismember('RE',params.connSymbols)
             tmpNet = reshape(tmpNet,[params.nMethod,length(ind)*2]);
             % node level
             for j = 1:nchan
-                nodeStr(:,j,1) = mean(results(:,j,[1:(j-1),(j+1):end],1),3,'omitnan');
-                nodeStr(:,j,2) = mean(results(:,j,[1:(j-1),(j+1):end],2),3,'omitnan');
+                nodeStr(:,j,1) = nanmean(results(:,j,[1:(j-1),(j+1):end],1),3);
+                nodeStr(:,j,2) = nanmean(results(:,j,[1:(j-1),(j+1):end],2),3);
             end
             nodeStr = reshape(nodeStr,[params.nMethod,36*2]); 
         else
@@ -427,13 +428,13 @@ if ismember('RE',params.connSymbols)
             tmpNet = tmpNet(:,ind,:);
             % node level
             for j = 1:nchan
-                nodeStr(:,j) = mean(results(:,j,[1:(j-1),(j+1):end]),3,'omitnan');
+                nodeStr(:,j) = nanmean(results(:,j,[1:(j-1),(j+1):end]),3);
             end
         end
         networkCorr(i,:,:) = corrcoef(tmpNet','Rows','complete');
         nodeCorr(i,:,:) = corrcoef(nodeStr','Rows','complete');
         % global level
-        globalStr(:,i) = mean(nodeStr,2,'omitnan');
+        globalStr(:,i) = nanmean(nodeStr,2);
     end
     globalCorr = corrcoef(globalStr','Rows','complete');
     
@@ -535,8 +536,8 @@ else
 end
 % imagesc plot
 for i = 1:params.nRef+1
-    coh1plot{i} = mean(coh1(i).cohspctrm,3,'omitnan');
-    coh2plot{i} = mean(coh2(i).cohspctrm,3,'omitnan');
+    coh1plot{i} = mean(coh1(i).cohspctrm,3);
+    coh2plot{i} = mean(coh2(i).cohspctrm,3);
 end
 
 % Customize the appearance of the heatmap
@@ -661,20 +662,19 @@ for i = 1:numFile
                 tmp = permute(tmp,[2,1,3,4]);
                 tmp = reshape(tmp,[params.nMethod,nchan,nchan]);
                 for j = 1:nchan
-                    nodeStr(:,j) = mean(tmp(:,j,[1:(j-1),(j+1):end]),3,'omitnan');
+                    nodeStr(:,j) = nanmean(tmp(:,j,[1:(j-1),(j+1):end]),3);
                 end
             end
             permResult(:,k,n,:) = nodeStr;
         end
     end
-    var_error(i,:,:) = mean(squeeze(std(permResult,0,3,'omitnan').^2),3,'omitnan');
-    var_true(i,:,:) = mean((std(permResult,0,4,'omitnan').^2),3,'omitnan');
+    var_error(i,:,:) = nanmean(squeeze(nanstd(permResult,0,3).^2),3);
+    var_true(i,:,:) = nanmean((nanstd(permResult,0,4).^2),3);
 end
 close(bar)
 permReliability = var_true./(var_true + var_error);
 permReliability = reshape(permReliability,params.nSeg,[],params.nMethod,params.nPerc);
-permReliability = mean(permReliability,1,'omitnan');
-permReliability = reshape(permReliability,size(permReliability,2,3,4));
+permReliability = squeeze(nanmean(permReliability,1));
 save(strcat(paths.dataPath,filesep,'perm.mat'),'permReliability','var_true','var_error')
 clearvars -except numFile patientList params paths 
 %% plot for section 5
@@ -686,8 +686,8 @@ end
 labels = cellstr(num2str(params.perc'*100,'%.0f%%'))';
 % SPLIT BY REF
 % plot
-ref = reshape(permReliability,[[],sum(params.numFeats),params.nRef,params.nPerc]);
-ref = squeeze(mean(ref,2,'omitnan'));
+ref = reshape(permReliability,[size(permReliability,1),sum(params.numFeats),params.nRef,size(permReliability,3)]);
+ref = squeeze(nanmean(ref,2));
 boxdata = {};
 for i = 1:params.nRef
     boxdata{i} = squeeze(ref(:,i,:));
@@ -721,8 +721,8 @@ method = [];
 boxdata = {};
 for i = 1:params.nConn
     tmp = permReliability(:,sum(params.numFeats(1:i-1))+1:sum(params.numFeats(1:i)),:);
-    tmp = (tmp + permReliability(:,sum(params.numFeats(1:i-1))+1+sum(params.numFeats):sum(params.numFeats(1:i))+sum(params.numFeats),:))/2;
-    method(:,i,:) = mean(tmp,2,'omitnan');
+    tmp = (tmp + permReliability(:,sum(params.numFeats(1:i-1))+1+24:sum(params.numFeats(1:i))+24,:))/2;
+    method(:,i,:) = nanmean(tmp,2);
     boxdata{i} = squeeze(method(:,i,:));
 end
 figure('Position',[0,0,800,400])
@@ -754,7 +754,7 @@ boxdata = {};
 for i = 1:params.nFreq
     tmp = permReliability(:,ini+i,:);
     tmp = (tmp + permReliability(:,ini+i+sum(params.numFeats),:))/2;
-    freq(:,i,:) = mean(tmp,2,'omitnan');
+    freq(:,i,:) = nanmean(tmp,2);
     boxdata{i} = squeeze(freq(:,i,:));
 end
 dark = hex2rgb('#a5474e');
@@ -778,9 +778,9 @@ saveas(gcf,strcat(paths.figPath,filesep,'robustFreq.svg'))
 close all
 % add test
 % ref
-refmean = squeeze(mean(ref,1,'omitnan'));
-methodmean = squeeze(mean(method,1,'omitnan'));
-freqmean = squeeze(mean(freq,1,'omitnan'));
+refmean = squeeze(nanmean(ref,1));
+methodmean = squeeze(nanmean(method,1));
+freqmean = squeeze(nanmean(freq,1));
 for i = 1:params.nPerc
     [p,h] = signrank(ref(:,1,i),ref(:,2,i));
     statsRef{i} = p;
@@ -854,16 +854,14 @@ for i = 1:numFile
     results = reshape(results,[params.nMethod,36,36,2]);
     % node level
     for j = 1:36
-        nodeStr(:,j,1) = mean(results(:,j,[1:(j-1),(j+1):end],1),3,'omitnan');
-        nodeStr(:,j,2) = mean(results(:,j,[1:(j-1),(j+1):end],2),3,'omitnan');
+        nodeStr(:,j,1) = nanmean(results(:,j,[1:(j-1),(j+1):end],1),3);
+        nodeStr(:,j,2) = nanmean(results(:,j,[1:(j-1),(j+1):end],2),3);
     end
     nodeStrAll(i,:,:,:) = nodeStr;
 end
-nodeStrAll = mean(nodeStrAll,3,'omitnan');
-nodeStrAll = reshape(nodeStrAll,size(nodeStrAll,1,2,4));
+nodeStrAll = squeeze(nanmean(nodeStrAll,3));
 nodeStrAll = reshape(nodeStrAll,params.nSeg,[],params.nMethod,2);
-nodeStrAll = mean(nodeStrAll,1,'omitnan');
-nodeStrAll = reshape(nodeStrAll,size(nodeStrAll,2,3,4));
+nodeStrAll = squeeze(nanmean(nodeStrAll,1));
 
 % build labels
 strlabel = {patientList.soz}';

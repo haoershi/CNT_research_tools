@@ -17,7 +17,7 @@ all_coherence = nan(nchs,nchs,nfreqs);
 
 for ich = 1:nchs
     curr_values = values(:,ich);
-    curr_values(isnan(curr_values)) = mean(curr_values,'omitnan');
+    curr_values(isnan(curr_values)) = nanmean(curr_values);
     values(:,ich) = curr_values;
 end
 
@@ -35,10 +35,10 @@ for ich = 1:nchs
         %% Average coherence in frequency bins of interest
         for i_f = 1:nfreqs
             all_coherence(ich,jch,i_f) = ...
-                mean(cxy(f >= freqs(i_f,1) & f <= freqs(i_f,2)),'omitnan');
+                nanmean(cxy(f >= freqs(i_f,1) & f <= freqs(i_f,2)));
             
             all_coherence(jch,ich,i_f) = ...
-                mean(cxy(f >= freqs(i_f,1) & f <= freqs(i_f,2)),'omitnan');
+                nanmean(cxy(f >= freqs(i_f,1) & f <= freqs(i_f,2)));
         end
         
     end

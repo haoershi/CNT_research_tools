@@ -13,7 +13,7 @@ all_coherence = nan(nchs,nchs,nfreqs);
 
 for ich = 1:nchs
     curr_values = values(:,ich);
-    curr_values(isnan(curr_values)) = mean(curr_values,'omitnan');
+    curr_values(isnan(curr_values)) = nanmean(curr_values);
     values(:,ich) = curr_values;
 end
 
@@ -33,12 +33,12 @@ if do_tw
             [cxy,f] = mscohere(values_no_nans(times(t):times(t+1),ich),values_no_nans(times(t):times(t+1),:),hamming(window),[],NFFT,fs);
             for i_f = 1:nfreqs
                 temp_coherence(:,ich,i_f,t) = ...
-                    mean(cxy(f >= freqs(i_f,1) & f <= freqs(i_f,2),:),1,'omitnan');
+                    nanmean(cxy(f >= freqs(i_f,1) & f <= freqs(i_f,2),:),1);
             end
         end
 
     end
-    temp_coherence = mean(temp_coherence,4,'omitnan');
+    temp_coherence = nanmean(temp_coherence,4);
 else
     temp_coherence = nan(nchs_no_nans,nchs_no_nans,nfreqs);
     for ich = 1:nchs_no_nans
@@ -49,7 +49,7 @@ else
         % Average coherence in frequency bins of interest
         for i_f = 1:nfreqs
             temp_coherence(:,ich,i_f) = ...
-                mean(cxy(f >= freqs(i_f,1) & f <= freqs(i_f,2),:),1,'omitnan');
+                nanmean(cxy(f >= freqs(i_f,1) & f <= freqs(i_f,2),:),1);
         end
 
     end

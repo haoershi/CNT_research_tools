@@ -6,14 +6,26 @@ from beartype.typing import Iterable
 
 @beartype
 def bipolar(data: np.ndarray, labels: Iterable[str]):
-    """This function returns the data in bipolar montage using the channel names
+    """
+    Return the data in bipolar montage using the channel names.
 
     Args:
-        data (_type_): _description_
-        labels (_type_): _description_
+        data (np.ndarray): The iEEG data as a NumPy array with shape (samples, channels).
+        labels (Iterable[str]): A list of channel labels indicating the channel names.
 
     Returns:
-        _type_: _description_
+        np.ndarray: The bipolar montage EEG data with the same shape as the input data.
+        np.ndarray: An array of bipolar labels corresponding to the bipolar montage.
+
+    Notes:
+        This function applies the bipolar montage transformation to EEG data based on the channel labels provided.
+        If a channel label follows the standard naming convention (e.g., 'C3', 'FZ'), it attempts to create a bipolar channel
+        by subtracting the adjacent channel. If the adjacent channel exists, the subtraction is performed; otherwise,
+        the label is marked as '-'.
+
+    Examples:
+        >>> bipolar_data, bipolar_labels = tools.bipolar(data, labels)
+        ***if add soft and soft threshold***
     """
     channels = np.array(labels)
 

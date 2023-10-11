@@ -70,6 +70,6 @@ for i = 1:nw
 end
 
 %% Average the network over all time windows
-avg_pc = mean(all_pc,2,'omitnan');
+avg_pc = nanmean(all_pc,2);
 
 end

@@ -41,8 +41,8 @@ if do_tw
     
     end
     
-    mb = mean(mb_all,3,'omitnan');
-    lb = mean(lb_all,3,'omitnan');
+    mb = nanmean(mb_all,3);
+    lb = nanmean(lb_all,3);
 
 
 else

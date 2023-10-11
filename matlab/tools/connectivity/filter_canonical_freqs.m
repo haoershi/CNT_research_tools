@@ -8,7 +8,7 @@ nchs = size(values,2);
 
 for ich = 1:nchs
     curr_values = values(:,ich);
-    curr_values(isnan(curr_values)) = mean(curr_values,'omitnan');
+    curr_values(isnan(curr_values)) = nanmean(curr_values);
     values(:,ich) = curr_values;
 end
 

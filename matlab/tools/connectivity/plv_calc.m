@@ -31,7 +31,7 @@ if do_tw
 
         end
     end
-    all_plv = mean(all_plv,4,'omitnan');
+    all_plv = nanmean(all_plv,4);
 
 else
     %% initialize output vector

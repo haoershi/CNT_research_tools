@@ -69,7 +69,7 @@ for i = 1:nmt
                        
                 % Calculate "intra" for these contacts, just the
                 % thing for those contacts
-                curr_intra = mean(thing(matching_contacts,:,:),1,'omitnan');
+                curr_intra = nanmean(thing(matching_contacts,:,:),1);
                 
                 % Fill
                 intra(i,k,j,:) = curr_intra;
@@ -81,7 +81,7 @@ for i = 1:nmt
                 
             %
             % Measure intra-electrode connectivity
-            curr_intra = mean(thing(strcmp(letters,curr_elec),strcmp(letters,curr_elec),:),[1 2],'omitnan');
+            curr_intra = nanmean(thing(strcmp(letters,curr_elec),strcmp(letters,curr_elec),:),[1 2]);
             
             % Fill, repeating across all electrodes
             intra(i,:,j,:) = repmat(curr_intra,1,maxn,1,1);
@@ -110,11 +110,11 @@ end
 
 %% Take AI
 ai = (intra(:,:,1,:)-intra(:,:,2,:))./((intra(:,:,1,:)+intra(:,:,2,:)));
-ai = (squeeze(mean(ai,[1 2 3],'omitnan')))';
+ai = (squeeze(nanmean(ai,[1 2 3])))';
         
 %% Average across ms  
 if last_dim == 1
-    ai = mean(ai,'omitnan');
+    ai = nanmean(ai);
 end
 
 %% Plot

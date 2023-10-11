@@ -1,13 +1,15 @@
-function avg_pc = new_pearson_calc(values,fs,tw,do_tw)
+function avg_pc = pc_vector_calc(values,fs,tw)
 
+all_at_once = 0;
 nchs = size(values,2);
 
 
-if ~do_tw
+if all_at_once
     avg_pc = corrcoef(values);
+    avg_pc = wrap_or_unwrap_adjacency_fc_toolbox(avg_pc);
 else
     %% Define time windows
-    iw = round(tw*fs);
+    iw = tw*fs;
     window_start = 1:iw:size(values,1);
 
     % remove dangling window
@@ -18,7 +20,7 @@ else
 
 
     %% initialize output vector
-    all_pc = nan(nchs,nchs,nw);
+    all_pc = nan(nchs*(nchs-1)/2,nw);
 
     %% Calculate pc for each window
     % Loop over time windows - note I have parallelized this step!
@@ -32,12 +34,12 @@ else
         pc(logical(eye(size(pc)))) = 0;
 
         %% unwrap the pc matrix into a one dimensional vector for storage
-        all_pc(:,:,i) = pc;
+        all_pc(:,i) = wrap_or_unwrap_adjacency_fc_toolbox(pc);
 
     end
 
     %% Average the network over all time windows
-    avg_pc = mean(all_pc,3,'omitnan');
+    avg_pc = nanmean(all_pc,2);
 
 end
 

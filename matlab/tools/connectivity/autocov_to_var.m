@@ -82,7 +82,7 @@ q = q1-1;
 qn = q*n;
 G0 = G(:,:,1);                                               % covariance
 GF = reshape(G(:,:,2:end),n,qn)';                            % forward  autocov sequence
-GB = reshape(permute(flip(G(:,:,2:end),3),[1 3 2]),qn,n); % backward autocov sequence
+GB = reshape(permute(flipdim(G(:,:,2:end),3),[1 3 2]),qn,n); % backward autocov sequence
 AF = zeros(n,qn); % forward  coefficients
 AB = zeros(n,qn); % backward coefficients (reversed compared with Whittle's treatment)
 % initialise recursion

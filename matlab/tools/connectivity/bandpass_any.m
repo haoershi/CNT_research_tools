@@ -12,7 +12,7 @@ for i = 1:size(values,2)
         continue
     end
     
-    eeg(isnan(eeg)) = mean(eeg,'omitnan'); % make nans equal to the mean.
+    eeg(isnan(eeg)) = nanmean(eeg); % make nans equal to the mean.
     eeg = filtfilt(d,eeg);   
     out(:,i) = eeg;
 end

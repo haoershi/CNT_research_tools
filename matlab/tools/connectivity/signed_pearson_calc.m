@@ -4,7 +4,11 @@ nchs = size(values,2);
 
 
 if ~do_tw
-    avg_pc = corrcoef(values);
+    avg_pc = corr(values,'Type','Spearman','Rows','pairwise');
+    r_unsig = corr(x, y);
+    
+    % Compute the signed Pearson correlation coefficient
+    r = sign(mean(x.*y))*abs(r_unsig);
 else
     %% Define time windows
     iw = round(tw*fs);
@@ -28,7 +32,7 @@ else
         clip = values(window_start:window_start+iw,:);
 
 
-        pc = corrcoef(clip);
+        pc = corr(clip,'type','Spearman','Rows','pairwise');
         pc(logical(eye(size(pc)))) = 0;
 
         %% unwrap the pc matrix into a one dimensional vector for storage
@@ -37,7 +41,7 @@ else
     end
 
     %% Average the network over all time windows
-    avg_pc = mean(all_pc,3,'omitnan');
+    avg_pc = nanmean(all_pc,3);
 
 end
 

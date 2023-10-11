@@ -3,7 +3,7 @@ from scipy.integrate import simpson
 import numpy as np
 
 
-def bandpower(data, sf, band, window_sec=None, relative=False):
+def bandpower(data, fs, band, window_sec=None, relative=False):
     """Adapted from https://raphaelvallat.com/bandpower.html
     Compute the average power of the signal x in a specific frequency band.
 
@@ -11,7 +11,7 @@ def bandpower(data, sf, band, window_sec=None, relative=False):
     ----------
     data : 1d-array or 2d-array
         Input signal in the time-domain. (time by channels)
-    sf : float
+    fs : float
         Sampling frequency of the data.
     band : list
         Lower and upper frequencies of the band of interest.
@@ -32,12 +32,12 @@ def bandpower(data, sf, band, window_sec=None, relative=False):
 
     # Define window length
     if window_sec is not None:
-        nperseg = window_sec * sf
+        nperseg = window_sec * fs
     else:
-        nperseg = (2 / low) * sf
+        nperseg = (2 / low) * fs
 
     # Compute the modified periodogram (Welch)
-    freqs, psd = welch(data.T, sf, nperseg=nperseg)
+    freqs, psd = welch(data.T, fs, nperseg=nperseg)
 
     # Frequency resolution
     freq_res = freqs[1] - freqs[0]

@@ -37,7 +37,7 @@ else
     end
 
     %% Average the network over all time windows
-    avg_pc = mean(all_pc,3,'omitnan');
+    avg_pc = nanmean(all_pc,3);
 
 end
 
