@@ -751,3 +751,5 @@ class iEEGData:
             filename += '.pkl'
         self._pickle_save(filename)
 
+    # add save plot
+    # add change color of plot
