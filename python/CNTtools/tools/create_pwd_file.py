@@ -1,5 +1,5 @@
 import os
-from . import settings
+from CNTtools import settings
 
 def create_pwd_file(username, password, fname=None):
     if fname is None:
