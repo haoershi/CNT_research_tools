@@ -4,7 +4,7 @@ import sys, os, json, pickle
 from beartype import beartype
 from typing import Union,Iterable
 from numbers import Number
-import settings
+from CNTtools import settings
 import tools
 
 class iEEGPreprocess:
