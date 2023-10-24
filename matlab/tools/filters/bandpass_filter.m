@@ -1,14 +1,46 @@
 function values = bandpass_filter(values,fs,varargin)
+% bandpass_filter Applies bandpass filter to iEEG data.
 
-low_freq = 1;
-high_freq = 120;
-if nargin == 3
-    low_freq = varargin{1};
-elseif nargin == 4
-    high_freq = varargin{2};
+% Parameters:
+%   values (numeric array): iEEG data matrix where each column represents a channel.
+%   fs (numeric): Sampling frequency of the iEEG data.
+%   low_freq (numeric, optional): Lower cutoff frequency for the bandpass filter (default: 1 Hz).
+%   high_freq (numeric, optional): Upper cutoff frequency for the bandpass filter (default: 120 Hz).
+%   order (integer, optional): Filter order (default: 4).
+
+% Returns:
+%   values (numeric array): Bandpass-filtered iEEG data.
+
+% Example:
+%   filtered_values = bandpass_filter(values, fs);
+%   filtered_values = bandpass_filter(values, fs, 5, 50, 6);
+%   filtered_values = bandpass_filter(values, fs, [], 35);
+
+defaults = {1,120,4};
+
+for i = 1:length(varargin)
+    if isempty(varargin{i})
+        varargin{i} = defaults{i};
+    end
 end
 
-d = designfilt('bandpassiir','FilterOrder',4, ...
+p = inputParser;
+addRequired(p, 'values', @isnumeric);
+addRequired(p, 'fs', @isnumeric);
+addOptional(p, 'low_freq', defaults{1}, @isnumeric);
+addOptional(p, 'high_freq', defaults{2}, @isnumeric);
+addOptional(p, 'order', defaults{3}, @isinteger);
+
+parse(p, values, fs, varargin{:});
+
+% Access parsed values
+values = p.Results.values;
+fs = p.Results.fs;
+low_freq = p.Results.low_freq;
+high_freq = p.Results.high_freq;
+order = p.Results.order;
+
+d = designfilt('bandpassiir','FilterOrder',order, ...
     'HalfPowerFrequency1',low_freq,'HalfPowerFrequency2',min(floor(fs/2),high_freq), ...
     'SampleRate',fs);
 

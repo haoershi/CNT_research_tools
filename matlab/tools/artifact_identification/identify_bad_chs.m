@@ -1,4 +1,33 @@
 function [bad,details] = identify_bad_chs(values,fs)
+% Identifies bad channels based on various criteria.
+%
+% Parameters:
+% - values (numeric array): Matrix representing EEG data. Each column is a channel, and each row is a time point.
+% - fs (numeric): Sampling frequency of the EEG data.
+%
+% Returns:
+% - bad (logical array): Boolean array indicating bad channels.
+% - details (struct): Details of bad channels categorized by specific criteria.
+%
+% Criteria:
+% - Channels with more than half NaNs are marked as bad.
+% - Channels with more than half zeros are marked as bad.
+% - Channels with a significant number of values above an absolute threshold are marked as bad.
+% - Channels with rare cases of super high variance above baseline are marked as bad.
+% - Channels with a significant amount of 60 Hz noise are marked as bad.
+% - Channels with standard deviation much higher than the median are marked as bad.
+%
+% Example:
+% values = randn(100, 5);  % Replace with your actual EEG data
+% fs = 250;
+% [bad, details] = identify_bad_chs(values, fs);
+
+p = inputParser;
+addRequired(p, 'values', @isnumeric);
+addRequired(p, 'fs', @isnumeric);
+parse(p, values, fs);
+values = p.Results.values;
+fs = p.Results.fs;
 
 %% Parameters to reject super high variance
 tile = 99;
@@ -28,7 +57,6 @@ for i = 1:nchs
     bad_ch = 0;
     
     ich = i;
-    %ich = 43;
     eeg = values(:,ich);
     bl = median(eeg,'omitnan');
     
@@ -57,21 +85,6 @@ for i = 1:nchs
         high_ch = [high_ch;ich];
     end
     
-    if 0
-    figure
-    if bad_ch == 1
-        plot(eeg,'r')
-    else
-        plot(eeg,'k')
-    end
-    hold on
-    plot(xlim,[bl + abs_thresh bl+abs_thresh])
-    plot(xlim,[bl - abs_thresh bl-abs_thresh])
-    title(sprintf('Percent above threshold: %1.1f%%',100*sum(abs(eeg - bl) > abs_thresh)/length(eeg)));
-    pause
-    close(gcf)
-    end
-    
     if bad_ch == 1
         continue;
     end
@@ -83,22 +96,6 @@ for i = 1:nchs
     sum_outside = sum(eeg > thresh(2) | eeg < thresh(1));
     if sum_outside >= num_above
         bad_ch = 1;
-    end
-    
-    if 0
-        if bad_ch == 1
-            plot(eeg,'r');
-        else
-            plot(eeg,'k');
-        end
-        title(chLabels{ich})
-        hold on
-        plot(xlim,[bl bl])
-        plot(xlim,[thresh(1) thresh(1)]);
-        plot(xlim,[thresh(2) thresh(2)]);
-        title(sprintf('Sum outside: %d',sum_outside));
-        pause
-        hold off
     end
     
     if bad_ch == 1
@@ -127,26 +124,6 @@ for i = 1:nchs
     if P_60Hz > percent_60_hz
         bad_ch = 1;
     end
-    
-    if 0
-        figure
-        subplot(2,1,1)
-        plot(eeg)
-        
-        subplot(2,1,2)
-        spectrogram(eeg,[],[],[],fs);
-        title(sprintf('%s Percent 60 Hz power %1.1f',chLabels{ich},P_60Hz*100))
-        pause
-        close(gcf)
-    end
-    
-    if bad_ch == 1
-        bad = [bad;ich];
-        noisy_ch = [noisy_ch;ich];
-        continue;
-    end
-    
-    
     
 end
 

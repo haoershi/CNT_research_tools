@@ -231,7 +231,7 @@ clearvars -except numFile patientList params paths
 % This part conduct re-ref processing and calculate connectivity 
 % for all methods.
 % connectivity parameters
-o_tw = true;
+do_tw = true;
 tw = 2; % time windown in sec
 bar = waitbar(0, 'Processing...');
 for i = 1:numFile
@@ -788,12 +788,12 @@ for i = 1:params.nPerc
     tmp(any(isnan(tmp),2),:) = [];
     [p,tbl,stats] = friedman(tmp);
     statsMethod{i} = tbl;
-    resultsMethod{i} = multcompare(stats,'CType','dunn-sidak');
+    [resultsMethod{i},estimatesMethod{i}] = multcompare(stats,'CType','dunn-sidak');
     tmp = squeeze(freq(:,:,i));
     tmp(any(isnan(tmp),2),:) = [];
     [p,tbl,stats] = friedman(tmp);
     statsFreq{i} = tbl;
-    resultsFreq{i} = multcompare(stats,'CType','dunn-sidak');
+    [resultsFreq{i},estimatesFreq{i}] = multcompare(stats,'CType','dunn-sidak');
 end
 close all
 for i = 1:size(ref,3)
@@ -806,24 +806,30 @@ for i = 1:size(ref,3)
 end
 
 for n = 1:params.nPerc
+    effMat = NaN(params.nConn);
     sigMat = NaN(params.nConn);
     results = resultsMethod{1,n};
     for i = 1:params.nConn-1
         for j = i+1:params.nConn
+            effMat(i,j) = results(find(results(:,1) == i & results(:,2) == j),4);
             sigMat(i,j) = results(find(results(:,1) == i & results(:,2) == j),6);
         end
     end
+    effMatMethod{n} = effMat;
     sigMatMethod{n} = sigMat;
 end
 
 for n = 1:params.nPerc
+    effMat = NaN(params.nFreq);
     sigMat = NaN(params.nFreq);
     results = resultsFreq{1,n};
     for i = 1:params.nFreq-1
         for j = i+1:params.nFreq
+            effMat(i,j) = results(find(results(:,1) == i & results(:,2) == j),4);
             sigMat(i,j) = results(find(results(:,1) == i & results(:,2) == j),6);
         end
     end
+    effMatFreq{n} = effMat;
     sigMatFreq{n} = sigMat;
 end
 save(strcat(paths.dataPath,filesep,'permstats.mat'),'resultsRef','resultsMethod','resultsFreq', ...

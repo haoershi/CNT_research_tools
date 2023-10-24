@@ -1,19 +1,25 @@
 function ekg = find_non_ieeg(labels)
+% Identify non-iEEG channels in a given set of labels.
 
-% ADD DC CHANNELS
-%% Added 11/13, Haoer
+% Parameters:
+% - labels (cell, string, or char): Cell array, string, or char array containing electrode labels.
+
+% Returns:
+% - ekg (logical array): Logical array indicating non-iEEG channels (1 for non-iEEG, 0 for iEEG).
+
+p = inputParser;
+addRequired(p, 'labels', @(x) iscell(x) || isstring(x) || ischar(x));
+parse(p, labels);
+labels = p.Results.labels;
+
+% Added 11/13, Haoer
 % assume cell format of channel labels
 if ~iscell(labels)
     try
         % convert to cell if table format
-        if istable(labels)
-            labels = table2cell(labels); 
-        
-        % convert to cell if string or char format
-        elseif isstring(labels) || ischar(labels)
+        if isstring(labels) || ischar(labels)
             labels = cellstr(labels); 
         end
-    
     catch ME
         throw(MException('CNTtools:invalidInputType','Electrode labels should be a cell array.'))
     end
@@ -64,16 +70,7 @@ for i = 1:length(labels)
 
         ekg(i) = 1;
     end
-    
-    % fix for things that could be either scalp or ieeg
-    %{
-    if strcmp(labels(i),'O2') 
-        if sum(strcmp(labels,'O1')) == 0 % if hemiscalp, should not have odd; if ieeg, should have O1
-            ekg(i) = 1;
-        end
-    end
-    %}
-    
+
     if strcmp(labels(i),'O1') || strcmp(labels(i),'O2')
         if sum(strcmp(labels,'O3')) == 1 || sum(strcmp(labels,'O4')) == 1 % if intracranial, should have these too
             ekg(i) = 0;
@@ -82,7 +79,6 @@ for i = 1:length(labels)
         end
     end
 
-    
 end
 
 ekg = logical(ekg);
