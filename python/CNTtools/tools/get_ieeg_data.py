@@ -1,7 +1,7 @@
 # pylint: disable-msg=C0103
 import ieeg
 from ieeg.auth import Session
-import settings
+from CNTtools import settings
 
 # from .pull_patient_localization import pull_patient_localization
 # from pull_patient_localization import pull_patient_localization
