@@ -1,6 +1,6 @@
 import settings
 import os, json
-from tools import create_pwd_file
+from .create_pwd_file import create_pwd_file
 
 def login_config():
     """ Generates user .json config file using keyboard username and password inputs. """
