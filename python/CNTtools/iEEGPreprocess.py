@@ -254,6 +254,13 @@ class iEEGPreprocess:
         List all datasets as a table with necessary information, including filename from ieeg.org and start/stop time
         """
         print(self.meta)
+
+    def remove_data(self,data_index):
+        """
+        Remove data instance from current session.
+        """
+        self.meta.drop(data_index,inplace=True)
+        del self.datasets[data_index]
     
     def save(self,filename:str,default_folder:bool = True):
         """
@@ -373,8 +380,7 @@ class iEEGData:
         """
         self._rev_data = self.data
         self._rev_chs = self.ch_names
-        if not hasattr(self, 'nonieeg'):
-            self.nonieeg = tools.find_non_ieeg(self.ch_names)
+        self.nonieeg = tools.find_non_ieeg(self.ch_names)
         self.data = self.data[:,~self.nonieeg]
         self.ch_names = self.ch_names[~self.nonieeg]
         self.history.append('reject_nonieeg')
@@ -385,8 +391,7 @@ class iEEGData:
         """
         self._rev_data = self.data
         self._rev_chs = self.ch_names
-        if not hasattr(self, 'bad'):
-            self.bad, self.reject_details = tools.identify_bad_chs(self.data,self.fs)
+        self.bad, self.reject_details = tools.identify_bad_chs(self.data,self.fs)
         self.data = self.data[:,~self.bad]
         self.ch_names = self.ch_names[~self.bad]
         self.history.append('reject_artifact')
@@ -449,7 +454,10 @@ class iEEGData:
         """
         self._rev_data = self.data.copy()
         self._rev_chs = self.ch_names.copy()
-        self._rev_refchs = self.ref_chnames.copy()
+        if self.ref_chnames is not None:
+            self._rev_refchs = self.ref_chnames.copy()
+        else:
+            self._rev_refchs = self.ref_chnames
         self.data, self.ref_chnames = tools.bipolar(self.data, self.ch_names)
         inds = np.where(self.ref_chnames=='-')[0]
         self.data = np.delete(self.data, inds, axis=1)
@@ -481,7 +489,10 @@ class iEEGData:
             
         self._rev_data = self.data.copy()
         self._rev_chs = self.ch_names.copy()
-        self._rev_refchs = self.ref_chnames.copy()
+        if self.ref_chnames is not None:
+            self._rev_refchs = self.ref_chnames.copy()
+        else:
+            self._rev_refchs = self.ref_chnames
         self.data, self.ref_chnames = tools.laplacian(self.data, self.ch_names, self.locs, radius)
         inds = np.where(self.ref_chnames=='-')[0]
         self.data = np.delete(self.data, inds, axis=1)
@@ -507,7 +518,10 @@ class iEEGData:
         assert ref in ['car','bipolar','laplacian'],"CNTtools:invalidRerefMethod"
         self._rev_data = self.data.copy()
         self._rev_chs = self.ch_names.copy()
-        self._rev_refchs = self.ref_chnames.copy()
+        if self.ref_chnames is not None:
+            self._rev_refchs = self.ref_chnames.copy()
+        else:
+            self._rev_refchs = self.ref_chnames
         if hasattr(self,'ref_chnames'):
             self._rev_refchs = self.ref_chnames
         if ref == 'car':
@@ -668,7 +682,7 @@ class iEEGData:
         """
         if 'pearson' in methods:
             self.conn['pearson'] = tools.pearson(self.data,self.fs,win = win,win_size = win_size)
-        if 'sqared_pearson' in methods:
+        if 'squared_pearson' in methods:
             self.conn['squared_pearson'] = tools.squared_pearson(self.data,self.fs,win = win,win_size = win_size)
         if 'cross_corr' in methods:
             self.conn['cross_corr'] = tools.cross_correlation(self.data,self.fs,win = win,win_size = win_size)
