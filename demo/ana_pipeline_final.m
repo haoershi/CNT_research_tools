@@ -111,7 +111,7 @@ params.dataset = 'HUP'; % <- make change here
 if exist(params.dataset,'dir') == 0
     mkdir(params.dataset);
 end
-params.chans_to_use = 'gw'; % <- make change here, options gw, gray, white, LR
+params.chans_to_use = 'LR'; % <- make change here, options gw, gray, white, LR
 clear allDataset
 
 % print some basic characteristics

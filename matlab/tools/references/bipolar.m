@@ -160,7 +160,7 @@ end
 
 function [non_nums,nums] = decompose(labels)
 non_nums = {};
-nums = {};
+nums = [];
 for ich = 1:length(labels)
     label = labels{ich};
     %% Get the non-numerical portion
