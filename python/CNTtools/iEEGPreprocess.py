@@ -61,8 +61,8 @@ class iEEGPreprocess:
         >>> session = IEEGPreprocess()
         >>> session.login_config()
         """
-        from CNTtools.tools.login_config import login_config
-        usrname = login_config()
+        # from tools.login_config import login_config
+        usrname = tools.login_config()
         self._load_user(usrname)
 
     def login(self, username:str = None):
