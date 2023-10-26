@@ -1,6 +1,6 @@
-import settings
 import os, json
 from .create_pwd_file import create_pwd_file
+from CNTtools import settings
 
 def login_config():
     """ Generates user .json config file using keyboard username and password inputs. """
