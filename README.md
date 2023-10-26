@@ -28,6 +28,13 @@ conda env create -n ieegpy -f ieegpy.yml
 conda activate ieegpy
 ```
 
+If the above command doesn't work, you can manually create an enviornment and install the necessary libraries:
+```
+conda create -n ieegpy python=3.9
+conda activate ieegpy
+pip install -r requirements.txt
+```
+
 **Login Configuration**
 
 The toolkit currently depends on ieeg.org.
@@ -39,7 +46,7 @@ Generate bin password file *_ieeglogin.bin through create_pwd_file function.
 In the _python_ folder, run in Python:
 ```\python
 from tools import create_pwd_file
-create_pwd_file(username, password)
+create_pwd_file(username, password) 
 ```
 A password file named usr_ieeglogin.bin would be automatically created in the _python_ folder.
 

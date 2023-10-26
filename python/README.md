@@ -18,8 +18,11 @@ Create a conda environment:
 ```
 conda env create -n ieegpy -f python/ieegpy.yml
 ```
+
+If the above command doesn't work, you can manually create an enviornment and install the necessary libraries:
 ```
-conda env create -n ieegpy pip
+conda create -n ieegpy python=3.9
+conda activate ieegpy
 pip install -r requirements.txt
 ```
 
