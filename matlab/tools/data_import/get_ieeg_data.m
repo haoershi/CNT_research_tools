@@ -1,5 +1,4 @@
-function data = get_ieeg_data(login_name, pwfile, fname, start, stop, varargin)
-
+function data = get_ieeg_data(fname, login_name, pwfile, start, stop, varargin) %changed the order of the inputs so that it matches preprocess5.m
 % This function download data from ieeg portal with filename, time range,
 % and user information provided
 % Inputs:
@@ -27,16 +26,19 @@ for i = 1:length(varargin)
     end
 end
 
+                        %seems to be parsing correctly BUT selecElecs arguement seems to take in a
+                        %string and not the actual cell values? I'm not sure how this function
+                        %works maybe you have more insight? 
 p = inputParser;
+addRequired(p, 'fname', @(x) isstring(x) || ischar(x));
 addRequired(p, 'login_name', @(x) isstring(x) || ischar(x));
 addRequired(p, 'pwfile', @(x) isstring(x) || ischar(x));
-addRequired(p, 'fname', @(x) isstring(x) || ischar(x));
 addRequired(p, 'start', @isnumeric);
 addRequired(p, 'stop', @isnumeric);
 addOptional(p, 'selecElecs', defaults{1}, @(x) iscell(x) || isnumeric(x) || isstring(x) || ischar(x));
 addOptional(p, 'ignoreElecs', defaults{2}, @(x) iscell(x) || isnumeric(x) || isstring(x) || ischar(x));
 addOptional(p, 'outputfile', defaults{3}, @(x) isstring(x) || ischar(x));
-parse(p, login_name, pwfile, fname, start, stop, varargin{:});
+parse(p, fname, login_name, pwfile, start, stop, varargin{:});
 
 % Access parsed values
 login_name = p.Results.login_name;
@@ -200,11 +202,12 @@ while attempt < 100
     end
 
 end
-end
+
 
 %% Delete session
 session.delete;
 clearvars -except data
 if ~isempty(outputfile)
     save(outputfile,'data');
+end
 end

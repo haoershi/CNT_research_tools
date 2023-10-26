@@ -203,7 +203,7 @@ if length(dir(paths.rawPath)) <= 2 || params.force_download
                 fileInds = find(cellfun(@(x) strcmp(x,patient),patients));
                 nFile = length(fileInds);
                 for k = 1:nFile
-                    [data,labels,fs,keepPatient(fileInds(k)),times] = preprocess5(patientList(fileInds(k)),params.chans_to_use);
+                    [data,labels,fs,keepPatient(fileInds(k)),times] = preprocess5(patientList(fileInds(k)),params.chans_to_use); %PROBLEMS ARE HERE (NOT ENOUGH INPUT ARGUEMENTS FOR get_ieeg_data?) makes no sense to me
                     if keepPatient(fileInds(k)) ~= 0
                         patientList(fileInds(k)).time = times;
                         save(strcat(paths.rawPath,filesep,patient,'.mat'),'data','labels','fs','times')

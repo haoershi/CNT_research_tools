@@ -38,7 +38,7 @@ for i = 1:params.nSeg
     time = randi(ranges(randi(min(nSession,3)),:),1);
     time = [time,time+120];
     disp(time)
-    data = get_ieeg_data(file_name, login.usr, login.pwd, time,'selecElecs',selecElecs);
+    data = get_ieeg_data(file_name, login.usr, login.pwd, time(1), time(end),'selecElecs',selecElecs); %changed time to start,stop to match get_ieeg_data
     bad = identify_bad_chs(data.values,data.fs);
     percent = sum(bad)/size(data.values,2);
     count = 0;
@@ -46,7 +46,7 @@ for i = 1:params.nSeg
         tmp_time = randi(ranges(randi(min(nSession,3)),:),1);
         tmp_time = [tmp_time,tmp_time+120];
         % time for different 2pm
-        tmp = get_ieeg_data(file_name, login.usr, login.pwd, tmp_time,'selecElecs',selecElecs);
+        tmp = get_ieeg_data(file_name, login.usr, login.pwd, tmp_time(1), tmp_time(end),'selecElecs',selecElecs); %changed time to start,stop to match get_ieeg_data
         tmpBad = identify_bad_chs(tmp.values,tmp.fs);
         percentBad = sum(tmpBad)/size(data.values,2);
         if percentBad < percent
@@ -91,4 +91,4 @@ for i = 1:params.nSeg
     full_data{i} = values;
     full_labels{i} = newlabels;
 end
-keep = any(keep);
+keep = any(keep);         
