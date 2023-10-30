@@ -13,7 +13,7 @@ end
 clusterConn = [];
 for j = 1:params.nRef
     for i = 1:params.nConn
-        clusterConn = [clusterConn repmat(i,1,params.numFeats(i))];
+        clusterConn = [clusterConn repmat(i,1,params.conn(i).numFeat)];
     end
 end
 % cluster = [];
@@ -26,7 +26,7 @@ end
 %         cluster = [cluster 2];
 %     end
 % end
-refCol = params.refCols;
+refCol = cell2mat({params.ref.col}');
 % connCols = {'#B4CE99','#789264','#506D31','#E59595','#A5474E','#3C5488'};
 % connCols = hex2rgb(connCols);
 % colSet = [refCol; connCols(6,:)];
@@ -44,6 +44,6 @@ title("t-SNE Plot of Network Level Pre-processing Pipeline Similarity")
 set(gca,'FontName','Helvetica','FontSize',20)
 xlabel(axisLabel{1})
 ylabel(axisLabel{2})
-legend(params.connMeasureNames,'Location','SouthWest','AutoUpdate','off')
+legend({params.conn.name},'Location','SouthWest','AutoUpdate','off')
 saveas(gcf,strcat(paths.figPath,filesep,'tsne',suffix,'.svg'))
 close all

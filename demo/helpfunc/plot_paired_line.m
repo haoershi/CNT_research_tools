@@ -23,7 +23,7 @@ for i = 1:ncomp
     h1 = plot((xpos(i)-width).*ones(nsample,1), pre(:,i), 'o', 'Color', blue,'MarkerFaceColor',[1,1,1],'LineWidth',1,'MarkerSize',8);
     h2 = plot((xpos(i)+width).*ones(nsample,1), post(:,i), 'o', 'Color', red,'MarkerFaceColor',[1,1,1],'LineWidth',1,'MarkerSize',8);
 end
-legend([h1,h2],params.refNames);
+legend([h1,h2],{params.ref.name});
 % Add a legend and axis labels
 ylabel('Reliability')
 xlabel('% Electrode Removed')

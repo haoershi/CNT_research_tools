@@ -9,7 +9,7 @@ import numpy as np
 import time, os, warnings, pickle
 
 from beartype import beartype
-from typing import Union,Optional,Tuple
+from beartype.typing import Union,Optional,Tuple
 from numbers import Number
 
 from .clean_labels import clean_labels

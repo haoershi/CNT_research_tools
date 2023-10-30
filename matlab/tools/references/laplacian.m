@@ -29,13 +29,14 @@ labels = p.Results.labels;
 locs = p.Results.locs;
 radius = p.Results.radius;
 
+nchs = size(values,2);
 out_values = nan(size(values));
 laplacian_labels = cell(nchs,1);
 nchs = size(values,2);
 close_chs = cell(nchs,1);
 % do pseudo-laplacian if no locs info available
 nan_elecs = any(isnan(locs),2);
-pseudo_values, pseudo_labels = pseudo_laplacian(values,labels);
+[pseudo_values, pseudo_labels] = pseudo_laplacian(values,labels);
 out_values(:,nan_elecs) = pseudo_values(:,nan_elecs);
 laplacian_labels(nan_elecs) = pseudo_labels(nan_elecs);
 % calculate distance

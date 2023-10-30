@@ -1,7 +1,7 @@
 function extractMLData(nodeStrAll,path)
 pairT_LR = zeros(size(nodeStrAll,1),7); 
 for i = 1:size(nodeStrAll,1)
-    pairT_LR(i,1:2) = squeeze(mean(nodeStrAll(i,:,:),2),'omitnan');
+    pairT_LR(i,1:2) = squeeze(mean(nodeStrAll(i,:,:),2,'omitnan'));
     pairT_LR(i,3) = mean(nodeStrAll(i,:,1)-nodeStrAll(i,:,2),'omitnan');
     pairT_LR(i,4) = mean((nodeStrAll(i,:,1)-nodeStrAll(i,:,2))./nodeStrAll(i,:,2),'omitnan');
     [~, pairT_LR(i,5),~,stats] = ttest(nodeStrAll(i,:,1), nodeStrAll(i,:,2));

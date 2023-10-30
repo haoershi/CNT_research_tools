@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
-from typing import Iterable, Union
 from .clean_labels import clean_labels
 from beartype import beartype
+from beartype.typing import Iterable, Union
 
 @beartype
 def get_elec_locs(chLabels: Union[Iterable[str], str], filename: str) -> np.ndarray:

@@ -259,8 +259,12 @@ class iEEGPreprocess:
         """
         Remove data instance from current session.
         """
-        self.meta.drop(data_index,inplace=True)
-        del self.datasets[data_index]
+        if ~isinstance(data_index,list):
+            data_index = [data_index]
+        for ind in data_index:
+            self.meta.drop(ind,inplace=True)
+            del self.datasets[ind]
+        self.num_data = self.meta.shape[0]
     
     def save(self,filename:str,default_folder:bool = True):
         """
@@ -338,10 +342,12 @@ class iEEGData:
         self.data = data
         self.fs = fs
         self.ch_names = ch_names
-        self.ref_chnames = None
+        self.ref_chnames = []
         self.index = None
+        self.power = {}
         self.conn = {}
         self.history = []
+        self.record()
         
 
     def _download(self,user):
@@ -352,11 +358,13 @@ class iEEGData:
         self.raw_chs = self.ch_names
         self.username = user['usr']
         self.user_data_dir = os.path.join(settings.DATA_DIR,self.username[:3])
+        self.record()
 
     def clean_labels(self):
         """
         Convert channel names to standardized format.
         """
+        self.record()
         self.ch_names = tools.clean_labels(self.ch_names)
         self.history.append('clean_labels')
 
@@ -378,8 +386,7 @@ class iEEGData:
         """
         Find and remove non-iEEG channels.
         """
-        self._rev_data = self.data
-        self._rev_chs = self.ch_names
+        self.record()
         self.nonieeg = tools.find_non_ieeg(self.ch_names)
         self.data = self.data[:,~self.nonieeg]
         self.ch_names = self.ch_names[~self.nonieeg]
@@ -389,8 +396,7 @@ class iEEGData:
         """
         Find and remove bad channels.
         """
-        self._rev_data = self.data
-        self._rev_chs = self.ch_names
+        self.record()
         self.bad, self.reject_details = tools.identify_bad_chs(self.data,self.fs)
         self.data = self.data[:,~self.bad]
         self.ch_names = self.ch_names[~self.bad]
@@ -404,7 +410,7 @@ class iEEGData:
             low_freq (Number, optional): Lower filtering frequency threshold. Defaults to 1.
             high_freq (Number, optional): Higher filtering frequency threshold. Defaults to 120.
         """
-        self._rev_data = self.data
+        self.record()
         self.data = tools.bandpass_filter(self.data,self.fs,low_freq,high_freq)
         self.history.append('bandpass_filter')
 
@@ -416,7 +422,7 @@ class iEEGData:
         Args:
             notch_freq (Number, optional): Notch filtering frequency. Defaults to 60.
         """
-        self._rev_data = self.data
+        self.record()
         self.data = tools.notch_filter(self.data,self.fs,notch_freq)
         self.history.append('notch_filter')
     
@@ -430,7 +436,7 @@ class iEEGData:
             high_freq (Number, optional): Higher filtering frequency threshold. Defaults to 120.
             notch_freq (Number, optional): Notch filtering frequency. Defaults to 60.
         """
-        self._rev_data = self.data
+        self.record()
         self.data = tools.bandpass_filter(self.data,self.fs,low_freq,high_freq)
         self.data = tools.notch_filter(self.data,self.fs,notch_freq)
         self.history.append('filter')
@@ -439,12 +445,7 @@ class iEEGData:
         """
         Perform Common Average Reference (CAR) on the input iEEG data.
         """
-        self._rev_data = self.data.copy()
-        self._rev_chs = self.ch_names.copy()
-        if self.ref_chnames is not None:
-            self._rev_refchs = self.ref_chnames.copy()
-        else:
-            self._rev_refchs = self.ref_chnames
+        self.record()
         self.data, self.ref_chnames = tools.car(self.data, self.ch_names)
         self.history.append('car')
 
@@ -452,12 +453,7 @@ class iEEGData:
         """
         Perform Bipolar Re-referencing (BR) on the input iEEG data.
         """
-        self._rev_data = self.data.copy()
-        self._rev_chs = self.ch_names.copy()
-        if self.ref_chnames is not None:
-            self._rev_refchs = self.ref_chnames.copy()
-        else:
-            self._rev_refchs = self.ref_chnames
+        self.record()
         self.data, self.ref_chnames = tools.bipolar(self.data, self.ch_names)
         inds = np.where(self.ref_chnames=='-')[0]
         self.data = np.delete(self.data, inds, axis=1)
@@ -487,12 +483,7 @@ class iEEGData:
             if not hasattr(self, 'locs'):
                 raise Exception('Please load electrodes locs first.\nLocs can be loaded through: data.load_locs(filename).\n')
             
-        self._rev_data = self.data.copy()
-        self._rev_chs = self.ch_names.copy()
-        if self.ref_chnames is not None:
-            self._rev_refchs = self.ref_chnames.copy()
-        else:
-            self._rev_refchs = self.ref_chnames
+        self.record()
         self.data, self.ref_chnames = tools.laplacian(self.data, self.ch_names, self.locs, radius)
         inds = np.where(self.ref_chnames=='-')[0]
         self.data = np.delete(self.data, inds, axis=1)
@@ -516,63 +507,58 @@ class iEEGData:
                 Default is 20.
         """
         assert ref in ['car','bipolar','laplacian'],"CNTtools:invalidRerefMethod"
-        self._rev_data = self.data.copy()
-        self._rev_chs = self.ch_names.copy()
-        if self.ref_chnames is not None:
-            self._rev_refchs = self.ref_chnames.copy()
-        else:
-            self._rev_refchs = self.ref_chnames
-        if hasattr(self,'ref_chnames'):
-            self._rev_refchs = self.ref_chnames
+        self.record()
         if ref == 'car':
             self.data, self.ref_chnames = tools.car(self.data, self.ch_names)
         elif ref == 'bipolar':
             self.data, self.ref_chnames = tools.bipolar(self.data, self.ch_names)
             inds = np.where(self.ref_chnames=='-')[0]
-            self.data = self.data[:,~inds]
-            self.ch_names = self.ch_names[~inds]
-            self.ref_chnames = self.ref_chnames[~inds]
+            self.data = np.delete(self.data, inds, axis=1)
+            self.ch_names = np.delete(self.ch_names, inds)
+            self.ref_chnames = np.delete(self.ref_chnames, inds)
         elif ref == 'laplacian':
             assert isinstance(locs,str) | hasattr(self, 'locs'), 'CNTtools:Please load electrodes locs first.\nLocs can be loaded through: data.load_locs(filename).\n'
             if isinstance(locs,str):
                 self.load_locs(locs)
-            self._rev_data = self.data
             self.data, self.ref_chnames = tools.laplacian(self.data, self.ch_names, self.locs, radius)
             inds = np.where(self.ref_chnames=='-')[0]
-            self.data = self.data[:,~inds]
-            self.ch_names = self.ch_names[~inds]
-            self.ref_chnames = self.ref_chnames[~inds] 
+            self.data = np.delete(self.data, inds, axis=1)
+            self.ch_names = np.delete(self.ch_names, inds)
+            self.ref_chnames = np.delete(self.ref_chnames, inds)
         self.history.append('reref-'+ref)  
 
     def pre_whiten(self):
         """
         Perform pre-whitening on iEEG data.
         """
-        self._rev_data = self.data
-        self._rev_chs = self.ch_names
+        self.record()
         self.data = tools.pre_whiten(self.data)
         self.history.append('pre_whiten') 
 
-    def bandpower(self, band:list, window:Number = None, relative:bool = False):
+    def bandpower(self, band, window:Number = None, relative:bool = False):
         """
         Compute the average power of the signal x in a specific frequency band.
 
         Parameters
         ----------
-        data : 1d-array or 2d-array
-            Input signal in the time-domain of shape samples by channels.
-        fs : Number
-            Sampling frequency of the data.
         band : list
             Lower and upper frequencies of the band of interest.
-        window_sec : Number
+        window : Number
             Length of each window in seconds.
             If None, window_sec = (1 / min(band)) * 2
         relative : boolean
             If True, return the relative power (= divided by the total power of the signal).
             If False (default), return the absolute power.
         """
-        self.power = tools.bandpower(self.data, self.fs, band, window, relative)
+# update according to matlab!!!
+        band = np.asarray(band)
+        assert band.shape[1] == 2,"CNTtools:invalidBandRange"
+        nband = band.shape[0]
+        self.power['freq'] = []
+        self.power['power'] = []
+        for i in range(nband):
+            self.power['freq'].append(band[i,:])
+            self.power['power'].append(tools.bandpower(self.data, self.fs, band[i,:], window, relative))
         self.history.append('bandpower')
         return self.power
         
@@ -616,7 +602,7 @@ class iEEGData:
 
     def cross_corr(self,win = True, win_size = 2):
         """
-        Calculate the Pearson correlation coefficients between channels in the iEEG data.
+        Calculate the cross correlation between channels in the iEEG data.
 
         Parameters:
         - win (bool, optional): If True, calculate windowed correlations; if False, calculate overall correlations. Default is True.
@@ -643,7 +629,7 @@ class iEEGData:
 
     def plv(self,win = True, win_size = 2):
         """
-        Calculate the Pearson correlation coefficients between channels in the iEEG data.
+        Calculate the phase-locking value (PLV) between channels in the iEEG data.
 
         Parameters:
         - win (bool, optional): If True, calculate windowed correlations; if False, calculate overall correlations. Default is True.
@@ -655,7 +641,7 @@ class iEEGData:
     
     def relative_entropy(self,win = True, win_size = 2):
         """
-        Calculate the Pearson correlation coefficients between channels in the iEEG data.
+        Calculate the relative entropy between channels in the iEEG data.
 
         Parameters:
         - win (bool, optional): If True, calculate windowed correlations; if False, calculate overall correlations. Default is True.
@@ -715,17 +701,59 @@ class iEEGData:
         fig = tools.plot_iEEG_data(self.data, self.ch_names, t)
         return fig
 
-    def conn_heatmap(self, method: str, band = 'broad', col:str = 'b'):
+    def conn_heatmap(self, method: str, band:str = 'broad', color = None, cmap = None):
         """
         Heatmap plot of connectivity matrix.
         """
+        # assert connectivity is calculated
+        assert method in self.conn,"CNTtools:invalidConnMethod, please calculate connectivity before plotting."
         bands = ['delta','theta','alpha','beta','gamma','ripple','broad']
+        assert band in bands,"CNTtools:invalidBand"
         ind = bands.index(band)
+        if ind < 6:
+            assert method in ['coh','plv','rela_entropy'],"CNTtools:invalidBand"
+        # import
+        import seaborn as sns
+        import matplotlib.pyplot as plt
+        # define cmap
+        col_dict = {'blue':'Blues','green':'Greens','orange':'Oranges',
+            'purple':'Purples','red':'Reds'}
+        if cmap is None:
+            if color is not None:
+                assert color in col_dict,"CNTtools:invalidColorCode:please provide custom colormap using cmap = yourcmp"
+                cmap = col_dict[color]
+            else:
+                cmap = 'Blues'
+                if method is 'pearson':
+                    cmap = plt.cm.get_cmap('RdBu')
+                    cmap = cmap.reversed()
+        # get data
         if np.ndim(self.conn[method]) == 3:
-            fig = tools.heatmap(self.conn[method][:,:,ind],self.ch_names)
+            data = self.conn[method][:,:,ind]
         else:
-            fig = tools.heatmap(self.conn[method],self.ch_names)
+            data = self.conn[method]
+        # figure
+        nchan = data.shape[1]
+        fig, ax = plt.subplots(figsize=(nchan/4,nchan*0.8/4))
+        if method is 'pearson':
+            sns.heatmap(data, vmin = -1, vmax = 1, cmap=cmap, square=True, annot=False, cbar=True, 
+                    xticklabels=self.ch_names, yticklabels=self.ch_names)
+        elif method is 'rela_entropy':
+            sns.heatmap(data, cmap=cmap, square=True, annot=False, cbar=True, 
+                    xticklabels=self.ch_names, yticklabels=self.ch_names)
+        else:
+            sns.heatmap(data, vmin = 0, vmax = 1, cmap=cmap, square=True, annot=False, cbar=True, 
+                    xticklabels=self.ch_names, yticklabels=self.ch_names)
+        plt.show()
         return fig
+
+    def record(self):
+        """
+        Record current status.
+        """
+        self._rev_data = self.data
+        self._rev_chs = self.ch_names
+        self._rev_refchs = self.ref_chnames
 
     def reverse(self):
         """
@@ -734,10 +762,7 @@ class iEEGData:
         if self.history:
             self.data = self._rev_data
             self.ch_names = self._rev_chs
-            if self._rev_refchs is not None:
-                self.ref_chnames = self._rev_refchs.copy()
-            else:
-                self.ref_chnames = self._rev_refchs
+            self.ref_chnames = self._rev_refchs
             self.history.append('reverse')
 
     def _pickle_save(self, filename):
@@ -749,7 +774,7 @@ class iEEGData:
             data = pickle.load(file)
         return data
 
-    def save(self,filename:str = None):
+    def save(self,filename:str = None,default_folder:bool = True):
         """
         Save data instance in pickle format. Defaultly save to data/user/filename_start_stop.
 
@@ -758,11 +783,8 @@ class iEEGData:
         """
         if filename is None:
             filename = self.filename+'_'+str(self.start)+'_'+str(self.stop)
-        if os.path.sep not in filename:
+        if default_folder:
             filename = os.path.join(self.user_data_dir,filename)
         if '.pkl' not in filename:
             filename += '.pkl'
         self._pickle_save(filename)
-
-    # add save plot
-    # add change color of plot

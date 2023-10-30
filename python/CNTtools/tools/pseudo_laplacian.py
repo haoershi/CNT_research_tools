@@ -1,6 +1,6 @@
 import numpy as np
 import re
-from typing import Iterable, Tuple
+from beartype.typing import Iterable, Tuple
 
 def pseudo_laplacian(values: np.ndarray, chLabels: Iterable[str], soft: bool = True, softThres: int = 1) -> Tuple[np.ndarray, np.ndarray]:
     """

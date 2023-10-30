@@ -1,6 +1,6 @@
 import numpy as np
 from beartype import beartype
-from typing import Iterable,Tuple
+from beartype.typing import Iterable,Tuple
 
 
 @beartype

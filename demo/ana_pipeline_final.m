@@ -40,101 +40,86 @@ addpath(genpath(['..',filesep,'matlab'])); % this should add analysis and matlab
 % initialize params
 global params
 % 🟡ref
-allRefMethods = {'car','bipolar','laplacian'}; 
-allRefSymbols = {'CAR','BR','LAPR'};
-allRefNames = {'Common average re-referencing', 'Bipolar re-referencing','Laplacian re-referencing'};
-params.refMap = containers.Map(allRefMethods, {@car, ...
-                                        @bipolar, ...
-                                        @laplacian});
-allRefCols = hex2rgb({'#51b8bd','#de7862','#63804f'});
+ref = struct('method',{'car';'bipolar';'laplacian'},...
+            'symbol',{'CAR';'BR';'LAPR'},...
+            'name',{'Common average re-referencing'; 'Bipolar re-referencing';'Laplacian re-referencing'}, ...
+            'col', mat2cell(hex2rgb({'#51b8bd','#de7862','#63804f'}),ones(3, 1)));
+
 ifRef = logical([1, 1, 0]); % <- make change here
-params.refMethods = allRefMethods(ifRef);
-params.refSymbols = allRefSymbols(ifRef);
-params.refNames = allRefNames(ifRef);
+params.ref = ref(ifRef);
 params.nRef = length(find(ifRef));
-params.refCols = allRefCols(ifRef,:);
-clear allRefMethods allRefSymbols allRefNames allRefCols ifRef
 % 🟡conn
-allConnMeasures = {'pearson','squaredPearson','crossCorr','coh','plv','relaEntropy'};
-allConnSymbols = {'Pearson','SquareP','CrossCorr','COH','PLV','RE'};
-allConnMeasureNames = {'Pearson','Squared Pearson','Cross Corr','Coherence','PLV','Relative Entropy'};
-params.connMap = containers.Map(allConnMeasures, {@new_pearson_calc, ...
-                                           @new_pearson_calc, ...
-                                           @cross_correlation, ...
-                                           @faster_coherence_calc, ...
-                                           @plv_calc, ...
-                                           @relative_entropy});
-allConnCols = hex2rgb({'#B4CE99','#789264','#506D31',...
-    '#E59595','#A5474E','#3C5488'});
+conn = struct('method',{'pearson';'squared_pearson';'cross_corr';'coh';'plv';'rela_entropy'},...
+              'symbol',{'Pearson';'SquareP';'CrossCorr';'COH';'PLV';'RE'}, ...
+              'name',{'Pearson';'Squared Pearson';'Cross Corr';'Coherence';'PLV';'Relative Entropy'},...
+              'col',mat2cell(hex2rgb({'#B4CE99','#789264','#506D31','#E59595','#A5474E','#3C5488'}),ones(6, 1)), ...
+              'numFeat',{1;1;1;7;7;7});
 ifConn = logical([1, 1, 1, 1, 1, 1]); % <- make change here
-params.connMeasures = allConnMeasures(ifConn);
-params.connSymbols = allConnSymbols(ifConn);
-params.connMeasureNames = allConnMeasureNames(ifConn);
+params.conn = conn(ifConn);
 params.nConn = length(find(ifConn));
-params.connCols = allConnCols(ifConn,:);
-numFeats = [1,1,1,7,7,7];
-params.numFeats = numFeats(ifConn);
-params.nMethod = params.nRef*sum(params.numFeats);
-clear allConnMeasures allConnSymbols allConnMeasureNames allConnCols ifConn numFeats
+params.nFeats = sum([params.conn.numFeat]);
+params.nMethod = params.nRef*params.nFeats;
 % 🟡freq
-params.freqBands = {'\delta','\theta','\alpha','\beta','\gamma','Ripple','Broad'};
-params.freqBandNames = {'Delta','Theta','Alpha','Beta','Gamma','Ripple','Broad'};
-params.nFreq = length(params.freqBands);
+params.freq = struct('symbol',{'\delta';'\theta';'\alpha';'\beta';'\gamma';'Ripple';'Broad'}, ...
+                     'name', {'Delta';'Theta';'Alpha';'Beta';'Gamma';'Ripple';'Broad'});
+params.nFreq = length(params.freq);
+stop_inds = cumsum([params.conn.numFeat]);
+start_inds = [0,stop_inds(1:end-1)]+1;
+params.conn = arrayfun(@(s, ind) setfield(s, 'start_ind', ind), params.conn, start_inds');
+params.conn = arrayfun(@(s, ind) setfield(s, 'stop_ind', ind), params.conn, stop_inds');
+
 
 % build method list
 longConnNames = {};shortConnNames = {};
 for i = 1:params.nConn
-    if params.numFeats(i) == 1
-        longConnNames = [longConnNames, params.connMeasureNames(i)];
-        shortConnNames = [shortConnNames, params.connSymbols(i)];
-    elseif params.numFeats(i) == params.nFreq
-        tmpShort = strcat(params.connSymbols(i),{'-'},params.freqBandNames);
-        tmpLong = strcat(params.connMeasureNames(i),{'-'},params.freqBandNames);
+    if params.conn(i).numFeat == 1
+        longConnNames = [longConnNames, params.conn(i).name];
+        shortConnNames = [shortConnNames, params.conn(i).symbol];
+    elseif params.conn(i).numFeat == params.nFreq
+        tmpShort = strcat(params.conn(i).symbol,{'-'},{params.freq.name});
+        tmpLong = strcat(params.conn(i).name,{'-'},{params.freq.name});
         longConnNames = [longConnNames, tmpLong];
         shortConnNames = [shortConnNames, tmpShort];
     end
 end
 shortNames = [];longNames = [];
 for i = 1:params.nRef
-    shortNames = [shortNames,strcat(params.refSymbols{i},'-',shortConnNames)];
-    longNames = [longNames,strcat(params.refNames{i},'-',longConnNames)];
+    shortNames = [shortNames,strcat(params.ref(i).symbol,'-',shortConnNames)];
+    longNames = [longNames,strcat(params.ref(i).name,'-',longConnNames)];
 end
 params.shortList = shortNames;
 params.longList = longNames;
-clear longConnNames shortConnNames tmpShort tmpLong shortNames longNames
 
 % 🟡num segments
 params.nSeg = 5; % <- make change here
 % 🟡dataset
 allDataset = {'HUP','MUSC'};
-params.dataset = 'HUP'; % <- make change here
+params.dataset = 'MUSC'; % <- make change here
 if exist(params.dataset,'dir') == 0
     mkdir(params.dataset);
 end
 params.chans_to_use = 'LR'; % <- make change here, options gw, gray, white, LR
-clear allDataset
 
 % print some basic characteristics
 fprintf('There are:\n');
 fprintf('%d Re-ref methods ✖ %d Connectivity Mesures\n',params.nRef,params.nConn)
 fprintf('Due to calculation over different frequency bands,\n')
-fprintf('The %d Connectivit Measures translates to %d total methods\n',params.nConn,sum(params.numFeats))
+fprintf('The %d Connectivit Measures translates to %d total methods\n',params.nConn,params.nFeats)
 
 % 🟡paths
 global paths
-paths.resultDir = strcat(params.dataset,filesep,params.chans_to_use);
-paths.rawPath = strcat(paths.resultDir,filesep,'raw');
-paths.resultPath = strcat(paths.resultDir,filesep,'result');
-paths.dataPath = strcat(paths.resultDir,filesep,'data');
-paths.figPath = strcat(paths.resultDir,filesep,'figs');
-paths.MLPath = strcat(paths.resultDir,filesep,'ML');
+paths.resultDir = fullfile(params.dataset,params.chans_to_use);
+paths.rawPath = fullfile(paths.resultDir,'raw');
+paths.resultPath = fullfile(paths.resultDir,'result');
+paths.dataPath = fullfile(paths.resultDir,'data');
+paths.figPath = fullfile(paths.resultDir,'figs');
+paths.MLPath = fullfile(paths.resultDir,'ML');
 for path = struct2cell(paths)'
     if exist(path{1},'dir') == 0
         mkdir(path{1});
     end
 end
 addpath(genpath(params.dataset));
-clear path
 
 % Dataset processing
 % Create a patientList file containing selected patients, if not already
@@ -145,9 +130,9 @@ params.force_download = false;
 % Set to true if allow use of downloaded data
 params.use_exist_data = true;
 
-if exist(strcat(paths.resultDir,filesep,'patientList.mat'),'file') == 2
+if exist(fullfile(paths.resultDir,'patientList.mat'),'file') == 2
     % indicates have run before
-    load(strcat(paths.resultDir,filesep,'patientList.mat'));
+    load(fullfile(paths.resultDir,'patientList.mat'));
     numFile = length(patientList);
 else
     if exist(strcat('meta',filesep,params.dataset,'_subMeta.mat'),'file') ~= 2
@@ -177,7 +162,7 @@ params.darkCols = hex2rgb({'#3c5488','#a5474e','#367068'}); % blue, red, green
 params.lightCols = hex2rgb({'#51b8bd','#de7862','#63804f'});
 params.font = 'Calibri';
 params.fontsize = 16;
-
+clearvars -except patientList numFile params paths 
 %% 1 | Download Data ⬇️
 % This part downloads data clips from the specified dataset and 
 % finish initial pre-processing, including bad-channel rejection 
@@ -189,7 +174,9 @@ if params.force_download
 end
 keepPatient = zeros(numFile,1);
 patients = {patientList.patient};
-if length(dir(paths.rawPath)) <= 2 || params.force_download
+session = iEEGPreprocess();
+session.login();
+if length(dir(paths.rawPath)) < numFile + 2 || params.force_download
     bar = waitbar(0, 'Processing...');
     for i = 1:numFile 
         waitbar(i/numFile, bar, sprintf('Processing %d of %d...', i, numFile));
@@ -203,10 +190,10 @@ if length(dir(paths.rawPath)) <= 2 || params.force_download
                 fileInds = find(cellfun(@(x) strcmp(x,patient),patients));
                 nFile = length(fileInds);
                 for k = 1:nFile
-                    [data,labels,fs,keepPatient(fileInds(k)),times] = preprocess5(patientList(fileInds(k)),params.chans_to_use);
+                    [data,keepPatient(fileInds(k)),times] = preprocess(session, patientList(fileInds(k)));
                     if keepPatient(fileInds(k)) ~= 0
                         patientList(fileInds(k)).time = times;
-                        save(strcat(paths.rawPath,filesep,patient,'.mat'),'data','labels','fs','times')
+                        save(strcat(paths.rawPath,filesep,patient,'.mat'),'data','times')
                         break
                     end
                 end
@@ -224,7 +211,7 @@ if length(dir(paths.rawPath)) <= 2 || params.force_download
     fprintf('There are %d unique patients included\n',numFile);
 else
     fprintf('Data already downloaded\n');
-    fprintf('Set force download to true to redownload')
+    fprintf('Set force download to true to redownload\n')
 end
 clearvars -except numFile patientList params paths 
 %% 2 | Re-ref and Calculate Connectivity 🔣 
@@ -236,63 +223,56 @@ tw = 2; % time windown in sec
 bar = waitbar(0, 'Processing...');
 for i = 1:numFile
     waitbar(i/numFile, bar, sprintf('Processing %d of %d...', i, numFile));
-    filename = strcat(paths.rawPath,filesep,'',patientList(i).patient,'.mat');
+    filename = strcat(paths.rawPath,filesep,patientList(i).patient,'.mat');
     if exist(filename,'file')
         load(filename)
     end
     data_full = data;
-    label_full = labels;
     for n = 1:params.nSeg
         data = data_full{n};
-        labels = label_full{n};
         % additional step to select only gray/white electrodes
         if strcmp('gray',params.chans_to_use) || strcmp('white',params.chans_to_use)
-            ind = ismember(labels,clean_labels(eval(['patientList(i).chan_',params.chans_to_use])));
-            data = data(:,ind);
-            labels = labels(ind);
+            ind = ismember(data.ch_names,clean_labels(eval(['patientList(i).chan_',params.chans_to_use])));
+            data.data = data.data(:,ind);
+            data.ch_names = data.ch_names(ind);
         end
         % end of additional step
-        nchan = size(data,2);
+        nchan = size(data.data,2);
         if strcmp('LR',params.chans_to_use)
-            results = NaN(params.nRef,sum(params.numFeats),36,36,2);
+            results = NaN(params.nRef,params.nFeats,36,36,2);
         else
-            results = NaN(params.nRef,sum(params.numFeats),nchan,nchan);
+            results = NaN(params.nRef,params.nFeats,nchan,nchan);
         end
         for j = 1:params.nRef
-            func = params.refMap(params.refMethods{j});
-            [values,newlabels] = func(data,labels);
-            ind = ~cellfun(@(x) strcmp(x,'-'),newlabels);
-            newlabels = cellfun(@(x) x(1:regexp(x,'-')-1),newlabels,'UniformOutput',false);
+            chs = data.ch_names;
+            data.reref(params.ref(j).method);
+            ind = ismember(chs,data.ch_names);
             if strcmp('LR',params.chans_to_use)
-                newlabels = newlabels(ind);
-                values = values(:,ind);
-                half = size(values,2)/2;
-                toFill = get_ind(newlabels(1:half));
-                leftData = values(:,1:half);
-                rightData = values(:,half+1:end);
+                [leftData,rightData] = split_data(data);
+                toFill = get_ind(leftData.ch_names);
+                leftData.connectivity({params.conn.method});
+                rightData.connectivity({params.conn.method});
                 for k = 1:params.nConn
-                    func = params.connMap(params.connMeasures{k});
-                    out = NaN(36,36,params.numFeats(k),2);
-                    out(toFill,toFill,:,1) = func(leftData,fs,tw,do_tw);
-                    out(toFill,toFill,:,2) = func(rightData,fs,tw,do_tw);
-                    results(j,sum(params.numFeats(1:k-1))+1:sum(params.numFeats(1:k-1))+params.numFeats(k),:,:,:) = permute(out,[3,1,2,4]);
+                    out = NaN(36,36,params.conn(k).numFeat,2);
+                    out(toFill,toFill,:,1) = leftData.conn.(params.conn(k).method);
+                    out(toFill,toFill,:,2) = rightData.conn.(params.conn(k).method);
+                    results(j,params.conn(k).start_ind:params.conn(k).stop_ind,:,:,:) = permute(out,[3,1,2,4]);
                 end
                 tmp = false(36,1);
                 tmp(toFill) = true;
                 full_ind{j} = tmp;
             else
                 toFill = find(ind);
-                values = values(:,toFill);
+                data.connectivity({params.conn.method});
                 for k = 1:params.nConn
-                    func = params.connMap(params.connMeasures{k});
-                    out = NaN(nchan,nchan,params.numFeats(k));
-                    out(toFill,toFill,:) = func(values,fs,tw,do_tw);
-                    results(j,sum(params.numFeats(1:k-1))+1:sum(params.numFeats(1:k-1))+params.numFeats(k),:,:) = permute(out,[3,1,2]);
+                    out = NaN(nchan,nchan,params.conn(k).numFeat);
+                    out(toFill,toFill,:) = data.conn.(params.conn(k).method);
+                    results(j,params.conn(k).start_ind:params.conn(k).stop_ind,:,:) = permute(out,[3,1,2]);
                 end
                 full_ind{j} = ind;
             end
         end
-        save(strcat(paths.resultPath,filesep,'',patientList(i).patient,'_',num2str(n),'.mat'),'results','full_ind');
+        save(strcat(paths.resultPath,filesep,patientList(i).patient,'_',num2str(n),'.mat'),'results','full_ind');
     end
 end
 close(bar);
@@ -387,7 +367,7 @@ plot_clustergram(squeeze(mean(nodeCorr,1,'omitnan')),'Nodal','abs');
 % tsne plot
 tsne_plot(networkCorr,'abs');
 
-if ismember('RE',params.connSymbols)
+if ismember('RE',{params.conn.symbol})
     % load results
     filelist = dir(paths.resultPath);
     isdir = [filelist.isdir];
@@ -488,26 +468,26 @@ cfg.mix = [cfg.mix,ones(params.num_chans,1)];
 cfg.delay = zeros(params.num_chans,params.num_chans+1);
 data2 = ft_connectivitysimulation(cfg); % machine reference data
 % re-reference
-labels = strcat({'LA'},string(num2cell([1:params.num_chans]))); % fake labels 
+labels = cellstr(strcat({'LA'},string(num2cell([1:params.num_chans]))))'; % fake labels 
 for i = 1:params.nRef
     data1(i+1) = data1(1);
     data2(i+1) = data2(1);
 end
-for j = 1:params.nRef
-    func = params.refMap(params.refMethods{j});
-    for i = 1:params.num_trials
-        data = data1(1).trial{1,i}';
-        [values,newlabels] = func(data,labels);
-        ind = ~cellfun(@(x) strcmp(x,'-'),newlabels);
-        newlabels = cellfun(@(x) x(1:regexp(x,'-')-1),newlabels,'UniformOutput',false);
-        newlabels = newlabels(ind);
-        data1(j+1).trial{1,i} = values(:,ind)';
-        data = data2(1).trial{1,i}';
-        [values,~] = func(data,labels);
-        data2(j+1).trial{1,i} = values(:,ind)';
+for i = 1:params.num_trials
+    data = data1(1).trial{1,i}';
+    dataobj = iEEGData('data1',1,1+cfg.triallength,[],[],data,cfg.fsample,labels);
+    data = data2(1).trial{1,i}';
+    dataobj2 = iEEGData('data2',1,1+cfg.triallength,[],[],data,cfg.fsample,labels);
+    for j = 1:params.nRef
+        dataobj.reref(params.ref(j).method);
+        data1(j+1).trial{1,i} = dataobj.data';
+        data1(j+1).label = dataobj.ch_names;
+        dataobj.reverse();
+        dataobj2.reref(params.ref(j).method);
+        data2(j+1).trial{1,i} = dataobj2.data';
+        data2(j+1).label = dataobj2.ch_names;
+        dataobj2.reverse();
     end
-    data1(j+1).label = newlabels;
-    data2(j+1).label = newlabels;
 end
 save(strcat(paths.dataPath,filesep,'spurcorrdata_',params.condition,'.mat'),'data1','data2');
 % analysis
@@ -540,11 +520,11 @@ for i = 1:params.nRef+1
 end
 
 % Customize the appearance of the heatmap
-white = [1,1,1]; red = params.refCols(2,:);
+white = [1,1,1]; red = params.ref(2).col;
 colors = [white;red];
 positions = [0, 1];
 mycolormap = interp1(positions, colors, linspace(0, 1, 256), 'pchip');
-titles = ['Machine reference',params.refSymbols];
+titles = ['Machine reference',{params.ref.symbol}];
 % without recording ref
 figure('Position',[0 0 1300 300]);
 for i = 1:params.nRef+1
@@ -569,7 +549,7 @@ exportgraphics(gcf, strcat(paths.figPath,filesep,'spurcorr2_',params.condition,'
 saveas(gcf,strcat(paths.figPath,filesep,'spurcorr2_',params.condition,'.svg'))
 close all
 % average plot
-cols = [hex2rgb('#63804f');params.refCols];
+cols = [hex2rgb('#63804f');cell2mat({params.ref.col}')];
 mycolormap = [reshape(cols,[1,params.nRef+1,3]);
               reshape(cols,[1,params.nRef+1,3])];
 data = []; error = [];
@@ -686,7 +666,7 @@ end
 labels = cellstr(num2str(params.perc'*100,'%.0f%%'))';
 % SPLIT BY REF
 % plot
-ref = reshape(permReliability,[[],sum(params.numFeats),params.nRef,params.nPerc]);
+ref = reshape(permReliability,[size(permReliability,1),params.nFeats,params.nRef,params.nPerc]);
 ref = squeeze(mean(ref,2,'omitnan'));
 boxdata = {};
 for i = 1:params.nRef
@@ -700,7 +680,7 @@ close all
 % box plot
 groupCenters = @(nGroups,nMembers,interGroupSpace) ...
     nGroups/2+.5 : nGroups+interGroupSpace : (nGroups+interGroupSpace)*nMembers-1;
-col = brighten(params.refCols,0.2);
+col = brighten(cell2mat({params.ref.col}'),0.2);
 fig = figure('Position',[0,0,800,400]);
 hold on
 b = boxplotGroup(boxdata,'primaryLabels',repmat({''}, params.nRef, 1), ...
@@ -720,15 +700,15 @@ close all
 method = [];
 boxdata = {};
 for i = 1:params.nConn
-    tmp = permReliability(:,sum(params.numFeats(1:i-1))+1:sum(params.numFeats(1:i)),:);
-    tmp = (tmp + permReliability(:,sum(params.numFeats(1:i-1))+1+sum(params.numFeats):sum(params.numFeats(1:i))+sum(params.numFeats),:))/2;
+    tmp = permReliability(:,params.conn(i).start_ind:params.conn(i).stop_ind,:);
+    tmp = (tmp + permReliability(:,params.conn(i).start_ind+params.nFeats:params.conn(i).stop_ind+params.nFeats,:))/2;
     method(:,i,:) = mean(tmp,2,'omitnan');
     boxdata{i} = squeeze(method(:,i,:));
 end
 figure('Position',[0,0,800,400])
 hold on
 b = boxplotGroup(boxdata,'primaryLabels',repmat({''}, params.nConn, 1), ...
-    'Colors',params.connCols,'GroupType','betweenGroups', ...
+    'Colors',cell2mat({params.conn.col}'),'GroupType','betweenGroups', ...
     'PlotStyle','traditional','BoxStyle','outline', ...
     'Symbol','o','Widths',0.7);
 title('Connectivity Methods','FontSize',16,'FontWeight','bold')
@@ -742,18 +722,19 @@ saveas(gcf,strcat(paths.figPath,filesep,'robustMethod.svg'))
 close all
 % SPlit by freq
 ini = [];
+numFeats = [params.conn.numFeat];
 for i = 1:params.nConn
-    if params.numFeats(i) == 1
+    if params.conn(i).numFeat == 1
         continue
     else
-        ini = [ini, sum(params.numFeats(1:i-1))];
+        ini = [ini, sum(numFeats(1:i-1))];
     end
 end
 freq = [];
 boxdata = {};
 for i = 1:params.nFreq
     tmp = permReliability(:,ini+i,:);
-    tmp = (tmp + permReliability(:,ini+i+sum(params.numFeats),:))/2;
+    tmp = (tmp + permReliability(:,ini+i+params.nFeats,:))/2;
     freq(:,i,:) = mean(tmp,2,'omitnan');
     boxdata{i} = squeeze(freq(:,i,:));
 end
@@ -778,66 +759,54 @@ saveas(gcf,strcat(paths.figPath,filesep,'robustFreq.svg'))
 close all
 % add test
 % ref
-refmean = squeeze(mean(ref,1,'omitnan'));
-methodmean = squeeze(mean(method,1,'omitnan'));
-freqmean = squeeze(mean(freq,1,'omitnan'));
+ref = struct('data',ref); method = struct('data',method); freq = struct('data',freq);
+ref.avg_data = squeeze(mean(ref.data,1,'omitnan'));
+method.avg_data = squeeze(mean(method.data,1,'omitnan'));
+freq.avg_data = squeeze(mean(freq.data,1,'omitnan'));
+% refmean = squeeze(mean(ref,1,'omitnan'));
+% methodmean = squeeze(mean(method,1,'omitnan'));
+% freqmean = squeeze(mean(freq,1,'omitnan'));
+ref.stats = {};method.stats = {};freq.stats = {};
+method.mult = {};freq.mult = {};
 for i = 1:params.nPerc
-    [p,h] = signrank(ref(:,1,i),ref(:,2,i));
-    statsRef{i} = p;
-    tmp = squeeze(method(:,:,i));
+    [p,h] = signrank(ref.data(:,1,i),ref.data(:,2,i));
+    ref.stats{i} = p;
+    tmp = squeeze(method.data(:,:,i));
     tmp(any(isnan(tmp),2),:) = [];
     [p,tbl,stats] = friedman(tmp);
-    statsMethod{i} = tbl;
-    [resultsMethod{i},estimatesMethod{i}] = multcompare(stats,'CType','dunn-sidak');
-    tmp = squeeze(freq(:,:,i));
+    method.stats{i} = tbl;
+    method.mult{i} = multcompare(stats,'CType','dunn-sidak');
+    tmp = squeeze(freq.data(:,:,i));
     tmp(any(isnan(tmp),2),:) = [];
     [p,tbl,stats] = friedman(tmp);
-    statsFreq{i} = tbl;
-    [resultsFreq{i},estimatesFreq{i}] = multcompare(stats,'CType','dunn-sidak');
+    freq.stats{i} = tbl;
+    freq.mult{i} = multcompare(stats,'CType','dunn-sidak');
 end
 close all
-for i = 1:size(ref,3)
-    tmp = resultsRef{i};
-    sigRef{i} = tmp(tmp(:,6)<=0.05,:);
-    tmp = resultsMethod{i};
-    sigMethod{i} = tmp(tmp(:,6)<=0.05,:);
-    tmp = resultsFreq{i};
-    sigFreq{i} = tmp(tmp(:,6)<=0.05,:);
-end
 
+method.sig = {};freq.sig = {};
 for n = 1:params.nPerc
-    effMat = NaN(params.nConn);
-    sigMat = NaN(params.nConn);
-    results = resultsMethod{1,n};
+    sig = NaN(params.nConn);
+    results = method.mult{1,n};
     for i = 1:params.nConn-1
         for j = i+1:params.nConn
-            effMat(i,j) = results(find(results(:,1) == i & results(:,2) == j),4);
-            sigMat(i,j) = results(find(results(:,1) == i & results(:,2) == j),6);
+            sig(i,j) = results(find(results(:,1) == i & results(:,2) == j),6);
         end
     end
-    effMatMethod{n} = effMat;
-    sigMatMethod{n} = sigMat;
+    method.sig{n} = sig;
 end
 
 for n = 1:params.nPerc
-    effMat = NaN(params.nFreq);
-    sigMat = NaN(params.nFreq);
-    results = resultsFreq{1,n};
+    sig = NaN(params.nFreq);
+    results = freq.mult{1,n};
     for i = 1:params.nFreq-1
         for j = i+1:params.nFreq
-            effMat(i,j) = results(find(results(:,1) == i & results(:,2) == j),4);
-            sigMat(i,j) = results(find(results(:,1) == i & results(:,2) == j),6);
+            sig(i,j) = results(find(results(:,1) == i & results(:,2) == j),6);
         end
     end
-    effMatFreq{n} = effMat;
-    sigMatFreq{n} = sigMat;
+    freq.sig{n} = sig;
 end
-save(strcat(paths.dataPath,filesep,'permstats.mat'),'resultsRef','resultsMethod','resultsFreq', ...
-                                        'statsRef','statsMethod','statsFreq', ...
-                                        'ref','method','freq', ...
-                                        'refmean','methodmean','freqmean', ...
-                                        'sigRef','sigMethod','sigFreq', ...
-                                        'sigMatMethod','sigMatFreq');
+save(strcat(paths.dataPath,filesep,'permstats.mat'),'ref','method','freq');
 clearvars -except numFile patientList params paths 
 %% 6 | SOZ lateralization 🧠
 % This part evaluate which method perform best in lateralizing epilepsy patients.

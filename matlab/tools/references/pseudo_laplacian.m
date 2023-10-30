@@ -67,7 +67,7 @@ for ch = 1:nchs
     label_non_num = elecs{ch};
 
     % get numerical portion
-    label_num = numbers(ch);
+    label_num = numbers{ch};
 
     if ~isnan(label_num)
         % see if there exists one higher

@@ -5,7 +5,7 @@ from beartype import beartype
 from numbers import Number
 
 @beartype
-def coherence(values:np.ndarray, fs:Number, win:bool=False, win_size:Number=2, freqs:np.ndarray=freqs, segment:Number=1, overlap:Number=0.5) -> np.ndarray:
+def coherence(values:np.ndarray, fs:Number, win:bool=False, win_size:Number=2, segment:Number=1, overlap:Number=0.5,freqs:np.ndarray=freqs) -> np.ndarray:
     """
     Calculates coherence for iEEG data with multiple channels.
 

@@ -17,7 +17,8 @@ function re = relative_entropy(values,fs,varargin)
 %   re = relative_entropy(values, fs, [], [], [8 12]);
 
 %% parse inputs
-defaults = {false,2,default_freqs}; % do_tw, tw, freqs, segment, overlap
+freqs = default_freqs;
+defaults = {false,2,freqs}; % do_tw, tw, freqs, segment, overlap
 
 for i = 1:length(varargin)
     if isempty(varargin{i})
@@ -70,7 +71,7 @@ if do_tw
         window_start(end) = [];
     end
     nw = length(window_start);
-    re = ones(nchs,nchs,nfreqs,nw);
+    re = nan(nchs,nchs,nfreqs,nw);
     
     % loop over window_start and frequences
     for t = 1:nw
@@ -79,7 +80,7 @@ if do_tw
             tmp_data = filtered_data(window_start(t):window_start(t)+iw,:,f);
         
             for ich = 1:nchs
-                for jch = ich+1:nchs
+                for jch = ich:nchs
                     h1 = (steve_histcounts(tmp_data(:,ich),10))'; % faster
                     h2 = (steve_histcounts(tmp_data(:,jch),10))';
                     smooth = 1e-10;
@@ -132,4 +133,12 @@ end
 % end
 %}
 
+end
+
+function c = steve_histcounts(x, n)
+    L = min(x);
+    U = max(x);
+    W = (U-L)/n;
+    i = min(n, 1+floor((x-L)/W));
+    c = accumarray(i, 1, [n 1]);
 end

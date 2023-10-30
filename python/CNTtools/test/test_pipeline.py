@@ -9,7 +9,7 @@ import os, sys
 # test_dir = os.path.dirname(os.path.abspath(__file__))
 # current_dir = os.path.dirname(test_dir)
 # sys.path.append(current_dir)
-from iEEGPreprocess import iEEGPreprocess
+from CNTtools.iEEGPreprocess import iEEGPreprocess
 #%%
 # unit test for get_iEEG_data function
 # write in a csv file all tests, col 0 filename, col 1 start in sec, col 2 stop in sec, col 4 electrodes
@@ -29,7 +29,7 @@ electrodes = electrodes.split(', ')
 # @pytest.mark.parametrize("filename,start,stop,electrodes", params)
 # def test_pipeline(filename, start, stop, electrodes):
 session = iEEGPreprocess()
-data = session.download_data(iEEG_filename,start_time,stop_time,select_elecs = electrodes)
+data = session.download_data(iEEG_filename,start_time,stop_time,select_elecs=electrodes)
 assert session.num_data == 1
 assert data.index == 0
 session.save('session1')
@@ -55,7 +55,7 @@ data.reverse()
 assert data.data.shape[1] == 6
 assert len(data.ref_chnames) == 6
 #%%
-data.laplacian('elec_locs.csv')
+data.laplacian('CNTtools/test/elec_locs.csv')
 assert hasattr(data,'locs')
 #%%
 f = data.plot()
@@ -65,7 +65,7 @@ data.line_length()
 assert not any(np.isnan(data.ll))
 #%%
 data.bandpower([[1,20],[25,50]])
-assert not any(np.isnan(data.power))
+assert not any(np.isnan(data.power['power'][0]))
 #%%
 data.pearson()
 data.squared_pearson()
@@ -78,6 +78,11 @@ data.relative_entropy()
 #%%
 assert set(data.conn.keys()) == {'pearson','plv','rela_entropy','squared_pearson','coh','cross_corr'}
 #%%
+fig = data.conn_heatmap('coh','delta')
+#%%
 data.save()
 session.load_data('')
 # %%
+session.list_data()
+session.remove_data([1,2,3])
+assert session.num_data == 1

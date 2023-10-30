@@ -16,7 +16,8 @@ function all_plv = plv(values,fs,varargin)
 %   all_plv = plv(values, fs, true, 2, [4 8; 8 12]);
 
 %% parse inputs
-defaults = {false,2,default_freqs}; % do_tw, tw, freqs, segment, overlap
+freqs = default_freqs;
+defaults = {false,2,freqs}; % do_tw, tw, freqs, segment, overlap
 
 for i = 1:length(varargin)
     if isempty(varargin{i})

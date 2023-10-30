@@ -1,7 +1,7 @@
 import numpy as np
 from beartype import beartype
 from numbers import Number
-from typing import Tuple
+from beartype.typing import Tuple
 
 
 def prctile(x, p):

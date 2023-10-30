@@ -20,7 +20,8 @@ function all_coherence = coherence(values,fs,varargin)
 
 
 %% parse inputs
-defaults = {false,2,default_freqs,1,0.5}; % do_tw, tw, freqs, segment, overlap
+freqs = default_freqs;
+defaults = {false,2,freqs,1,0.5}; % do_tw, tw, freqs, segment, overlap
 
 for i = 1:length(varargin)
     if isempty(varargin{i})
@@ -33,9 +34,9 @@ addRequired(p, 'values', @isnumeric);
 addRequired(p, 'fs', @isnumeric);
 addOptional(p, 'do_tw', defaults{1}, @(x) ismember(x,[0,1]));
 addOptional(p, 'tw', defaults{2}, @isnumeric);
-addOptional(p, 'freqs', defaults{3}, @isnumeric);
 addOptional(p, 'segment', defaults{4}, @isnumeric);
 addOptional(p, 'overlap', defaults{5}, @isnumeric);
+addOptional(p, 'freqs', defaults{3}, @isnumeric);
 
 parse(p, values, fs, varargin{:});
 

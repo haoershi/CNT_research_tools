@@ -17,6 +17,6 @@ function avg_pc = squared_pearson(values,fs,varargin)
 % correlations = squared_pearson(values, fs, true);
 % correlations = squared_pearson(values, fs, true, 3);
 
-avg_pc = pearson(values,fs,varargin);
+avg_pc = pearson(values,fs,varargin{:});
 avg_pc = avg_pc.^2;
 

@@ -1,5 +1,5 @@
 % Global settings of the CNT iEEG Pre-processing Toolkit
-
+global ROOT_DIR TEST_DIR DATA_DIR USER_DIR
 % Directories
 ROOT_DIR = fileparts(mfilename('fullpath'));
 TEST_DIR = fullfile(ROOT_DIR, 'test');
@@ -13,3 +13,4 @@ for i = 1:numel(DIRS)
         mkdir(DIRS{i});
     end
 end
+

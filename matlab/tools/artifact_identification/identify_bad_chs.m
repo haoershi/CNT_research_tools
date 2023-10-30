@@ -130,7 +130,7 @@ end
 %% Remove channels for whom the std is much larger than the baseline
 median_std = median(all_std,'omitnan');
 higher_std = chs(all_std > mult_std * median_std);
-bad_std = higher_std;
+bad_std = higher_std';
 bad_std(ismember(bad_std,bad)) = [];
 bad = ([bad;bad_std]);
 bad_bin = zeros(nchs,1);

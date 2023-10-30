@@ -1,7 +1,7 @@
 import re
 import numpy as np
 from beartype import beartype
-from typing import Union, Iterable
+from beartype.typing import Union, Iterable
 
 
 @beartype

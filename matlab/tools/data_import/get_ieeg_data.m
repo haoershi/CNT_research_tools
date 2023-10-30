@@ -47,7 +47,6 @@ stop = p.Results.stop;
 selecElecs = p.Results.selecElecs;
 ignoreElecs = p.Results.ignoreElecs;
 outputfile = p.Results.outputfile;
-
 % remove potential blanks/quotes
 fname = strip(fname);
 fname = strip(fname,'"');
@@ -64,12 +63,13 @@ while attempt < 100
         assert(~isempty(channelLabels),'CNTtools:emptyFile','No channels.');
         dura = session.data.rawChannels(1).get_tsdetails.getDuration/1e6;  % get duration info
         % test if time range valid
-        assert(times(2) > times(1),'CNTtools:invalidTimeRange','Stop before start.')
-        assert(times(1) >= 0 && times(2) <= dura, 'CNTtools:invalidTimeRange', 'Time outrange.')
-        [channelLabels,~,~] = clean_labels(channelLabels);
+        assert(stop > start,'CNTtools:invalidTimeRange','Stop before start.')
+        assert(start >= 0 && stop <= dura, 'CNTtools:invalidTimeRange', 'Time outrange.')
+        channelLabels = clean_labels(channelLabels);
         allChannelLabels = channelLabels;
         nchs = length(allChannelLabels);
         allChanInds = [1:nchs];
+        chanInds = allChanInds;
         if ~isempty(selecElecs)
             if ~iscell(selecElecs)
                 try
@@ -200,11 +200,10 @@ while attempt < 100
     end
 
 end
-end
 
 %% Delete session
 session.delete;
-clearvars -except data
+clearvars -except data outputfile
 if ~isempty(outputfile)
     save(outputfile,'data');
 end

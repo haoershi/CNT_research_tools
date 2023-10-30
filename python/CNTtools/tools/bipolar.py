@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import re
 from beartype import beartype
-from typing import Iterable,Tuple
+from beartype.typing import Iterable,Tuple
 from .clean_labels import clean_labels
 
 
