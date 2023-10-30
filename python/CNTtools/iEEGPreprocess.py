@@ -681,24 +681,31 @@ class iEEGData:
             self.conn['rela_entropy'] = tools.relative_entropy(self.data,self.fs,win = win,win_size = win_size)
     
     
-    def plot(self,t_data = None,t_axis = None):
+    def plot(self,time_range_data = None,t_axis = None,select = None):
         """
         Plot iEEG data for multiple channels over a specified time range.
 
         Parameters:
-        - t_data (list, optional): Time range for plotting the data. If not provided, the entire data range will be used.
-        - t_axis (list, optional): Time range for the x-axis of the plot. If not provided, the full range of the data will be used.
+        - time_range_data (list, optional): sample range within data segment to plot. e.g. 50-1000 of a 2000 sample data. 
+                                            If not provided, the entire data range will be used.
+        - t_axis (list, optional): Axis label range for the x-axis of the plot. 
 
         Returns:
         - fig (matplotlib.figure.Figure): The generated matplotlib Figure object.
         """
-        if t_data is None:
-            t_data = [0,self.data.shape[0]]
+        if time_range_data is None:
+            time_range_data = [0,self.data.shape[0]]
         if t_axis is None:
-            t_axis = [self.start,self.stop]
-        plot_data = self.data[t_data[0]:t_data[1],:]
+            t_axis = [self.start+(time_range_data[0]/self.fs),self.start+(time_range_data[1]/self.fs)]
+        plot_data = self.data[time_range_data[0]:time_range_data[1],:]
+        chs = self.ch_names
+        if select is not None:
+            assert np.max(select) < plot_data.shape[1],"CNTtools:invalidSelectChannels"
+            assert np.min(select) >= 0,"CNTtools:invalidSelectChannels"
+            plot_data = plot_data[:,select]
+            chs = chs[select]
         t = np.linspace(t_axis[0], t_axis[1], num=plot_data.shape[0])
-        fig = tools.plot_iEEG_data(self.data, self.ch_names, t)
+        fig = tools.plot_ieeg_data(plot_data, chs, t)
         return fig
 
     def conn_heatmap(self, method: str, band:str = 'broad', color = None, cmap = None):

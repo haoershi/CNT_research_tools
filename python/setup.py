@@ -1,5 +1,5 @@
 import setuptools
-from distutils.core import setup, Extension
+from distutils.core import setup
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -17,7 +17,9 @@ setup(
         "pytest-html",
     ],
     packages=setuptools.find_packages(),
-    include_package_data=True,
+    package_data={
+      'CNTtools': ['test/*.csv'],
+    },
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/haoershi/CNT_research_tools",

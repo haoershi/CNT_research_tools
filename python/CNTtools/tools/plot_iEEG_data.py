@@ -4,14 +4,14 @@ import numpy as np
 from beartype import beartype
 
 @beartype
-def plot_iEEG_data(data:np.ndarray, chs, t):
+def plot_ieeg_data(data:np.ndarray, chs, t):
     """
     Plot iEEG data for multiple channels over time.
 
     Parameters:
     - data (np.ndarray): 2D array representing iEEG data. Each column corresponds to a channel, and each row corresponds to a time point.
     - chs (list): List of channel names corresponding to the columns in the data array.
-    - t (list): List of time range to plot.
+    - t (list): linspace of time to plot
 
     Returns:
     - fig (matplotlib.figure.Figure): The generated matplotlib Figure object.
@@ -25,24 +25,27 @@ def plot_iEEG_data(data:np.ndarray, chs, t):
     plt.show()
     """
 
-    offset = 0
+
+    # offset = 0
+    nchan = data.shape[1]
+    medians = np.nanmedian(data,axis = 0)
+    up = np.nanmax(data,axis = 0) - medians
+    down = medians - np.nanmin(data,axis = 0)
+    percentile = 60
+    spacing = 2*np.percentile(np.concatenate([up,down]), percentile)
+    ticks = np.arange(0,spacing*(nchan-1)+1,spacing)
     fig, ax = plt.subplots(figsize=(15, 15))
     mpl.rcParams['axes.spines.right'] = False
     mpl.rcParams['axes.spines.top'] = False
-    mpl.rcParams['axes.spines.left'] = False
+    mpl.rcParams['axes.spines.left'] = True
 
-    for ich in range(data.shape[1]):
-        eeg = data[:, ich]
-        if np.any(~np.isnan(eeg)):
-            ax.plot(t, eeg - offset, 'k')
-            ax.text(t[-1] + 0.5, -offset + np.nanmedian(eeg), chs[ich], fontsize=10, va='center')
-            last_min = np.nanmin(eeg)
-
-        if ich < data.shape[1] - 1:
-            next_eeg = data[:, ich + 1]
-            if np.any(~np.isnan(next_eeg)) and not np.isnan(last_min):
-                offset = offset - (last_min - np.nanmax(next_eeg))
-
+    plt.plot(t, data - medians + ticks,'k')
+    plt.yticks(ticks, chs)
+    ax.spines['left'].set_visible(True)
+    plt.gca().set_xlim(t[0], plt.gca().get_xlim()[1])
+    plt.xlabel('Time')
+    plt.ylabel('Channels')
+    plt.grid(axis='x')
     # pass a plt.xlim that focuses around the center of the spike
     plt.show()
 

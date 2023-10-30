@@ -596,34 +596,32 @@ classdef iEEGData < matlab.mixin.Copyable & handle
             end
         end
 
-        function fig = plot(obj, varargin)%t_data, t_axis) % update
+        function fig = plot(obj, varargin)%time_range_data, t_axis,select) % update
             % Plot iEEG data for multiple channels over a specified time range.
             p = inputParser;
-            defaults = {true,2,1,0.5};
-            for i = 1:length(varargin)
-                if isempty(varargin{i})
-                    varargin{i} = defaults{i};
-                end
+            addOptional(p, 'time_range_data', [], @isnumeric);
+            addOptional(p, 't_axis', [], @isnumeric);
+            addOptional(p, 'select', [], @isnumeric);
+            parse(p, varargin{:});
+            time_range_data = p.Results.time_range_data;
+            t_axis = p.Results.t_axis;
+            select = p.Results.select;
+            if isempty(time_range_data)
+                time_range_data = [1,size(obj.data,1)];
             end
-            addRequired(p, 'methods', @(x) iscell(x) || ischar(x) || isstring(x));
-            addOptional(p, 'win', defaults{1}, @(x) ismember(x,[0,1]));
-            addOptional(p, 'win_size', defaults{2}, @isnumeric);
-            addOptional(p, 'segment', defaults{3}, @isnumeric);
-            addOptional(p, 'overlap', defaults{4}, @isnumeric);
-            parse(p, methods, varargin{:});
-            win = p.Results.win;
-            win_size = p.Results.win_size;
-            segment = p.Results.segment;
-            overlap = p.Results.overlap;
-            if nargin < 3
-                t_axis = [obj.start, obj.stop];
+            plot_data = obj.data(time_range_data(1):time_range_data(2),:);
+            if isempty(t_axis)
+                t_axis = [obj.start+time_range_data(1)/obj.fs,obj.start+time_range_data(2)/obj.fs];
             end
-            if nargin < 2 || isempty(t_data)
-                t_data = [0, size(obj.data, 1)];
+            chs = obj.ch_names;
+            if ~isempty(select)
+                assert(max(select) <= size(plot_data,2),"CNTtools:invalidSelectChannels");
+                assert(min(select) > 0,"CNTtools:invalidSelectChannels");
+                plot_data = plot_data(:,select);
+                chs = chs(select);
             end
-            plot_data = obj.data(t_data(1):t_data(2), :);
             t = linspace(t_axis(1), t_axis(2), numel(plot_data(:, 1)));
-            fig = tools.plot_iEEG_data(obj.data, obj.ch_names, t);
+            fig = plot_ieeg_data(obj.data, obj.ch_names, t);
         end
 
         function heatmap_settings(obj,varargin)
