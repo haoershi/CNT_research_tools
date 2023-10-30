@@ -28,7 +28,7 @@
 % * Fieldtrip (optional for section 4)
 
 %% set path
-filename = which('ana_pipeline_final.m');
+filename = which('ana_pipeline.m');
 [filedir, ~, ~] = fileparts(filename);
 cd(filedir);
 addpath(genpath('.')); % this should add analysis and matlab folder
@@ -174,19 +174,25 @@ if params.force_download
 end
 keepPatient = zeros(numFile,1);
 patients = {patientList.patient};
+filelist = dir(paths.rawPath);
+isdir = [filelist.isdir];
+filelist(isdir) = [];
 session = iEEGPreprocess();
 session.login();
-if length(dir(paths.rawPath)) < numFile + 2 || params.force_download
+if length(filelist) < numFile || params.force_download
     bar = waitbar(0, 'Processing...');
     for i = 1:numFile 
         waitbar(i/numFile, bar, sprintf('Processing %d of %d...', i, numFile));
         % skip the file if don't have file start time
+        if exists(strcat(paths.rawPath,filesep,patients{i},'.mat'),'file') == 2 && ~params.force_download
+            continue
+        end
         if isnan(patientList(i).ind_2pm) || isempty(eval(['patientList(i).chan_',params.chans_to_use]))
             continue
         else
             % start from the first file available
             if patientList(i).fileNo == 1
-                patient = patientList(i).patient;
+                patient = patients{i};
                 fileInds = find(cellfun(@(x) strcmp(x,patient),patients));
                 nFile = length(fileInds);
                 for k = 1:nFile
@@ -276,7 +282,7 @@ for i = 1:numFile
     end
 end
 close(bar);
-fprintf('Finished calculation\n');
+fprintf('Finished calculation.\n');
 clearvars -except numFile patientList params paths  
 %% 3 | Methods Similarity 🔍
 % This part evaluate which methods are more similar to each other

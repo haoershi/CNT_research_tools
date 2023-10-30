@@ -781,17 +781,27 @@ class iEEGData:
             data = pickle.load(file)
         return data
 
-    def save(self,filename:str = None,default_folder:bool = True):
+    def save(self,file:str = None,default_folder:bool = True):
         """
         Save data instance in pickle format. Defaultly save to data/user/filename_start_stop.
 
         Args:
-            filename (str, optional): filename to save file. Can be either a path, or a name without path specified.
+            file (str, optional): filename to save file. Can be either a path, or a fullpath with filename.
         """
-        if filename is None:
-            filename = self.filename+'_'+str(self.start)+'_'+str(self.stop)
-        if default_folder:
-            filename = os.path.join(self.user_data_dir,filename)
-        if '.pkl' not in filename:
-            filename += '.pkl'
-        self._pickle_save(filename)
+        filename = self.filename+'_'+str(self.start)+'_'+str(self.stop)+'.pkl'
+        if file is None:
+            # filename not provided, default filename & folder
+            file = self.user_data_dir
+            filename = os.path.join(file,filename)
+            self._pickle_save(filename)
+        else:
+            # when filename provided
+            if '.pkl' in file:
+                # with filename
+                if default_folder:
+                    filename = os.path.join(self.user_data_dir,filename)
+                self._pickle_save(filename)
+            else:
+                # folder specified
+                filename = os.path.join(file,filename)
+                self._pickle_save(filename)

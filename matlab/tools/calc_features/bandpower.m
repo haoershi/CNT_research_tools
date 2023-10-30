@@ -40,12 +40,12 @@ parse(p, data, fs, band, varargin{:});
 
 % Access parsed values
 data = p.Results.data;
-fs = p.Results.pwfile;
+fs = p.Results.fs;
 band = p.Results.band;
 win = p.Results.win;
 relative = p.Results.relative;
 
-low = band(i,1); high = band(i,2);
+low = band(1); high = band(2);
 if ~isnan(win)
     nperseg = win * fs;
 else

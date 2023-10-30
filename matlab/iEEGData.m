@@ -205,7 +205,7 @@ classdef iEEGData < matlab.mixin.Copyable & handle
             notch_freq = p.Results.notch_freq;
             obj.record();
             obj.data = bandpass_filter(obj.data, obj.fs, low_freq, high_freq);
-            obj.data = notchFilter(obj.data, obj.fs, notch_freq);
+            obj.data = notch_filter(obj.data, obj.fs, notch_freq);
             obj.history{end + 1} = 'filter';
         end
 
@@ -349,9 +349,9 @@ classdef iEEGData < matlab.mixin.Copyable & handle
             If True, return the relative power (= divided by the total power of the signal).
             If False (default), return the absolute power.
             %}
-            default_freqs;
+            freqs = default_freqs;
             p = inputParser;
-            defaults = {freqs,nan,False};
+            defaults = {freqs,nan,false};
             for i = 1:length(varargin)
                 if isempty(varargin{i})
                     varargin{i} = defaults{i};
@@ -359,8 +359,8 @@ classdef iEEGData < matlab.mixin.Copyable & handle
             end
             addOptional(p, 'band', defaults{1}, @(x) isnumeric(x) && ...
                 size(x,2) == 2 && all(x(:,1) < x(:,2)));
-            addOptional(p, 'window', defaults{2}, @(x) (isstring(x) || ischar(x)));
-            addOptional(p, 'relative', defaults{3}, @isnumeric);
+            addOptional(p, 'window', defaults{2}, @isnumeric);
+            addOptional(p, 'relative', defaults{3}, @(x) ismember(x,[0,1]));
             parse(p, varargin{:});
             band = p.Results.band;
             window = p.Results.window;
@@ -728,12 +728,12 @@ classdef iEEGData < matlab.mixin.Copyable & handle
             file = p.Results.file;
             default_folder = p.Results.default_folder;
             file = char(file);
+            [folder, name, ext] = fileparts(file);
+            if isempty(ext)
+                file = fullfile(file,defaults{1});
+            end
             if default_folder
                 file = fullfile(obj.user_data_dir, file);
-            end
-
-            if ~endsWith(file, '.mat')
-                file = strcat([file, '.mat']);
             end
 
             save(file,'obj');
