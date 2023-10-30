@@ -31,13 +31,14 @@ def plot_ieeg_data(data:np.ndarray, chs, t):
     medians = np.nanmedian(data,axis = 0)
     up = np.nanmax(data,axis = 0) - medians
     down = medians - np.nanmin(data,axis = 0)
-    percentile = 60
+    percentile = 80
     spacing = 2*np.percentile(np.concatenate([up,down]), percentile)
     ticks = np.arange(0,spacing*(nchan-1)+1,spacing)
     fig, ax = plt.subplots(figsize=(15, 15))
     mpl.rcParams['axes.spines.right'] = False
     mpl.rcParams['axes.spines.top'] = False
     mpl.rcParams['axes.spines.left'] = True
+    mpl.rcParams['font.size'] = 9
 
     plt.plot(t, data - medians + ticks,'k')
     plt.yticks(ticks, chs)

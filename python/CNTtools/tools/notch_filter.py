@@ -23,7 +23,7 @@ def notch_filter(data: np.ndarray, fs: Number, notch_freq:Number=60,order:int = 
     notch_filtered_values = notch_filter(values, fs, notch_freq=120, order=8)
     """
     # b, a = iirnotch(notch_freq, notch_freq / 2, fs=fs)
-    b, a = butter(order, [notch_freq-0.5,notch_freq+0.5], 'bandstop', fs)
+    b, a = butter(order, [notch_freq-2,notch_freq+2], 'bandstop', fs)
 
     y = filtfilt(b, a, data, axis=0)
 
