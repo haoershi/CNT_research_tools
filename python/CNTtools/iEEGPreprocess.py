@@ -742,7 +742,7 @@ class iEEGData:
         # figure
         nchan = data.shape[1]
         tmpfigsize = [nchan/4,nchan*0.8/4]
-        fig, ax = plt.subplots(figsize=(np.max(tmpfigsize[0],10),np.max(tmpfigsize[1],8)))
+        fig, ax = plt.subplots(figsize=(np.max([tmpfigsize[0],10]),np.max([tmpfigsize[1],8])))
         if method is 'pearson':
             sns.heatmap(data, vmin = -1, vmax = 1, cmap=cmap, square=True, annot=False, cbar=True, 
                     xticklabels=self.ch_names, yticklabels=self.ch_names)
