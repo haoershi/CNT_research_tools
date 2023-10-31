@@ -92,7 +92,7 @@ The toolbox includes the following functions:
 * Feature extraction
 * Connectivity calculation
 * Plotting and connectivity heatmap
-<img src="https://github.com/haoershi/CNT_research_tools/assets/116624350/dfefeb73-4fc0-48db-96ff-5fd823785f2c" width=50% height=50%>
+<img src="https://github.com/haoershi/CNT_research_tools/assets/116624350/2e28a994-71ef-4b31-b368-df081b367aa4" width=50% height=50%>
 
 ## Usage
 
