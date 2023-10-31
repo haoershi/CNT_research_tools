@@ -3,55 +3,42 @@ Toolkit for pre-processing of intracranial EEG data, and an interactive pipeline
 
 Toolkit available in Matlab and Python, compatible with iEEG.org
 
-## Installation
+## Python Installation
 
-### Get Started 
+**pip install**
 
-Download or clone the toolbox into a local folder via git, and switch to folder:
+```
+pip install git+https://github.com/penn-cnt/CNT_research_tools.git#subdirectory=python
+```
+
+Alternatively, download or clone the toolbox into a local folder via git, switch to folder, and pip install locally:
 ```
 git clone git@github.com:haoershi/CNT_research_tools.git
-cd CNT_research_tools
+cd CNT_research_tools/python
+pip install .
 ```
 
-### Python
+**Set Conda Environment**
 
-**Installation via Conda**
+An environment could be set through conda to reduce the likelihood of dependency conflicts and making it easier to set up.
 
 Dependencies: 
 * [anaconda](https://www.anaconda.com)
 
-
 Create a conda environment and activate:
 ```
-cd python
 conda env create -n ieegpy -f ieegpy.yml
 conda activate ieegpy
 ```
-
-**Login Configuration**
-
-The toolkit currently depends on ieeg.org.
-
-To access data, please register first on https://www.ieeg.org.
-
-Generate bin password file *_ieeglogin.bin through create_pwd_file function.
-
-In the _python_ folder, run in Python:
-```\python
-from tools import create_pwd_file
-create_pwd_file(username, password)
-```
-A password file named usr_ieeglogin.bin would be automatically created in the _python_ folder.
-
-Update config.json file to specify username and password file name.
 
 **Testing**
 
 Run pytest to ensure no running issues.
 (Getting data may not be tested currently)
+(Need update for the new system)
 
+## MATLAB Installation
 
-### MATLAB
 Dependencies: 
 * MATLAB >= R2021b
 * Signal Processing Toolbox
@@ -61,32 +48,35 @@ Toolboxes could be installed via Adds-Ons > Get Adds-Ons.
 
 Add folder _matlab_ in MATLAB working directory.
 ```\matlab
-addpath(genpath('matlab'));
+addpath(genpath('path/CNT_research_tools/matlab'));
 ```
 
-**Login Configuration**
+**Testing**
+
+Run unit tests to ensure no running issues:
+(Getting data may not be tested currently, need update to the current system)
+```
+runtests('matlab/test','IncludeSubfolders',true);
+```
+## Folder Structure
+
+During usage of toolkit, folders users and data would be created under the python/CNTtools or matlab folder to store user login information and data files, respectively.
+
+## Login Congiguration
 
 The toolkit currently depends on ieeg.org.
 
 To access data, please register first on https://www.ieeg.org.
 
-Generate bin password file *_ieeglogin.bin through create_pwd_file function.
+Running the toolkit requires input of username and password during login configuration.
 
-Run in MATLAB:
-```\matlab
-IEEGSession.createPwdFile('username', 'password');
 ```
-Save the password file in the _matlab_ folder with name 'usr_ieeglogin.bin'.
-
-Update config.json file to specify username and password file name.
-
-**Testing**
-
-Run unit tests to ensure no running issues:
-(Getting data may not be tested currently)
+session = iEEGPreprocess()
+session.login_config()
+# input of user information
 ```
-runtests('matlab/test','IncludeSubfolders',true);
-```
+
+This would generate password file *_ieeglogin.bin and config file *_config.json to in the CNTtools/user folder.
 
 ## Functions
 
@@ -100,6 +90,8 @@ The toolbox includes the following functions:
     * Laplacian Re-referencing (LR)
 * Pre-whitening
 * Feature extraction
+* Connectivity calculation
+* Plotting and connectivity heatmap
 <img src="https://github.com/haoershi/CNT_research_tools/assets/116624350/dfefeb73-4fc0-48db-96ff-5fd823785f2c" width=50% height=50%>
 
 ## Usage
