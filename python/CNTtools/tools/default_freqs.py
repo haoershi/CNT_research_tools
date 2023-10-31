@@ -11,12 +11,4 @@ freqs : ndarray
     bound of the frequency range. Sequence: delta, theta, alpha, beta,
     gamma, ripple, broadband.
 """
-freqs = np.array([
-        [0.5, 4],
-        [4, 8],
-        [8, 12],
-        [12, 30],
-        [30, 80],
-        [80, 250],
-        [0.5, 250]
-    ])
+freqs = np.array([[0.5, 4], [4, 8], [8, 12], [12, 30], [30, 80], [80, 250], [0.5, 250]])

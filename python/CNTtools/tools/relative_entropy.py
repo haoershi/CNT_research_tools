@@ -4,8 +4,15 @@ from .bandpass_filter import bandpass_filter
 from beartype import beartype
 from numbers import Number
 
+
 @beartype
-def relative_entropy(values:np.ndarray, fs:Number, win:bool=False, win_size:Number=2, freqs:np.ndarray=freqs):
+def relative_entropy(
+    values: np.ndarray,
+    fs: Number,
+    win: bool = False,
+    win_size: Number = 2,
+    freqs: np.ndarray = freqs,
+):
     """
     Calculates relative entropy for iEEG data.
 
@@ -19,7 +26,6 @@ def relative_entropy(values:np.ndarray, fs:Number, win:bool=False, win_size:Numb
     Returns:
     - re (numpy array): Relative entropy matrix where each element (i, j, k) represents the relative entropy bewin_sizeeen channel i and channel j at frequency range k.
     """
-
 
     nchs = values.shape[1]
     nfreqs = freqs.shape[0]
@@ -46,11 +52,11 @@ def relative_entropy(values:np.ndarray, fs:Number, win:bool=False, win_size:Numb
             window_start = window_start[:-1]
 
         nw = len(window_start)
-        re = np.nan*np.zeros((nchs, nchs, nfreqs, nw))
+        re = np.nan * np.zeros((nchs, nchs, nfreqs, nw))
 
         for t in range(nw):
             for f in range(nfreqs):
-                tmp_data = filtered_data[window_start[t]:window_start[t] + iw, :, f]
+                tmp_data = filtered_data[window_start[t] : window_start[t] + iw, :, f]
 
                 for ich in range(nchs):
                     for jch in range(ich, nchs):
@@ -69,7 +75,7 @@ def relative_entropy(values:np.ndarray, fs:Number, win:bool=False, win_size:Numb
         re = np.nanmean(re, axis=3)
 
     else:
-        re = np.nan*np.zeros((nchs, nchs, nfreqs))
+        re = np.nan * np.zeros((nchs, nchs, nfreqs))
 
         for f in range(nfreqs):
             tmp_data = filtered_data[:, :, f]

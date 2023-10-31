@@ -33,10 +33,17 @@ import importlib
 current_dir = os.path.dirname(__file__)
 
 # Get all Python files in the current directory
-module_files = [f[:-3] for f in os.listdir(current_dir) if f.endswith('.py') and f != '__init__.py']
+module_files = [
+    f[:-3] for f in os.listdir(current_dir) if f.endswith(".py") and f != "__init__.py"
+]
 
 # Import all classes from the module files
 for module_file in module_files:
-    module = importlib.import_module(f'.{module_file}', package=__name__)
-    globals().update({name: getattr(module, name) for name in dir(module) if callable(getattr(module, name))})
-
+    module = importlib.import_module(f".{module_file}", package=__name__)
+    globals().update(
+        {
+            name: getattr(module, name)
+            for name in dir(module)
+            if callable(getattr(module, name))
+        }
+    )

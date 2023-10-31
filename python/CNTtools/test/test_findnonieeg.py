@@ -7,27 +7,19 @@ This function provides a test case of pulling iEEG data
 #%%
 # Imports
 import pandas as pd
-import numpy as np
 import pytest
 import os
-import sys
-
-test_dir = os.path.dirname(os.path.abspath(__file__))
-current_dir = os.path.dirname(test_dir)
-sys.path.append(current_dir)
-
-import tools
-
+from CNTtools import settings,tools
 # %%
 # unit test for clean_labels function
 # write in a csv file, col 0 input, col 1 expected output
 # wait to fetch all channel types from ieeg
-test_chans = pd.read_csv(os.path.join(test_dir, "findNonIEEG_testInput.csv"))
+test_chans = pd.read_csv(os.path.join(settings.TEST_DIR, "testInput_findnonieeg.csv"))
 params = [
     tuple([test_chans.iloc[i, 0], test_chans.iloc[i, 1]])
     for i in range(test_chans.shape[0])
 ]
-
+params.append(tuple(test_chans.iloc[0,:].to_list(),test_chans.iloc[1,:].to_list()))
 
 @pytest.mark.parametrize("input,expected", params)
 def test_channel(input, expected):
@@ -36,4 +28,3 @@ def test_channel(input, expected):
         assert expected == output
     except AttributeError as e:
         assert False
-    # %%

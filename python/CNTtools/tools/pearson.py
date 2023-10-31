@@ -2,8 +2,9 @@ import numpy as np
 from beartype import beartype
 from numbers import Number
 
+
 @beartype
-def pearson(values:np.ndarray, fs:Number, win:bool, win_size:Number) -> np.ndarray:
+def pearson(values: np.ndarray, fs: Number, win: bool, win_size: Number) -> np.ndarray:
     """
     Calculate the Pearson correlation coefficients between channels in iEEG data.
 
@@ -12,7 +13,7 @@ def pearson(values:np.ndarray, fs:Number, win:bool, win_size:Number) -> np.ndarr
     - fs (float): Sampling frequency of the EEG data.
     - win (bool): If True, calculate windowed correlations; if False, calculate overall correlations.
     - win_size (float): Size of the time window in seconds for windowed correlation calculation.
-    
+
     Returns:
     - np.ndarray: Pearson correlation coefficients between channels. If windowed, returns an average over time windows.
 
@@ -46,7 +47,7 @@ def pearson(values:np.ndarray, fs:Number, win:bool, win_size:Number) -> np.ndarr
         # Calculate pc for each window
         for i, start in enumerate(window_start):
             # Define the time clip
-            clip = values[start:start+iw, :]
+            clip = values[start : start + iw, :]
 
             pc = np.corrcoef(clip, rowvar=False)
             # np.fill_diagonal(pc, 0)

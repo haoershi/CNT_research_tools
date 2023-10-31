@@ -49,10 +49,12 @@ def find_non_ieeg(channel_li: Union[Iterable[str], str]) -> np.ndarray:
         # finds non-iEEG channels, make a separate function
         if label_non_num.upper() in non_ieeg:
             is_non_ieeg[ind] = True
-        if i == 'O1' or i == 'O2':
-            if channel_li.count('O3') == 1 or channel_li.count('O4') == 1:  # if intracranial, should have these too
+        if i == "O1" or i == "O2":
+            if (
+                channel_li.count("O3") == 1 or channel_li.count("O4") == 1
+            ):  # if intracranial, should have these too
                 is_non_ieeg[ind] = 0
             else:
                 is_non_ieeg[ind] = 1
-                
+
     return is_non_ieeg

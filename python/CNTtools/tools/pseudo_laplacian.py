@@ -2,7 +2,10 @@ import numpy as np
 import re
 from beartype.typing import Iterable, Tuple
 
-def pseudo_laplacian(values: np.ndarray, chLabels: Iterable[str], soft: bool = True, softThres: int = 1) -> Tuple[np.ndarray, np.ndarray]:
+
+def pseudo_laplacian(
+    values: np.ndarray, chLabels: Iterable[str], soft: bool = True, softThres: int = 1
+) -> Tuple[np.ndarray, np.ndarray]:
     """
     Apply pseudo-laplacian re-referencing to multi-channel iEEG data.
 
@@ -28,7 +31,7 @@ def pseudo_laplacian(values: np.ndarray, chLabels: Iterable[str], soft: bool = T
     for ch in range(nchs):
         # Initialize it as nans
         out = np.nan * np.zeros(values.shape[0])
-        bipolar_label = '-'
+        bipolar_label = "-"
 
         # Get the clean label
         label = chLabels[ch]
@@ -41,8 +44,16 @@ def pseudo_laplacian(values: np.ndarray, chLabels: Iterable[str], soft: bool = T
 
         if not np.isnan(label_num):
             # see if there exists one higher
-            label_nums_high = list(range(label_num + 1, label_num + softThres + 2)) if soft else [label_num + 1]
-            label_nums_low = list(range(label_num - softThres - 1, label_num))[::-1] if soft else [label_num - 1]
+            label_nums_high = (
+                list(range(label_num + 1, label_num + softThres + 2))
+                if soft
+                else [label_num + 1]
+            )
+            label_nums_low = (
+                list(range(label_num - softThres - 1, label_num))[::-1]
+                if soft
+                else [label_num - 1]
+            )
             higher_ch = np.nan
             lower_ch = np.nan
 
@@ -59,7 +70,10 @@ def pseudo_laplacian(values: np.ndarray, chLabels: Iterable[str], soft: bool = T
                     break
 
             if (not np.isnan(higher_ch)) and (not np.isnan(lower_ch)):
-                out = old_values[:, ch] - (old_values[:, higher_ch] + old_values[:, lower_ch]) / 2
+                out = (
+                    old_values[:, ch]
+                    - (old_values[:, higher_ch] + old_values[:, lower_ch]) / 2
+                )
             elif not np.isnan(higher_ch):
                 out = old_values[:, ch] - old_values[:, higher_ch]
             elif not np.isnan(lower_ch):
@@ -71,6 +85,7 @@ def pseudo_laplacian(values: np.ndarray, chLabels: Iterable[str], soft: bool = T
         values[:, ch] = out
 
     return values, np.array(out_labels)
+
 
 def decompose(labels: Iterable[str]) -> Tuple[list, list]:
     non_nums = []

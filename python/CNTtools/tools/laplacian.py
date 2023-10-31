@@ -4,6 +4,7 @@ from beartype import beartype
 from .pseudo_laplacian import pseudo_laplacian
 from numbers import Number
 
+
 @beartype
 def laplacian(data: np.ndarray, labels: np.ndarray, locs: np.ndarray, radius: Number):
     """
@@ -22,7 +23,7 @@ def laplacian(data: np.ndarray, labels: np.ndarray, locs: np.ndarray, radius: Nu
     out_values = np.nan * np.zeros(data.shape)
     nchs = data.shape[1]
     laplacian_labels = []
-    
+
     nan_elecs = np.any(np.isnan(locs), axis=1)
     pseudo_values, pseudo_labels = pseudo_laplacian(data, labels)
 

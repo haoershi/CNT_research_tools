@@ -3,8 +3,9 @@ import matplotlib as mpl
 import numpy as np
 from beartype import beartype
 
+
 @beartype
-def plot_ieeg_data(data:np.ndarray, chs, t):
+def plot_ieeg_data(data: np.ndarray, chs, t):
     """
     Plot iEEG data for multiple channels over time.
 
@@ -25,28 +26,27 @@ def plot_ieeg_data(data:np.ndarray, chs, t):
     plt.show()
     """
 
-
     # offset = 0
     nchan = data.shape[1]
-    medians = np.nanmedian(data,axis = 0)
-    up = np.nanmax(data,axis = 0) - medians
-    down = medians - np.nanmin(data,axis = 0)
+    medians = np.nanmedian(data, axis=0)
+    up = np.nanmax(data, axis=0) - medians
+    down = medians - np.nanmin(data, axis=0)
     percentile = 80
-    spacing = 2*np.percentile(np.concatenate([up,down]), percentile)
-    ticks = np.arange(0,spacing*(nchan-1)+1,spacing)
+    spacing = 2 * np.percentile(np.concatenate([up, down]), percentile)
+    ticks = np.arange(0, spacing * (nchan - 1) + 1, spacing)
     fig, ax = plt.subplots(figsize=(15, 15))
-    mpl.rcParams['axes.spines.right'] = False
-    mpl.rcParams['axes.spines.top'] = False
-    mpl.rcParams['axes.spines.left'] = True
-    mpl.rcParams['font.size'] = 9
+    mpl.rcParams["axes.spines.right"] = False
+    mpl.rcParams["axes.spines.top"] = False
+    mpl.rcParams["axes.spines.left"] = True
+    mpl.rcParams["font.size"] = 9
 
-    plt.plot(t, data - medians + ticks,'k')
+    plt.plot(t, data - medians + ticks, "k")
     plt.yticks(ticks, chs)
-    ax.spines['left'].set_visible(True)
+    ax.spines["left"].set_visible(True)
     plt.gca().set_xlim(t[0], plt.gca().get_xlim()[1])
-    plt.xlabel('Time')
-    plt.ylabel('Channels')
-    plt.grid(axis='x')
+    plt.xlabel("Time")
+    plt.ylabel("Channels")
+    plt.grid(axis="x")
     # pass a plt.xlim that focuses around the center of the spike
     plt.show()
 

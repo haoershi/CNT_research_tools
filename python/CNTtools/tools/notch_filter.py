@@ -1,10 +1,13 @@
-from scipy.signal import iirnotch, filtfilt,butter
+from scipy.signal import iirnotch, filtfilt, butter
 import numpy as np
 from beartype import beartype
 from numbers import Number
 
+
 @beartype
-def notch_filter(data: np.ndarray, fs: Number, notch_freq:Number=60,order:int = 4) -> np.ndarray:
+def notch_filter(
+    data: np.ndarray, fs: Number, notch_freq: Number = 60, order: int = 4
+) -> np.ndarray:
     """Apply notch filter to remove interference at a specified frequency.
 
     Args:

@@ -1,10 +1,10 @@
 import numpy as np
 from beartype import beartype
-from beartype.typing import Iterable,Tuple
+from beartype.typing import Iterable, Tuple
 
 
 @beartype
-def car(data: np.ndarray, labels: Iterable[str]) -> Tuple[np.ndarray,np.ndarray]:
+def car(data: np.ndarray, labels: Iterable[str]) -> Tuple[np.ndarray, np.ndarray]:
     """
     Perform Common Average Reference (CAR) on the input iEEG data.
 

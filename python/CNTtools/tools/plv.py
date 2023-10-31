@@ -5,8 +5,15 @@ from .bandpass_filter import bandpass_filter
 from beartype import beartype
 from numbers import Number
 
+
 @beartype
-def plv(values:np.ndarray, fs:Number, win:bool=False, win_size:Number=2, freqs:np.ndarray=freqs) -> np.ndarray:
+def plv(
+    values: np.ndarray,
+    fs: Number,
+    win: bool = False,
+    win_size: Number = 2,
+    freqs: np.ndarray = freqs,
+) -> np.ndarray:
     """
     Computes phase-locking value (PLV) for iEEG data.
 
@@ -15,7 +22,7 @@ def plv(values:np.ndarray, fs:Number, win:bool=False, win_size:Number=2, freqs:n
         fs (numeric): Sampling frequency of the iEEG data.
         win (bool, optional): Boolean indicating whether to use time windows (True) or compute a single PLV (False).
         win_size (numeric, optional): Time window size in seconds.
-        freqs (numpy array, optional): Matrix where each row represents a frequency range. 
+        freqs (numpy array, optional): Matrix where each row represents a frequency range.
                                       The first column is the lower bound, and the second column is the upper bound.
 
     Returns:
@@ -60,7 +67,7 @@ def plv(values:np.ndarray, fs:Number, win:bool=False, win_size:Number=2, freqs:n
         all_plv = np.ones((nchs, nchs, nfreqs, nw))
         for t in range(nw):
             for f in range(nfreqs):
-                tmp_data = filtered_data[window_start[t]:window_start[t] + iw, :, f]
+                tmp_data = filtered_data[window_start[t] : window_start[t] + iw, :, f]
 
                 # Get phase of each signal
                 phase = np.angle(hilbert(tmp_data))

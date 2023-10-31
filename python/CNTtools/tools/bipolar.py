@@ -2,21 +2,23 @@ import numpy as np
 import pandas as pd
 import re
 from beartype import beartype
-from beartype.typing import Iterable,Tuple
+from beartype.typing import Iterable, Tuple
 from .clean_labels import clean_labels
 
 
 @beartype
-def bipolar(data: np.ndarray, labels: Iterable[str], soft: bool = True, soft_thres:int = 1) -> Tuple[np.ndarray,np.ndarray]:
+def bipolar(
+    data: np.ndarray, labels: Iterable[str], soft: bool = True, soft_thres: int = 1
+) -> Tuple[np.ndarray, np.ndarray]:
     """
     Return the data in bipolar montage using the channel names.
-    The output data[:,ich] equals the input data[:,ich] - data[:,jch], 
-    where jch is the next numbered contact on the same electrode as ich. 
-    For example. if ich is RA1, then jch is RA2 and values(:,RA1) will be 
-    the old values(:,RA1) - old values(:,RA2). If ich is the last contact 
-    on the electrode, or adjacent channel does not exist, then values(:,ich) 
+    The output data[:,ich] equals the input data[:,ich] - data[:,jch],
+    where jch is the next numbered contact on the same electrode as ich.
+    For example. if ich is RA1, then jch is RA2 and values(:,RA1) will be
+    the old values(:,RA1) - old values(:,RA2). If ich is the last contact
+    on the electrode, or adjacent channel does not exist, then values(:,ich)
     is defined to be nans. the label is marked as '-'.
-    Default allows soft referencing, i.e. substraction of channels at distance 
+    Default allows soft referencing, i.e. substraction of channels at distance
     of soft threshold. e.g. A soft threshold of 1 allows RA1-RA3.
 
     Args:
@@ -60,9 +62,9 @@ def bipolar(data: np.ndarray, labels: Iterable[str], soft: bool = True, soft_thr
             if label_num > 12:
                 print("This might be a grid and so bipolar might be tricky")
             if soft:
-                ch2_num = list(range(label_num+1,label_num+soft_thres+2))
+                ch2_num = list(range(label_num + 1, label_num + soft_thres + 2))
             else:
-                ch2_num = [label_num+1]
+                ch2_num = [label_num + 1]
             for i in ch2_num:
                 ch2 = label_non_num + f"{i}"
                 ch2exists = np.where(channels == ch2)[0]

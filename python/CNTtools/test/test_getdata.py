@@ -10,11 +10,7 @@ import pandas as pd
 import numpy as np
 import pytest
 import os, sys
-
-test_dir = os.path.dirname(os.path.abspath(__file__))
-current_dir = os.path.dirname(test_dir)
-sys.path.append(current_dir)
-import tools
+from CNTtools import iEEGPreprocess,settings
 
 # %%
 # unit test for get_iEEG_data function

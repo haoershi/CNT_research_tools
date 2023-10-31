@@ -3,9 +3,14 @@ from scipy.signal import butter, filtfilt
 from beartype import beartype
 from numbers import Number
 
+
 @beartype
 def bandpass_filter(
-    data: np.ndarray, fs: Number, low_freq: Number = 1, high_freq: Number = 120, order: int = 4,
+    data: np.ndarray,
+    fs: Number,
+    low_freq: Number = 1,
+    high_freq: Number = 120,
+    order: int = 4,
 ) -> np.ndarray:
     """
     Apply a 4th-order Butterworth bandpass filter to input data.
@@ -24,8 +29,8 @@ def bandpass_filter(
     Examples:
         >>> # Simulate data
         >>> import numpy as np
-        >>> data = np.random.rand(1000) 
-        >>>  
+        >>> data = np.random.rand(1000)
+        >>>
         >>> from tools import bandpass_filter
         >>> fs = 1000  # Sampling frequency in Hz
         >>> filtered_data = bandpass_filter(data, fs)

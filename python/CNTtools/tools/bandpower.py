@@ -5,8 +5,15 @@ from beartype import beartype
 from beartype.typing import Union, Iterable
 from numbers import Number
 
+
 @beartype
-def bandpower(data: np.ndarray, fs: Number, band: Iterable[Number], win_size:Union[None,Number]=None, relative:bool=False) -> np.ndarray:
+def bandpower(
+    data: np.ndarray,
+    fs: Number,
+    band: Iterable[Number],
+    win_size: Union[None, Number] = None,
+    relative: bool = False,
+) -> np.ndarray:
     """Adapted from https://raphaelvallat.com/bandpower.html
     Compute the average power of the signal x in a specific frequency band.
 
@@ -17,7 +24,7 @@ def bandpower(data: np.ndarray, fs: Number, band: Iterable[Number], win_size:Uni
     fs : float
         Sampling frequency of the data.
     band : list
-        Lower and upper frequencies of the band of interest. 
+        Lower and upper frequencies of the band of interest.
     win_size : float
         Length of each window in seconds.
         If None, win_size = (1 / min(band)) * 2
@@ -31,10 +38,10 @@ def bandpower(data: np.ndarray, fs: Number, band: Iterable[Number], win_size:Uni
         Absolute or relative band power. channels by bands
     """
     band = np.asarray(band)
-    assert len(band) == 2,"CNTtools:invalidBandRange"
-    assert band[0] < band[1],"CNTtools:invalidBandRange"
+    assert len(band) == 2, "CNTtools:invalidBandRange"
+    assert band[0] < band[1], "CNTtools:invalidBandRange"
     nchan = data.shape[1]
-    bp = np.nan*np.zeros(nchan)
+    bp = np.nan * np.zeros(nchan)
     low, high = band
 
     # Define window length
@@ -60,5 +67,5 @@ def bandpower(data: np.ndarray, fs: Number, band: Iterable[Number], win_size:Uni
 
     if relative:
         bp /= simpson(psd, dx=freq_res)
-        
+
     return bp

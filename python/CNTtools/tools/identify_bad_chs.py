@@ -13,7 +13,7 @@ def prctile(x, p):
 
 
 @beartype
-def identify_bad_chs(data: np.ndarray, fs: Number) -> Tuple[np.ndarray,dict]:
+def identify_bad_chs(data: np.ndarray, fs: Number) -> Tuple[np.ndarray, dict]:
     """
     Identify bad channels based on various criteria.
 

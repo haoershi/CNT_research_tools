@@ -7,10 +7,10 @@ import sys, os
 #####################
 #    DIRECTORIES    #
 #####################
-ROOT_DIR =      os.path.dirname(os.path.abspath(__file__))
-TEST_DIR =      os.path.join(ROOT_DIR, 'test')
-DATA_DIR =      os.path.join(ROOT_DIR, 'data')
-USER_DIR =     os.path.join(ROOT_DIR,   'users')
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+TEST_DIR = os.path.join(ROOT_DIR, "test")
+DATA_DIR = os.path.join(ROOT_DIR, "data")
+USER_DIR = os.path.join(ROOT_DIR, "users")
 
 DIRS = [DATA_DIR, USER_DIR]
 

@@ -2,6 +2,7 @@ from sklearn.linear_model import LinearRegression
 import numpy as np
 from beartype import beartype
 
+
 @beartype
 def pre_whiten(data: np.ndarray) -> np.ndarray:
     """Pre-whiten the input data using linear regression.

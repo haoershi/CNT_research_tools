@@ -2,6 +2,7 @@ import numpy as np
 from scipy.ndimage.filters import uniform_filter1d
 from beartype import beartype
 
+
 @beartype
 def movingmean(x: np.ndarray, k: int) -> np.ndarray:
     """

@@ -3,8 +3,11 @@ from .pearson import pearson
 from beartype import beartype
 from numbers import Number
 
+
 @beartype
-def squared_pearson(values:np.ndarray, fs:Number, win:bool=False, win_size:Number=2) -> np.ndarray:
+def squared_pearson(
+    values: np.ndarray, fs: Number, win: bool = False, win_size: Number = 2
+) -> np.ndarray:
     """
     Calculate the Squared Pearson correlation coefficients bewin_sizeeen channels in iEEG data.
 
@@ -25,6 +28,6 @@ def squared_pearson(values:np.ndarray, fs:Number, win:bool=False, win_size:Numbe
     correlations = squared_pearson(values, fs, win=True, win_size=3)
     """
 
-    corr = pearson(values,fs,win=win,win_size=win_size)
+    corr = pearson(values, fs, win=win, win_size=win_size)
 
     return corr**2

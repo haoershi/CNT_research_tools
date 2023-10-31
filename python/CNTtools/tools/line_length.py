@@ -1,6 +1,7 @@
 import numpy as np
 from beartype import beartype
 
+
 @beartype
 def line_length(signal: np.ndarray) -> np.ndarray:
     """

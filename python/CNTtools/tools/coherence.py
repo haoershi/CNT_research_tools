@@ -4,8 +4,17 @@ from .default_freqs import freqs
 from beartype import beartype
 from numbers import Number
 
+
 @beartype
-def coherence(values:np.ndarray, fs:Number, win:bool=False, win_size:Number=2, segment:Number=1, overlap:Number=0.5,freqs:np.ndarray=freqs) -> np.ndarray:
+def coherence(
+    values: np.ndarray,
+    fs: Number,
+    win: bool = False,
+    win_size: Number = 2,
+    segment: Number = 1,
+    overlap: Number = 0.5,
+    freqs: np.ndarray = freqs,
+) -> np.ndarray:
     """
     Calculates coherence for iEEG data with multiple channels.
 
@@ -37,7 +46,7 @@ def coherence(values:np.ndarray, fs:Number, win:bool=False, win_size:Number=2, s
         win = False
 
     # Initialize output matrix
-    all_coherence = np.nan*np.zeros((nchs, nchs, nfreqs))
+    all_coherence = np.nan * np.zeros((nchs, nchs, nfreqs))
 
     for ich in range(nchs):
         curr_values = values[:, ich]
@@ -54,38 +63,49 @@ def coherence(values:np.ndarray, fs:Number, win:bool=False, win_size:Number=2, s
 
         nw = len(window_start)
 
-        temp_coherence = np.nan*np.zeros((nchs, nchs, nfreqs, nw))
+        temp_coherence = np.nan * np.zeros((nchs, nchs, nfreqs, nw))
         for t in range(nw):
             for ich in range(nchs):
-                for jch in range(ich,nchs):
+                for jch in range(ich, nchs):
                     f, cxy = coh(
-                        values[window_start[t]:window_start[t]+window, ich],
-                        values[window_start[t]:window_start[t]+window, jch],
-                        fs=fs, nperseg=nperseg, noverlap=noverlap
+                        values[window_start[t] : window_start[t] + window, ich],
+                        values[window_start[t] : window_start[t] + window, jch],
+                        fs=fs,
+                        nperseg=nperseg,
+                        noverlap=noverlap,
                     )
                     f = np.squeeze(f)
                     for i_f in range(nfreqs):
-                        temp_coherence[ich, jch, i_f, t] = np.nanmean(cxy[(f >= freqs[i_f, 0]) & (f <= freqs[i_f, 1])])
-                        temp_coherence[jch, ich, i_f, t] = np.nanmean(cxy[(f >= freqs[i_f, 0]) & (f <= freqs[i_f, 1])])
-
+                        temp_coherence[ich, jch, i_f, t] = np.nanmean(
+                            cxy[(f >= freqs[i_f, 0]) & (f <= freqs[i_f, 1])]
+                        )
+                        temp_coherence[jch, ich, i_f, t] = np.nanmean(
+                            cxy[(f >= freqs[i_f, 0]) & (f <= freqs[i_f, 1])]
+                        )
 
         temp_coherence = np.nanmean(temp_coherence, axis=3)
     else:
-        temp_coherence = np.nan*np.zeros((nchs, nchs, nfreqs))
+        temp_coherence = np.nan * np.zeros((nchs, nchs, nfreqs))
         for ich in range(nchs):
             for jch in range(nchs):
                 # Do MS cohere on the full thing
                 f, cxy = coh(
                     values[:, ich],
                     values[:, jch],
-                    fs=fs, nperseg=nperseg, noverlap=noverlap
+                    fs=fs,
+                    nperseg=nperseg,
+                    noverlap=noverlap,
                 )
                 f = np.squeeze(f)
 
                 # Average coherence in frequency bins of interest
                 for i_f in range(nfreqs):
-                    temp_coherence[ich, jch, i_f] = np.nanmean(cxy[(f >= freqs[i_f, 0]) & (f <= freqs[i_f, 1])])
-                    temp_coherence[jch, ich, i_f] = np.nanmean(cxy[(f >= freqs[i_f, 0]) & (f <= freqs[i_f, 1])])
+                    temp_coherence[ich, jch, i_f] = np.nanmean(
+                        cxy[(f >= freqs[i_f, 0]) & (f <= freqs[i_f, 1])]
+                    )
+                    temp_coherence[jch, ich, i_f] = np.nanmean(
+                        cxy[(f >= freqs[i_f, 0]) & (f <= freqs[i_f, 1])]
+                    )
 
     # Put the non-nans back
     all_coherence = temp_coherence

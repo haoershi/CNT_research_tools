@@ -9,10 +9,11 @@ import numpy as np
 import time, os, warnings, pickle
 
 from beartype import beartype
-from beartype.typing import Union,Optional,Tuple
+from beartype.typing import Union, Optional, Tuple
 from numbers import Number
 
 from .clean_labels import clean_labels
+
 
 def _pull_iEEG(
     ds: ieeg.dataset.Dataset,
@@ -32,6 +33,7 @@ def _pull_iEEG(
                 time.sleep(1)
             else:
                 raise e
+
 
 @beartype
 def get_ieeg_data(
@@ -69,12 +71,12 @@ def get_ieeg_data(
     removed_channels = ['EKG1', 'EKG2', 'CZ', 'C3', 'C4', 'F3', 'F7', 'FZ', 'F4', 'F8', 'LF04', 'RC03', 'RE07', 'RC05', 'RF01', 'RF03', 'RB07', 'RG03', 'RF11', 'RF12']
     outputfile = '/Users/andyrevell/mount/DATA/Human_Data/BIDS_processed/sub-RID0278/eeg/sub-RID0278_HUP138_phaseII_248432340000_248525740000_EEG.pickle'
     get_iEEG_data(username, password, iEEG_filename, start_time, stop_time, ignore_elecs = removed_channels, outputfile = outputfile)
-    
+
     To run from command line:
-        python3.6 -c 'import get_iEEG_data; get_iEEG_data.get_iEEG_data("arevell", "password", "HUP138_phaseII", 248432.34, 248525.74, 
-        ["EKG1", "EKG2", "CZ", "C3", "C4", "F3", "F7", "FZ", "F4", "F8", "LF04", "RC03", "RE07", "RC05", "RF01", "RF03", "RB07", "RG03", "RF11", "RF12"], 
+        python3.6 -c 'import get_iEEG_data; get_iEEG_data.get_iEEG_data("arevell", "password", "HUP138_phaseII", 248432.34, 248525.74,
+        ["EKG1", "EKG2", "CZ", "C3", "C4", "F3", "F7", "FZ", "F4", "F8", "LF04", "RC03", "RE07", "RC05", "RF01", "RF03", "RB07", "RG03", "RF11", "RF12"],
         "/gdrive/public/DATA/Human_Data/BIDS_processed/sub-RID0278/eeg/sub-RID0278_HUP138_phaseII_D01_248432340000_248525740000_EEG.pickle")'
-    
+
     How to get back pickled files:
     with open(outputfile, 'rb') as f: data, fs = pickle.load(f)
     """
@@ -89,7 +91,7 @@ def get_ieeg_data(
     # else:
     #     print("Not saving, returning data and sampling frequency")
 
-    pwd = open(os.path.join(settings.USER_DIR,password_bin_file), "r").read()
+    pwd = open(os.path.join(settings.USER_DIR, password_bin_file), "r").read()
 
     assert start_time < stop_time, "CNTtools:invalidTimeRange"
     assert start_time >= 0, "CNTtools:invalidTimeRange"
@@ -114,7 +116,7 @@ def get_ieeg_data(
                 time.sleep(1)
             else:
                 raise e
-            
+
     assert len(all_channel_labels) > 0, "CNTtools:emptyFile"
     end_sec = ds.get_time_series_details(all_channel_labels[0]).duration
     assert stop_time_usec <= end_sec, "CNTtools:invalidTimeRange"
@@ -197,6 +199,7 @@ def get_ieeg_data(
             pickle.dump([data, channel_names, fs], f)
     else:
         return data, fs, np.array(channel_names)
+
 
 """"
 Download and install iEEG python package - ieegpy
