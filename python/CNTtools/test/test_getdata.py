@@ -10,7 +10,7 @@ import pandas as pd
 import numpy as np
 import pytest
 import os, sys
-from CNTtools import iEEGPreprocess,settings
+from CNTtools import iEEGPreprocess, settings
 
 # %%
 # unit test for get_iEEG_data function

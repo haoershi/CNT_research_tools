@@ -18,7 +18,7 @@ setup(
     ],
     packages=setuptools.find_packages(),
     package_data={
-        "CNTtools": ["test/testInputs/*.csv"],
+        "CNTtools": ["test/data/*"],
     },
     long_description=long_description,
     long_description_content_type="text/markdown",
