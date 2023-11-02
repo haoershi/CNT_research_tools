@@ -1,4 +1,4 @@
-from scipy.signal import iirnotch, filtfilt, butter
+from scipy.signal import iirnotch, sosfiltfilt, butter
 import numpy as np
 from beartype import beartype
 from numbers import Number
@@ -25,9 +25,11 @@ def notch_filter(
     notch_filtered_values = notch_filter(values, fs)
     notch_filtered_values = notch_filter(values, fs, notch_freq=120, order=8)
     """
-    b, a = iirnotch(notch_freq, notch_freq / 2, fs=fs)
-    # b, a = butter(order, [notch_freq-2,notch_freq+2], 'bandstop', fs)
+    # b, a = iirnotch(notch_freq, notch_freq / 2, fs=fs)
+    sos = butter(
+        order, [notch_freq - 1, notch_freq + 1], "bandstop", fs=fs, output="sos"
+    )
 
-    y = filtfilt(b, a, data, axis=0)
+    y = sosfiltfilt(sos, data, axis=0)
 
     return y

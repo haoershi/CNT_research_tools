@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.signal import butter, filtfilt
+from scipy.signal import butter, sosfiltfilt
 from beartype import beartype
 from numbers import Number
 
@@ -39,11 +39,15 @@ def bandpass_filter(
         >>> filtered_data = bandpass_filter(data, fs, low_freq, high_freq)
     """
 
-    b, a = butter(
-        order, [max(low_freq, 0), min(high_freq, fs // 2)], btype="bandpass", fs=fs
+    sos = butter(
+        order,
+        [max(low_freq, 0.5), min(high_freq, fs // 2 - 1)],
+        btype="bandpass",
+        fs=fs,
+        output="sos",
     )
 
     # Apply filter to input signal
-    y = filtfilt(b, a, data, axis=0)
+    y = sosfiltfilt(sos, data, axis=0)
 
     return y

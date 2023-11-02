@@ -6,7 +6,8 @@ function values = bandpass_filter(values,fs,varargin)
 %   fs (numeric): Sampling frequency of the iEEG data.
 %   low_freq (numeric, optional): Lower cutoff frequency for the bandpass filter (default: 1 Hz).
 %   high_freq (numeric, optional): Upper cutoff frequency for the bandpass filter (default: 120 Hz).
-%   order (integer, optional): Filter order (default: 4).
+%   order (integer, optional): Filter order (default: 4). Order consistent
+%   with python version.
 
 % Returns:
 %   values (numeric array): Bandpass-filtered iEEG data.
@@ -39,6 +40,7 @@ fs = p.Results.fs;
 low_freq = p.Results.low_freq;
 high_freq = p.Results.high_freq;
 order = p.Results.order;
+order = order * 2;
 
 d = designfilt('bandpassiir','FilterOrder',order, ...
     'HalfPowerFrequency1',max(low_freq,0.5),'HalfPowerFrequency2',min(floor(fs/2)-1,high_freq), ...

@@ -184,7 +184,7 @@ if length(filelist) < numFile || params.force_download
     for i = 1:numFile 
         waitbar(i/numFile, bar, sprintf('Processing %d of %d...', i, numFile));
         % skip the file if don't have file start time
-        if exists(strcat(paths.rawPath,filesep,patients{i},'.mat'),'file') == 2 && ~params.force_download
+        if exist(strcat(paths.rawPath,filesep,patients{i},'.mat'),'file') == 2 && ~params.force_download
             continue
         end
         if isnan(patientList(i).ind_2pm) || isempty(eval(['patientList(i).chan_',params.chans_to_use]))

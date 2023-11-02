@@ -37,6 +37,7 @@ values = p.Results.values;
 fs = p.Results.fs;
 notch_freq = p.Results.notch_freq;
 order = p.Results.order;
+order = order * 2;
 
 f = designfilt('bandstopiir','FilterOrder',order, ...
    'HalfPowerFrequency1',notch_freq-1,'HalfPowerFrequency2',notch_freq+1, ...
