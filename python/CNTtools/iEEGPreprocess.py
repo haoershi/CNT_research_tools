@@ -194,7 +194,8 @@ class iEEGPreprocess:
         if os.path.isdir(dir):
             filelist = os.listdir(dir)
         elif os.path.isfile(dir):
-            filelist = [dir]
+            dir,file = os.path.split(dir)
+            filelist = [file]
         assert any(
             file.endswith(".pkl") for file in filelist
         ), "CNTtools:invalidFileFormat"
@@ -904,15 +905,13 @@ class iEEGData:
             # filename not provided, default filename & folder
             file = self.user_data_dir
             filename = os.path.join(file, filename)
-            self._pickle_save(filename)
         else:
             # when filename provided
             if ".pkl" in file:
                 # with filename
                 if default_folder:
                     filename = os.path.join(self.user_data_dir, filename)
-                self._pickle_save(filename)
             else:
                 # folder specified
                 filename = os.path.join(file, filename)
-                self._pickle_save(filename)
+        self._pickle_save(filename)
