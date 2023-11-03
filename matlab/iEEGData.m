@@ -235,7 +235,7 @@ classdef iEEGData < matlab.mixin.Copyable & handle
             obj.locs = get_elec_locs(obj.ch_names, loc_file);
         end
 
-        function laplacian(obj, varargin)%locs, radius)
+        function laplacian(obj, varargin)
             p = inputParser;
             defaults = {'',20};
             for i = 1:length(varargin)
@@ -252,8 +252,8 @@ classdef iEEGData < matlab.mixin.Copyable & handle
             if ~isempty(locs)
                 obj.load_locs(locs);
             else
-                if ~isprop(obj, 'locs')
-                    error('CNTtools:Please load electrode locs first.\nLocs can be loaded through: data.load_locs(filename).\n');
+                if isempty(obj.locs)
+                    error(sprintf('CNTtools:Please load electrode locs first.\nLocs can be loaded through: data.load_locs(filename).\n'));
                 end
             end
 
@@ -313,8 +313,8 @@ classdef iEEGData < matlab.mixin.Copyable & handle
                     if ~isempty(locs)
                         obj.load_locs(locs);
                     else
-                        if ~isprop(obj, 'locs')
-                            error('CNTtools:Please load electrode locs first.\nLocs can be loaded through: data.load_locs(filename).\n');
+                        if isempty(obj.locs)
+                            error(sprintf('CNTtools:Please load electrode locs first.\nLocs can be loaded through: data.load_locs(filename).\n'));
                         end
                     end
                     [obj.data, obj.ref_chnames] = laplacian(obj.data, obj.ch_names, obj.locs, radius);

@@ -439,6 +439,7 @@ end
 ftpath = "/Users/meow/Downloads/fieldtrip-20230118"; % <- change directory here
 addpath(ftpath);
 ft_defaults
+ft_warning off
 % simulate data, 8 chans
 % uncorrelated, without recording reference
 params.num_chans = 8;
@@ -504,6 +505,7 @@ for i = 1:params.nRef+1
     cfg.output = 'fourier';
     cfg.tapsmofrq = 3;
     cfg.foilim = [0 100];
+    cfg.pad = 'nextpow2';
     freq1 = ft_freqanalysis(cfg, data1(i));
     freq2 = ft_freqanalysis(cfg, data2(i));
     cfg = [];
@@ -816,6 +818,7 @@ save(strcat(paths.dataPath,filesep,'permstats.mat'),'ref','method','freq');
 clearvars -except numFile patientList params paths 
 %% 6 | SOZ lateralization 🧠
 % This part evaluate which method perform best in lateralizing epilepsy patients.
+% This section should only be executed when the chans_to_use option is set to 'LR' 
 % (Note: The ML part was implemented in Google Colab and hasn't been transfered to here yet) 
 % load results
 filelist = dir(paths.resultPath);

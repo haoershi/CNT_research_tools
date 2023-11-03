@@ -32,7 +32,6 @@ radius = p.Results.radius;
 nchs = size(values,2);
 out_values = nan(size(values));
 laplacian_labels = cell(nchs,1);
-nchs = size(values,2);
 close_chs = cell(nchs,1);
 % do pseudo-laplacian if no locs info available
 nan_elecs = any(isnan(locs),2);
