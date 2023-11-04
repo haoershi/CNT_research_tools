@@ -41,13 +41,15 @@ addpath(genpath(['..',filesep,'matlab'])); % this should add analysis and matlab
 global params
 % 🟡ref
 ref = struct('method',{'car';'bipolar';'laplacian'},...
-            'symbol',{'CAR';'BR';'LAPR'},...
+            'symbol',{'CAR';'BR';'LAR'},...
             'name',{'Common average re-referencing'; 'Bipolar re-referencing';'Laplacian re-referencing'}, ...
             'col', mat2cell(hex2rgb({'#51b8bd','#de7862','#63804f'}),ones(3, 1)));
 
 ifRef = logical([1, 1, 0]); % <- make change here
 params.ref = ref(ifRef);
 params.nRef = length(find(ifRef));
+params.LAR_loc = '';
+params.LAR_radius = 20;
 % 🟡conn
 conn = struct('method',{'pearson';'squared_pearson';'cross_corr';'coh';'plv';'rela_entropy'},...
               'symbol',{'Pearson';'SquareP';'CrossCorr';'COH';'PLV';'RE'}, ...
@@ -251,7 +253,7 @@ for i = 1:numFile
         end
         for j = 1:params.nRef
             chs = data.ch_names;
-            data.reref(params.ref(j).method);
+            data.reref(params.ref(j).method,params.LAR_loc,params.LAR_radius);
             ind = ismember(chs,data.ch_names);
             if strcmp('LR',params.chans_to_use)
                 [leftData,rightData] = split_data(data);

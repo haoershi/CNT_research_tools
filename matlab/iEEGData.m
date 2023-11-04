@@ -229,10 +229,21 @@ classdef iEEGData < matlab.mixin.Copyable & handle
 
         function load_locs(obj, loc_file)
             p = inputParser;
-            addRequired(p, 'loc_file', @(x) (isstring(x) || ischar(x)) & exist(x,'file'));
+            addOptional(p, 'loc_file', '', @(x) (isstring(x) || ischar(x)));
             parse(p, loc_file);
             loc_file = p.Results.loc_file;
-            obj.locs = get_elec_locs(obj.ch_names, loc_file);
+            if isempty(loc_file)
+                loc_file = 'elec_locs.csv';    
+                assert(exist(loc_file,'file'),...
+                        sprintf(['CNTtools:invalidLocFile\nPlease specify a ' ...
+                        'electrode location file for laplacian re-referencing, ' ...
+                        'with format | fileID/patientID | electrodeName | x | y | z | \n' ...
+                        'For default loading, please save electrode location information' ...
+                        'with filename elec_locs.csv and add to MATLAB workpath.\n']))
+            else
+                assert(exist(loc_file,'file'),'CNTtools:invalidLocFile')
+            end
+            obj.locs = get_elec_locs(obj.filename, obj.ch_names, loc_file);
         end
 
         function laplacian(obj, varargin)
@@ -249,12 +260,9 @@ classdef iEEGData < matlab.mixin.Copyable & handle
             locs = p.Results.locs;
             radius = p.Results.radius;
 
-            if ~isempty(locs)
-                obj.load_locs(locs);
-            else
-                if isempty(obj.locs)
-                    error(sprintf('CNTtools:Please load electrode locs first.\nLocs can be loaded through: data.load_locs(filename).\n'));
-                end
+            obj.load_locs(locs);
+            if isempty(obj.locs)
+                error(sprintf('CNTtools:Please load electrode locs first.\nLocs can be loaded through: data.load_locs(filename).\n'));
             end
 
             obj.record();
@@ -310,12 +318,9 @@ classdef iEEGData < matlab.mixin.Copyable & handle
                     obj.ch_names(inds) = [];
                     obj.ref_chnames(inds) = [];
                 case 'laplacian'
-                    if ~isempty(locs)
-                        obj.load_locs(locs);
-                    else
-                        if isempty(obj.locs)
-                            error(sprintf('CNTtools:Please load electrode locs first.\nLocs can be loaded through: data.load_locs(filename).\n'));
-                        end
+                    obj.load_locs(locs);
+                    if isempty(obj.locs)
+                        error(sprintf('CNTtools:Please load electrode locs first.\nLocs can be loaded through: data.load_locs(filename).\n'));
                     end
                     [obj.data, obj.ref_chnames] = laplacian(obj.data, obj.ch_names, obj.locs, radius);
                     inds = strcmp(obj.ref_chnames,'-');

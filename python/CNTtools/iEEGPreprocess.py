@@ -497,10 +497,15 @@ class iEEGData:
         self.ref_chnames = np.delete(self.ref_chnames, inds)
         self.history.append("bipolar")
 
-    def load_locs(self, loc_file: str):
-        self.locs = tools.get_elec_locs(self.ch_names, loc_file)
+    def load_locs(self, loc_file: str = ''):
+        if loc_file is '':
+            loc_file = os.path.join(settings.TESTDATA_DIR,'elec_locs.csv') 
+            assert os.path.exists(loc_file),'CNTtools:invalidLocFile\nPlease specify a electrode location file for laplacian re-referencing, with format | fileID/patientID | electrodeName | x | y | z | \nFor default loading, please save electrode location information with filename elec_locs.csv in test/data/elec_locs.csv.\n'
+        else:
+            assert os.path.exists(loc_file),'CNTtools:invalidLocFile'
+        self.locs = tools.get_elec_locs(self.filename, self.ch_names, loc_file)
 
-    def laplacian(self, locs: str = None, radius: Number = 20):
+    def laplacian(self, locs: str = '', radius: Number = 20):
         """
         Perform Laplacian (LAR) on the input iEEG data.
 
@@ -513,13 +518,11 @@ class iEEGData:
         Raises:
             Exception: Raised if electrode locations are not provided and have not been previously loaded.
         """
-        if isinstance(locs, str):
-            self.load_locs(locs)
-        else:
-            if not hasattr(self, "locs"):
-                raise Exception(
-                    "Please load electrodes locs first.\nLocs can be loaded through: data.load_locs(filename).\n"
-                )
+        self.load_locs(locs)
+        if not hasattr(self, "locs"):
+            raise Exception(
+                "Please load electrodes locs first.\nLocs can be loaded through: data.load_locs(filename).\n"
+            )
 
         self.record()
         self.data, self.ref_chnames = tools.laplacian(
@@ -531,7 +534,7 @@ class iEEGData:
         self.ref_chnames = np.delete(self.ref_chnames, inds)
         self.history.append("laplacian")
 
-    def reref(self, ref: str, locs: str = None, radius: Number = 20):
+    def reref(self, ref: str, locs: str = '', radius: Number = 20):
         """
         Perform re-referencing on the input iEEG data.
         Available options:
@@ -547,21 +550,23 @@ class iEEGData:
                 Default is 20.
         """
         assert ref in ["car", "bipolar", "laplacian"], "CNTtools:invalidRerefMethod"
-        self.record()
         if ref == "car":
+            self.record()
             self.data, self.ref_chnames = tools.car(self.data, self.ch_names)
         elif ref == "bipolar":
+            self.record()
             self.data, self.ref_chnames = tools.bipolar(self.data, self.ch_names)
             inds = np.where(self.ref_chnames == "-")[0]
             self.data = np.delete(self.data, inds, axis=1)
             self.ch_names = np.delete(self.ch_names, inds)
             self.ref_chnames = np.delete(self.ref_chnames, inds)
         elif ref == "laplacian":
-            assert isinstance(locs, str) | hasattr(
-                self, "locs"
-            ), "CNTtools:Please load electrodes locs first.\nLocs can be loaded through: data.load_locs(filename).\n"
-            if isinstance(locs, str):
-                self.load_locs(locs)
+            self.load_locs(locs)
+            if not hasattr(self, "locs"):
+                raise Exception(
+                    "Please load electrodes locs first.\nLocs can be loaded through: data.load_locs(filename).\n"
+                )
+            self.record()
             self.data, self.ref_chnames = tools.laplacian(
                 self.data, self.ch_names, self.locs, radius
             )

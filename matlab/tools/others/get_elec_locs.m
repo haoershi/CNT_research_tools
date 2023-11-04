@@ -1,7 +1,9 @@
-function output = get_elec_locs(chLabels,filename)
+function output = get_elec_locs(fileID, chLabels,filename)
 % Get electrode locations for specified channel labels from a file.
 
 % Parameters:
+% - fileID (string, char): iEEG data filename in iEEG.org, should contain
+% patient info, should match to filename in first column of the elec locs file
 % - chLabels (cell array): Channel labels for which to retrieve electrode locations.
 % - filename (string, char): Path to the file containing electrode locations.
 
@@ -15,9 +17,11 @@ function output = get_elec_locs(chLabels,filename)
 % output = get_elec_locs(chLabels, filename);
 
 p = inputParser;
+addRequired(p, 'fileID', @(x) isstring(x) || ischar(x));
 addRequired(p, 'chLabels', @(x) iscell(x) || isstring(x) || ischar(x));
 addRequired(p, 'filename', @(x) (isstring(x) || ischar(x)) && exist(x,'file') == 2);
-parse(p, chLabels, filename);
+parse(p, fileID, chLabels, filename);
+fileID = p.Results.fileID;
 chLabels = p.Results.chLabels;
 filename = p.Results.filename;
 
@@ -29,14 +33,20 @@ if ~iscell(chLabels)
     end
 end
 
+
 elec_locs = table2cell(readtable(filename));
+available_pts = unique(elec_locs(:,1));
+match = cellfun(@(x) contains(fileID,x) && ~isempty(x),available_pts);
+fullFileID = available_pts{match};
 % clean both
-labels = clean_labels(elec_locs(:,1));
+elec_locs = elec_locs(cellfun(@(x) strcmp(x,fullFileID), elec_locs(:,1)),:);
+labels = elec_locs(:,2);
+labels = clean_labels(labels);
 chLabels = clean_labels(chLabels);
 
 [Lia,locb] = ismember(chLabels,labels);
-output = nan(size(chLabels,1),size(elec_locs,2)-1);
-output(Lia,:) = cell2mat(elec_locs(locb(Lia),2:end));
+output = nan(size(chLabels,1),3);
+output(Lia,:) = cell2mat(elec_locs(locb(Lia),3:5));
 % output = chLabels;
 % output = [output,num2cell(output_data)];
 

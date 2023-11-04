@@ -6,7 +6,7 @@ from beartype.typing import Iterable, Union
 
 
 @beartype
-def get_elec_locs(chLabels: Union[Iterable[str], str], filename: str) -> np.ndarray:
+def get_elec_locs(fileID: str, chLabels: Union[Iterable[str], str], filename: str) -> np.ndarray:
     """
     Get electrode locations for specified channel labels from a file.
 
@@ -29,18 +29,25 @@ def get_elec_locs(chLabels: Union[Iterable[str], str], filename: str) -> np.ndar
         chLabels = [chLabels]
 
     # Load electrode locations from the specified file
-    elec_locs = pd.read_csv(filename, header=None, index_col=0)
-    locs = elec_locs.to_numpy()
+    elec_locs = pd.read_csv(filename, header=None).dropna()
+    elec_locs = elec_locs.to_numpy()
+
+    # 
+    available_pts = np.unique(elec_locs[:,0])
+    match = [i in fileID for i in available_pts]
+    fullFileID = available_pts[match]
+    elec_locs = elec_locs[np.where(elec_locs[:,0]==fullFileID)[0],:]
+
     # Clean labels from both sources
-    labels = clean_labels(elec_locs.index.to_numpy())
+    labels = clean_labels(elec_locs[:,1])
     chLabels = clean_labels(chLabels)
 
     # Find common labels and their corresponding indices
     common = np.isin(chLabels, labels)
-    out_locs = np.nan * np.zeros([len(chLabels), locs.shape[1]])
+    out_locs = np.nan * np.zeros([len(chLabels), 3])
     for i in range(len(chLabels)):
         if common[i]:
             ind = np.where(labels == chLabels[i])[0]
-            out_locs[i, :] = locs[ind, :]
+            out_locs[i, :] = elec_locs[ind, 2:]
 
     return out_locs
