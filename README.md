@@ -30,6 +30,12 @@ Create a conda environment and activate:
 conda env create -n ieegpy -f ieegpy.yml
 conda activate ieegpy
 ```
+If the above command doesn't work, you can manually create an enviornment and install the necessary libraries:
+```
+conda create -n ieegpy python=3.9
+conda activate ieegpy
+pip install -r requirements.txt
+```
 
 **Testing**
 
@@ -68,15 +74,15 @@ The toolkit currently depends on ieeg.org.
 
 To access data, please register first on https://www.ieeg.org.
 
-Running the toolkit requires input of username and password during login configuration.
+A usr_ieeglogin.bin password file and a usr_config.json file are required in the user folder before data downloading can run correctly.
+
+Files could be automatically generated throught running login configuration and input of username and password.
 
 ```
 session = iEEGPreprocess()
 session.login_config()
 # input of user information
 ```
-
-This would generate password file *_ieeglogin.bin and config file *_config.json to in the CNTtools/user folder.
 
 ## Functions
 
