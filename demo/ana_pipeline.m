@@ -98,7 +98,7 @@ params.nSeg = 5; % <- make change here
 allDataset = {'HUP','MUSC'};
 params.dataset = 'MUSC'; % <- make change here
 if exist(params.dataset,'dir') == 0
-    mkdir(params.dataset);
+    mkdir(fullfile(work_path,params.dataset));
 end
 params.chans_to_use = 'LR'; % <- make change here, options gw, gray, white, LR
 
@@ -110,7 +110,7 @@ fprintf('The %d Connectivit Measures translates to %d total methods\n',params.nC
 
 % 🟡paths
 global paths
-paths.resultDir = fullfile(params.dataset,params.chans_to_use);
+paths.resultDir = fullfile(work_path,params.dataset,params.chans_to_use);
 paths.rawPath = fullfile(paths.resultDir,'raw');
 paths.resultPath = fullfile(paths.resultDir,'result');
 paths.dataPath = fullfile(paths.resultDir,'data');
