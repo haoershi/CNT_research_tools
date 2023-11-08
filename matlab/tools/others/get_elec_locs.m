@@ -37,16 +37,18 @@ end
 elec_locs = table2cell(readtable(filename));
 available_pts = unique(elec_locs(:,1));
 match = cellfun(@(x) contains(fileID,x) && ~isempty(x),available_pts);
-fullFileID = available_pts{match};
-% clean both
-elec_locs = elec_locs(cellfun(@(x) strcmp(x,fullFileID), elec_locs(:,1)),:);
-labels = elec_locs(:,2);
-labels = clean_labels(labels);
-chLabels = clean_labels(chLabels);
-
-[Lia,locb] = ismember(chLabels,labels);
 output = nan(size(chLabels,1),3);
-output(Lia,:) = cell2mat(elec_locs(locb(Lia),3:5));
-% output = chLabels;
-% output = [output,num2cell(output_data)];
-
+try
+    fullFileID = available_pts{match};
+    % clean both
+    elec_locs = elec_locs(cellfun(@(x) strcmp(x,fullFileID), elec_locs(:,1)),:);
+    labels = elec_locs(:,2);
+    labels = clean_labels(labels);
+    chLabels = clean_labels(chLabels);
+    [Lia,locb] = ismember(chLabels,labels);
+    output(Lia,:) = cell2mat(elec_locs(locb(Lia),3:5));
+catch
+    warning(['No match electrode location info were indentified, pseudo-laplacian ' ...
+        're-referencing where Channel i is referenced to the average signal of Channel ' ...
+        'i-1 and Channel i+1 would be done.'])
+end

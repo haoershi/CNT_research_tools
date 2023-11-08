@@ -442,6 +442,7 @@ ftpath = "/Users/meow/Downloads/fieldtrip-20230118"; % <- change directory here
 addpath(ftpath);
 ft_defaults
 ft_warning off
+warning off
 % simulate data, 8 chans
 % uncorrelated, without recording reference
 params.num_chans = 8;
