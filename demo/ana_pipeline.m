@@ -377,6 +377,7 @@ tsne_plot(networkCorr,'abs');
 
 if ismember('RE',{params.conn.symbol})
     % load results
+    [~,RE_ind] = ismember('RE',{params.conn.symbol});
     filelist = dir(paths.resultPath);
     isdir = [filelist.isdir];
     filelist(isdir) = [];
@@ -407,7 +408,7 @@ if ismember('RE',{params.conn.symbol})
             end
             nodeStr = reshape(nodeStr,[params.nMethod,36*2]); 
         else
-            results(:,18:24,:,:) = 1./(1+results(:,18:24,:,:)); % added for test
+            results(:,params.conn(RE_ind).start_ind:params.conn(RE_ind).stop_ind,:,:) = 1./(1+results(:,params.conn(RE_ind).start_ind:params.conn(RE_ind).stop_ind,:,:)); % added for test
             results = permute(results,[2,1,3,4]);
             results = reshape(results,[params.nMethod,nchan,nchan]);
             %  network level
@@ -687,11 +688,13 @@ boxdata = {};
 for i = 1:params.nRef
     boxdata{i} = squeeze(ref(:,i,:));
 end
-plot_paired_line(boxdata);
-title('Re-reference Methods','FontSize',16,'FontWeight','bold','FontName','Avenir')
-exportgraphics(gcf, strcat(paths.figPath,filesep,'robustRef_line.png'), 'Resolution', 300);
-saveas(gcf,strcat(paths.figPath,filesep,'robustRef_line.svg'))
-close all
+if params.nRef == 2
+    plot_paired_line(boxdata);
+    title('Re-reference Methods','FontSize',16,'FontWeight','bold','FontName','Avenir')
+    exportgraphics(gcf, strcat(paths.figPath,filesep,'robustRef_line.png'), 'Resolution', 300);
+    saveas(gcf,strcat(paths.figPath,filesep,'robustRef_line.svg'))
+    close all
+end
 % box plot
 groupCenters = @(nGroups,nMembers,interGroupSpace) ...
     nGroups/2+.5 : nGroups+interGroupSpace : (nGroups+interGroupSpace)*nMembers-1;
