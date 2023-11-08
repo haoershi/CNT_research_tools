@@ -618,7 +618,11 @@ bar = waitbar(0, 'Processing...');
 for i = 1:numFile
     waitbar(i/numFile, bar, sprintf('Processing %d of %d...', i, numFile));
     load(strcat(paths.resultPath,filesep,'',filelist(i).name))
-    nchan = size(results,3);
+    if strcmp(params.chans_to_use,'LR')
+        nchan = size(results,3)*2;
+    else
+        nchan = size(results,3);
+    end
     if nchan < 10 || any(cellfun(@(x) length(find(x))<10,full_ind))
         continue
     end
@@ -637,7 +641,7 @@ for i = 1:numFile
                 end
                 tmp = permute(tmp,[2,1,3,4,5]);
                 tmp = reshape(tmp,[params.nMethod,36,36,2]);
-                for j = 1:nchan
+                for j = 1:nchan/2
                     nodeStr(:,j,:) = mean(tmp(:,j,[1:(j-1),(j+1):end],:),3,'omitnan');
                 end
                 nodeStr = reshape(nodeStr,[params.nMethod,36*2]);
@@ -667,7 +671,7 @@ permReliability = reshape(permReliability,params.nSeg,[],params.nMethod,params.n
 permReliability = mean(permReliability,1,'omitnan');
 permReliability = reshape(permReliability,size(permReliability,2,3,4));
 save(strcat(paths.dataPath,filesep,'perm.mat'),'permReliability','var_true','var_error')
-clearvars -except numFile patientList params paths 
+% clearvars -except numFile patientList params paths 
 %% plot for section 5
 if exist(strcat(paths.dataPath,filesep,'perm.mat'),'file') ~= 2
     error('No results file exist, please make sure to run section 5.')
