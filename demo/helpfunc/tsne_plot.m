@@ -44,6 +44,6 @@ title("t-SNE Plot of Network Level Pre-processing Pipeline Similarity",'FontName
 set(gca,'FontName',params.font,'FontSize',params.fontsize+4)
 xlabel(axisLabel{1})
 ylabel(axisLabel{2})
-legend({params.conn.name},'Location','SouthWest','AutoUpdate','off')
+legend({params.conn.name},'Location','best','AutoUpdate','off')
 saveas(gcf,strcat(paths.figPath,filesep,'tsne',suffix,'.svg'))
 close all
