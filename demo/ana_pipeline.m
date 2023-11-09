@@ -29,8 +29,8 @@
 
 %% set path
 filename = which('ana_pipeline.m');
-[filedir, ~, ~] = fileparts(filename);
-cd(filedir);
+[work_path, ~, ~] = fileparts(filename);
+cd(work_path);
 addpath(genpath('.')); % this should add analysis and matlab folder
 addpath(genpath(['..',filesep,'matlab'])); % this should add analysis and matlab folder
 %% 0 | Settings 🤖
@@ -45,7 +45,7 @@ ref = struct('method',{'car';'bipolar';'laplacian'},...
             'name',{'Common average re-referencing'; 'Bipolar re-referencing';'Laplacian re-referencing'}, ...
             'col', mat2cell(hex2rgb({'#51b8bd','#de7862','#63804f'}),ones(3, 1)));
 
-ifRef = logical([1, 1, 0]); % <- make change here
+ifRef = logical([1, 1, 1]); % <- make change here
 params.ref = ref(ifRef);
 params.nRef = length(find(ifRef));
 params.LAR_loc = '';
