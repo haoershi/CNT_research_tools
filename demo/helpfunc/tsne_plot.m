@@ -40,8 +40,8 @@ for i = 1:params.nMethod
             'MarkerFaceAlpha',.7,'LineWidth',1);
     hold on
 end
-title("t-SNE Plot of Network Level Pre-processing Pipeline Similarity")
-set(gca,'FontName','Helvetica','FontSize',20)
+title("t-SNE Plot of Network Level Pre-processing Pipeline Similarity",'FontName',params.font,'FontSize',params.fontsize,'FontWeight','bold')
+set(gca,'FontName',params.font,'FontSize',params.fontsize+4)
 xlabel(axisLabel{1})
 ylabel(axisLabel{2})
 legend({params.conn.name},'Location','SouthWest','AutoUpdate','off')

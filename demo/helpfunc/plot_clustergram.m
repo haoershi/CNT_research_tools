@@ -14,7 +14,7 @@ t.RowLabels = params.shortList;
 t.ColumnLabelsRotate = 45;
 fig1 = clustergram(data);
 set(fig1,t);
-addTitle(fig1,'Global Connectivity Measure Grouped');
+addTitle(fig1,'Global Connectivity Measure Grouped','FontName',params.font,'FontSize',params.fontsize,'FontWeight','bold');
 f = plot(fig1);
 % added
 columnLabels = fig1.ColumnLabels;
@@ -24,7 +24,7 @@ set(fig1,t);
 f.Children.CData(logical(triu(ones(params.nMethod,params.nMethod),1))) = 0;
 for i = 1:params.nMethod
     text(f,i+1, i, columnLabels{i}, 'HorizontalAlignment', 'left', ...
-        'VerticalAlignment', 'middle','FontName','Calibri');
+        'VerticalAlignment', 'middle','FontName',params.font);
 end
 set(f,'XColor','none');
 set(f,'YColor','none');

@@ -21,9 +21,9 @@ for i = 1:size(nodeStrAll,1)
         hold on
     end
     hold off
-    title(params.shortList{i})
+    title(params.shortList{i},'FontName',params.font,'FontSize',params.fontsize)
     legend(leg,'Location','SouthEast','AutoUpdate','off')
-    set(gca,'FontName','Avenir','FontSize',14)
+    set(gca,'FontName',params.font,'FontSize',params.fontsize-2)
     xlabel(axisLabel{1})
     ylabel(axisLabel{2})
     f.CurrentAxes.XLim(2) = max(f.CurrentAxes.XLim(2),f.CurrentAxes.YLim(2));

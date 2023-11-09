@@ -532,13 +532,13 @@ for i = 1:params.nRef+1
 end
 
 % Customize the appearance of the heatmap
-white = [1,1,1]; red = params.ref(2).col;
+white = [1,1,1]; red = params.lightCols(2,:);
 colors = [white;red];
 positions = [0, 1];
 mycolormap = interp1(positions, colors, linspace(0, 1, 256), 'pchip');
 titles = ['Machine reference',{params.ref.symbol}];
 % without recording ref
-figure('Position',[0 0 1300 300]);
+figure('Position',[0 0 100+(params.nRef+1)*400 300]);
 for i = 1:params.nRef+1
     subplot(1,params.nRef+1,i)
     imagesc(coh1plot{i});colorbar;caxis([0,1]);
@@ -549,7 +549,7 @@ colormap(mycolormap);
 exportgraphics(gcf, strcat(paths.figPath,filesep,'spurcorr1_',params.condition,'.png'), 'Resolution', 300);
 saveas(gcf,strcat(paths.figPath,filesep,'spurcorr1_',params.condition,'.svg'))
 % with recording ref
-figure('Position',[0 0 1300 300]);
+figure('Position',[0 0 100+(params.nRef+1)*400 300]);
 for i = 1:params.nRef+1
     subplot(1,params.nRef+1,i)
     imagesc(coh2plot{i});colorbar;caxis([0,1]);
@@ -561,7 +561,7 @@ exportgraphics(gcf, strcat(paths.figPath,filesep,'spurcorr2_',params.condition,'
 saveas(gcf,strcat(paths.figPath,filesep,'spurcorr2_',params.condition,'.svg'))
 close all
 % average plot
-cols = [hex2rgb('#63804f');cell2mat({params.ref.col}')];
+cols = [params.darkCols(3,:);cell2mat({params.ref.col}')];
 mycolormap = [reshape(cols,[1,params.nRef+1,3]);
               reshape(cols,[1,params.nRef+1,3])];
 data = []; error = [];
@@ -690,7 +690,7 @@ for i = 1:params.nRef
 end
 if params.nRef == 2
     plot_paired_line(boxdata);
-    title('Re-reference Methods','FontSize',16,'FontWeight','bold','FontName','Avenir')
+    title('Re-reference Methods','FontSize',params.fontsize,'FontWeight','bold','FontName',params.font)
     exportgraphics(gcf, strcat(paths.figPath,filesep,'robustRef_line.png'), 'Resolution', 300);
     saveas(gcf,strcat(paths.figPath,filesep,'robustRef_line.svg'))
     close all
@@ -705,10 +705,10 @@ b = boxplotGroup(boxdata,'primaryLabels',repmat({''}, params.nRef, 1), ...
     'Colors',col,'GroupType','betweenGroups', ...
     'PlotStyle','traditional','BoxStyle','outline', ...
     'Symbol','o','Widths',0.7);
-title('Re-reference Methods','FontSize',16,'FontWeight','bold')
+title('Re-reference Methods','FontName',params.font,'FontSize',params.fontsize,'FontWeight','bold')
 ylabel('Reliability')
 xlabel('% Electrode Removed')
-set(gca,'FontName','Helvetica','FontSize',14)
+set(gca,'FontName',params.font,'FontSize',params.fontsize-2)
 ticks = groupCenters(numel(boxdata), size(boxdata{1},2), 1);
 set(gca,'XTick',ticks,'XTickLabels',labels)
 exportgraphics(gcf, strcat(paths.figPath,filesep,'robustRef.png'), 'Resolution', 300);
@@ -729,10 +729,10 @@ b = boxplotGroup(boxdata,'primaryLabels',repmat({''}, params.nConn, 1), ...
     'Colors',cell2mat({params.conn.col}'),'GroupType','betweenGroups', ...
     'PlotStyle','traditional','BoxStyle','outline', ...
     'Symbol','o','Widths',0.7);
-title('Connectivity Methods','FontSize',16,'FontWeight','bold')
+title('Connectivity Methods','FontName',params.font,'FontSize',params.fontsize,'FontWeight','bold')
 ylabel('Reliability')
 xlabel('% Electrode Removed')
-set(gca,'FontName','Avenir','FontSize',14)
+set(gca,'FontName',params.font,'FontSize',params.fontsize-2)
 ticks = groupCenters(numel(boxdata), size(boxdata{1},2), 1);
 set(gca,'XTick',ticks,'XTickLabels',labels)
 exportgraphics(gcf, strcat(paths.figPath,filesep,'robustMethod.png'), 'Resolution', 300);
@@ -766,10 +766,10 @@ b = boxplotGroup(boxdata,'primaryLabels',repmat({''}, params.nFreq, 1), ...
     'Colors',mycolormap,'GroupType','betweenGroups', ...
     'PlotStyle','traditional','BoxStyle','outline', ...
     'Symbol','o','Widths',0.7);
-title('Frequency Bands','FontSize',16,'FontWeight','bold')
+title('Frequency Bands','FontName',params.font,'FontSize',params.fontsize,'FontWeight','bold')
 ylabel('Reliability')
 xlabel('% Electrode Removed')
-set(gca,'FontName','Avenir','FontSize',14)
+set(gca,'FontName',params.font,'FontSize',params.fontsize-2)
 ticks = groupCenters(numel(boxdata), size(boxdata{1},2), 1);
 set(gca,'XTick',ticks,'XTickLabels',labels)
 exportgraphics(gcf, strcat(paths.figPath,filesep,'robustFreq.png'), 'Resolution', 300);
@@ -834,6 +834,7 @@ clearvars -except numFile patientList params paths
 filelist = dir(paths.resultPath);
 isdir = [filelist.isdir];
 filelist(isdir) = [];
+filelist(cellfun(@(x) strcmp(x,'.DS_Store'),{filelist.name})) = [];
 numFile = length(filelist);
 % patient list
 patients = {filelist.name}';
@@ -886,11 +887,17 @@ writematrix(goodoutcome,strcat(paths.MLPath,filesep,'goodout.csv'))
 writematrix(istemp,strcat(paths.MLPath,filesep,'istemp.csv'))
 
 % if there's left vs right difference overall
-% per-method temporal lobe/nontempraol lobe
-extractMLData(nodeStrAll(:,istemp,:),strcat(paths.MLPath,filesep,'pairT_LR_temp.csv'));
+% % per-method temporal lobe/nontempraol lobe
+% extractMLData(nodeStrAll(:,istemp,:),strcat(paths.MLPath,filesep,'pairT_LR_temp.csv'));
 % soz/non-soz difference, pair-ttest
 nodeStrAll(:,numlabel==2,:) = nodeStrAll(:,numlabel==2,[2,1]);
-extractMLData(nodeStrAll(:,istemp&(numlabel==1|numlabel==2),:),strcat(paths.MLPath,filesep,'pairT_SOZ_temp.csv'));
+unilateral_temporal = istemp&(numlabel==1|numlabel==2);
+npatient = length(find(unilateral_temporal));
+if npatient > 1
+    extractMLData(nodeStrAll(:,unilateral_temporal,:),strcat(paths.MLPath,filesep,'pairT_SOZ_temp.csv'));
+else
+    disp('Less than two patients have unilateral temporal SOZ.')
+end
 clearvars -except numFile patientList params paths 
 %% plot for section 6
 if exist(strcat(paths.dataPath,filesep,'sozML.mat'),'file') ~= 2
@@ -898,11 +905,17 @@ if exist(strcat(paths.dataPath,filesep,'sozML.mat'),'file') ~= 2
 else
     load(strcat(paths.dataPath,filesep,'sozML.mat'));
 end
-plot_soz_scatter(nodeStrAll(:,istemp,:),numlabel(istemp),'pairT_LR_temp');
+% plot_soz_scatter(nodeStrAll(:,istemp,:),numlabel(istemp),'pairT_LR_temp');
 nodeStrAll(:,numlabel==2,:) = nodeStrAll(:,numlabel==2,[2,1]);
-plot_soz_scatter(nodeStrAll(:,istemp&(numlabel==1|numlabel==2),:),numlabel(istemp&(numlabel==1|numlabel==2)),'pairT_SOZ_temp');
-% volcano plot
-files = dir(strcat(paths.MLPath,filesep,'pairT*'));
-for i = 1:length(files)
-    volcano_process(files(i).name(1:end-4),'bh');
+unilateral_temporal = istemp&(numlabel==1|numlabel==2);
+npatient = length(find(unilateral_temporal));
+if npatient > 1
+    plot_soz_scatter(nodeStrAll(:,unilateral_temporal,:),numlabel(unilateral_temporal),'pairT_SOZ_temp');
+    % volcano plot
+    files = dir(strcat(paths.MLPath,filesep,'pairT*'));
+    for i = 1:length(files)
+        volcano_process(files(i).name(1:end-4),'bh');
+    end
+else
+    disp('Less than two patients have unilateral temporal SOZ.')
 end

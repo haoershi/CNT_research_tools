@@ -1,6 +1,6 @@
 function plot_paired_line(data)
 global params
-blue = params.lightCols(1,:);red = params.lightCols(2,:);
+col1 = params.ref(1).col;col2 = params.ref(2).col;
 % Get the number of groups
 ngroups = length(data);
 assert(ngroups ==2, 'This functions is only for paired comparison.')
@@ -20,8 +20,8 @@ for i = 1:ncomp
         plot([xpos(i)-width, xpos(i)+width], [pre(j,i), post(j,i)], 'Color', 'black');
     end
     % Plot the pre/post data with lines connecting the pre/post dots
-    h1 = plot((xpos(i)-width).*ones(nsample,1), pre(:,i), 'o', 'Color', blue,'MarkerFaceColor',[1,1,1],'LineWidth',1,'MarkerSize',8);
-    h2 = plot((xpos(i)+width).*ones(nsample,1), post(:,i), 'o', 'Color', red,'MarkerFaceColor',[1,1,1],'LineWidth',1,'MarkerSize',8);
+    h1 = plot((xpos(i)-width).*ones(nsample,1), pre(:,i), 'o', 'Color', col1,'MarkerFaceColor',[1,1,1],'LineWidth',1,'MarkerSize',8);
+    h2 = plot((xpos(i)+width).*ones(nsample,1), post(:,i), 'o', 'Color', col2,'MarkerFaceColor',[1,1,1],'LineWidth',1,'MarkerSize',8);
 end
 legend([h1,h2],{params.ref.name});
 % Add a legend and axis labels

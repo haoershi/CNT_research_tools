@@ -39,7 +39,10 @@ switch ptype
         ind = 7;
 end
 plot_volcano(data(:,4),data(:,ind),params.shortList)
-title(titleText)
+title(titleText,'FontName',params.font,'FontSize',params.fontsize)
+if exist(strcat(paths.figPath,filesep,folderName),'dir') == 0
+    mkdir(strcat(paths.figPath,filesep,folderName))
+end
 exportgraphics(gcf, strcat(paths.figPath,filesep,folderName,filesep,filename,'_',ptype,'.png'), 'Resolution', 300);
 saveas(gcf,strcat(paths.figPath,filesep,folderName,filesep,filename,'_',ptype,'.svg'))
 close all
